@@ -1,6 +1,6 @@
 //
 //  RNDBindings.h
-//  RNDBindableObjects
+//  RNDKit
 //
 //  Created by Erikheath Thomas on 6/29/17.
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
@@ -11,9 +11,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-//extern id RNDMultipleValuesMarker;
-//extern id RNDNoSelectionMarker;
-//extern id RNDNotApplicableMarker;
+extern id RNDMultipleValuesMarker;
+extern id RNDNoSelectionMarker;
+extern id RNDNotApplicableMarker;
+
 
 extern BOOL RNDIsControllerMarker(__nullable id object);
 
@@ -21,10 +22,10 @@ typedef NSString * RNDBindingName NS_EXTENSIBLE_STRING_ENUM;
 typedef NSString * RNDBindingOption NS_STRING_ENUM;
 
 // keys for the returned dictionary of -infoForBinding:
-//typedef NSString * RNDBindingInfoKey NS_STRING_ENUM;
-//extern RNDBindingInfoKey RNDObservedObjectKey;
-//extern RNDBindingInfoKey RNDObservedKeyPathKey;
-//extern RNDBindingInfoKey RNDOptionsKey;
+typedef NSString * RNDBindingInfoKey NS_STRING_ENUM;
+extern RNDBindingInfoKey RNDObservedObjectKey;
+extern RNDBindingInfoKey RNDObservedKeyPathKey;
+extern RNDBindingInfoKey RNDOptionsKey;
 
 @protocol RNDKeyValueBindingCreation <NSObject>
 
@@ -95,112 +96,112 @@ typedef NSString * RNDBindingOption NS_STRING_ENUM;
 @end
 
 // constants for binding names
-//extern RNDBindingName NSAlignmentBinding;
-//extern RNDBindingName NSAlternateImageBinding;
-//extern RNDBindingName NSAlternateTitleBinding;
-//extern RNDBindingName NSAnimateBinding;
-//extern RNDBindingName NSAnimationDelayBinding;
-//extern RNDBindingName NSArgumentBinding;
-//extern RNDBindingName NSAttributedStringBinding;
-//extern RNDBindingName NSContentArrayBinding;
-//extern RNDBindingName NSContentArrayForMultipleSelectionBinding;
-//extern RNDBindingName NSContentBinding;
-//extern RNDBindingName NSContentDictionaryBinding;
-//extern RNDBindingName NSContentHeightBinding;
-//extern RNDBindingName NSContentObjectBinding;
-//extern RNDBindingName NSContentObjectsBinding;
-//extern RNDBindingName NSContentSetBinding;
-//extern RNDBindingName NSContentValuesBinding;
-//extern RNDBindingName NSContentWidthBinding;
-//extern RNDBindingName NSCriticalValueBinding;
-//extern RNDBindingName NSDataBinding;
-//extern RNDBindingName NSDisplayPatternTitleBinding;
-//extern RNDBindingName NSDisplayPatternValueBinding;
-//extern RNDBindingName NSDocumentEditedBinding;
-//extern RNDBindingName NSDoubleClickArgumentBinding;
-//extern RNDBindingName NSDoubleClickTargetBinding;
-//extern RNDBindingName NSEditableBinding;
-//extern RNDBindingName NSEnabledBinding;
-//extern RNDBindingName NSExcludedKeysBinding;
-//extern RNDBindingName NSFilterPredicateBinding;
-//extern RNDBindingName NSFontBinding;
-//extern RNDBindingName NSFontBoldBinding;
-//extern RNDBindingName NSFontFamilyNameBinding;
-//extern RNDBindingName NSFontItalicBinding;
-//extern RNDBindingName NSFontNameBinding;
-//extern RNDBindingName NSFontSizeBinding;
-//extern RNDBindingName NSHeaderTitleBinding;
-//extern RNDBindingName NSHiddenBinding;
-//extern RNDBindingName NSImageBinding;
-//extern RNDBindingName NSIncludedKeysBinding;
-//extern RNDBindingName NSInitialKeyBinding;
-//extern RNDBindingName NSInitialValueBinding;
-//extern RNDBindingName NSIsIndeterminateBinding;
-//extern RNDBindingName NSLabelBinding;
-//extern RNDBindingName NSLocalizedKeyDictionaryBinding;
-//extern RNDBindingName NSManagedObjectContextBinding;
-//extern RNDBindingName NSMaximumRecentsBinding;
-//extern RNDBindingName NSMaxValueBinding;
-//extern RNDBindingName NSMaxWidthBinding;
-//extern RNDBindingName NSMinValueBinding;
-//extern RNDBindingName NSMinWidthBinding;
-//extern RNDBindingName NSMixedStateImageBinding;
-//extern RNDBindingName NSOffStateImageBinding;
-//extern RNDBindingName NSOnStateImageBinding;
-//extern RNDBindingName NSPositioningRectBinding;
-//extern RNDBindingName NSPredicateBinding;
-//extern RNDBindingName NSRecentSearchesBinding;
-//extern RNDBindingName NSRepresentedFilenameBinding;
-//extern RNDBindingName NSRowHeightBinding;
-//extern RNDBindingName NSSelectedIdentifierBinding;
-//extern RNDBindingName NSSelectedIndexBinding;
-//extern RNDBindingName NSSelectedLabelBinding;
-//extern RNDBindingName NSSelectedObjectBinding;
-//extern RNDBindingName NSSelectedObjectsBinding;
-//extern RNDBindingName NSSelectedTagBinding;
-//extern RNDBindingName NSSelectedValueBinding;
-//extern RNDBindingName NSSelectedValuesBinding;
-//extern RNDBindingName NSSelectionIndexesBinding;
-//extern RNDBindingName NSSelectionIndexPathsBinding;
-//extern RNDBindingName NSSortDescriptorsBinding;
-//extern RNDBindingName NSTargetBinding;
-//extern RNDBindingName NSTextColorBinding;
-//extern RNDBindingName NSTitleBinding;
-//extern RNDBindingName NSToolTipBinding;
-//extern RNDBindingName NSTransparentBinding;
-//extern RNDBindingName NSValueBinding;
-//extern RNDBindingName NSValuePathBinding;
-//extern RNDBindingName NSValueURLBinding;
-//extern RNDBindingName NSVisibleBinding;
-//extern RNDBindingName NSWarningValueBinding;
-//extern RNDBindingName NSWidthBinding;
+extern RNDBindingName NSAlignmentBinding;
+extern RNDBindingName NSAlternateImageBinding;
+extern RNDBindingName NSAlternateTitleBinding;
+extern RNDBindingName NSAnimateBinding;
+extern RNDBindingName NSAnimationDelayBinding;
+extern RNDBindingName NSArgumentBinding;
+extern RNDBindingName NSAttributedStringBinding;
+extern RNDBindingName NSContentArrayBinding;
+extern RNDBindingName NSContentArrayForMultipleSelectionBinding;
+extern RNDBindingName NSContentBinding;
+extern RNDBindingName NSContentDictionaryBinding;
+extern RNDBindingName NSContentHeightBinding;
+extern RNDBindingName NSContentObjectBinding;
+extern RNDBindingName NSContentObjectsBinding;
+extern RNDBindingName NSContentSetBinding;
+extern RNDBindingName NSContentValuesBinding;
+extern RNDBindingName NSContentWidthBinding;
+extern RNDBindingName NSCriticalValueBinding;
+extern RNDBindingName NSDataBinding;
+extern RNDBindingName NSDisplayPatternTitleBinding;
+extern RNDBindingName NSDisplayPatternValueBinding;
+extern RNDBindingName NSDocumentEditedBinding;
+extern RNDBindingName NSDoubleClickArgumentBinding;
+extern RNDBindingName NSDoubleClickTargetBinding;
+extern RNDBindingName NSEditableBinding;
+extern RNDBindingName NSEnabledBinding;
+extern RNDBindingName NSExcludedKeysBinding;
+extern RNDBindingName NSFilterPredicateBinding;
+extern RNDBindingName NSFontBinding;
+extern RNDBindingName NSFontBoldBinding;
+extern RNDBindingName NSFontFamilyNameBinding;
+extern RNDBindingName NSFontItalicBinding;
+extern RNDBindingName NSFontNameBinding;
+extern RNDBindingName NSFontSizeBinding;
+extern RNDBindingName NSHeaderTitleBinding;
+extern RNDBindingName NSHiddenBinding;
+extern RNDBindingName NSImageBinding;
+extern RNDBindingName NSIncludedKeysBinding;
+extern RNDBindingName NSInitialKeyBinding;
+extern RNDBindingName NSInitialValueBinding;
+extern RNDBindingName NSIsIndeterminateBinding;
+extern RNDBindingName NSLabelBinding;
+extern RNDBindingName NSLocalizedKeyDictionaryBinding;
+extern RNDBindingName NSManagedObjectContextBinding;
+extern RNDBindingName NSMaximumRecentsBinding;
+extern RNDBindingName NSMaxValueBinding;
+extern RNDBindingName NSMaxWidthBinding;
+extern RNDBindingName NSMinValueBinding;
+extern RNDBindingName NSMinWidthBinding;
+extern RNDBindingName NSMixedStateImageBinding;
+extern RNDBindingName NSOffStateImageBinding;
+extern RNDBindingName NSOnStateImageBinding;
+extern RNDBindingName NSPositioningRectBinding;
+extern RNDBindingName NSPredicateBinding;
+extern RNDBindingName NSRecentSearchesBinding;
+extern RNDBindingName NSRepresentedFilenameBinding;
+extern RNDBindingName NSRowHeightBinding;
+extern RNDBindingName NSSelectedIdentifierBinding;
+extern RNDBindingName NSSelectedIndexBinding;
+extern RNDBindingName NSSelectedLabelBinding;
+extern RNDBindingName NSSelectedObjectBinding;
+extern RNDBindingName NSSelectedObjectsBinding;
+extern RNDBindingName NSSelectedTagBinding;
+extern RNDBindingName NSSelectedValueBinding;
+extern RNDBindingName NSSelectedValuesBinding;
+extern RNDBindingName NSSelectionIndexesBinding;
+extern RNDBindingName NSSelectionIndexPathsBinding;
+extern RNDBindingName NSSortDescriptorsBinding;
+extern RNDBindingName NSTargetBinding;
+extern RNDBindingName NSTextColorBinding;
+extern RNDBindingName NSTitleBinding;
+extern RNDBindingName NSToolTipBinding;
+extern RNDBindingName NSTransparentBinding;
+extern RNDBindingName NSValueBinding;
+extern RNDBindingName NSValuePathBinding;
+extern RNDBindingName NSValueURLBinding;
+extern RNDBindingName NSVisibleBinding;
+extern RNDBindingName NSWarningValueBinding;
+extern RNDBindingName NSWidthBinding;
 
 // constants for binding options
-//extern RNDBindingOption NSAllowsEditingMultipleValuesSelectionBindingOption;
-//extern RNDBindingOption NSAllowsNullArgumentBindingOption;
-//extern RNDBindingOption NSAlwaysPresentsApplicationModalAlertsBindingOption;
-//extern RNDBindingOption NSConditionallySetsEditableBindingOption;
-//extern RNDBindingOption NSConditionallySetsEnabledBindingOption;
-//extern RNDBindingOption NSConditionallySetsHiddenBindingOption;
-//extern RNDBindingOption NSContinuouslyUpdatesValueBindingOption;
-//extern RNDBindingOption NSCreatesSortDescriptorBindingOption;
-//extern RNDBindingOption NSDeletesObjectsOnRemoveBindingsOption;
-//extern RNDBindingOption NSDisplayNameBindingOption;
-//extern RNDBindingOption NSDisplayPatternBindingOption;
-//extern RNDBindingOption NSContentPlacementTagBindingOption;
-//extern RNDBindingOption NSHandlesContentAsCompoundValueBindingOption;
-//extern RNDBindingOption NSInsertsNullPlaceholderBindingOption;
-//extern RNDBindingOption NSInvokesSeparatelyWithArrayObjectsBindingOption;
-//extern RNDBindingOption NSMultipleValuesPlaceholderBindingOption;
-//extern RNDBindingOption NSNoSelectionPlaceholderBindingOption;
-//extern RNDBindingOption NSNotApplicablePlaceholderBindingOption;
-//extern RNDBindingOption NSNullPlaceholderBindingOption;
-//extern RNDBindingOption NSRaisesForNotApplicableKeysBindingOption;
-//extern RNDBindingOption NSPredicateFormatBindingOption;
-//extern RNDBindingOption NSSelectorNameBindingOption;
-//extern RNDBindingOption NSSelectsAllWhenSettingContentBindingOption;
-//extern RNDBindingOption NSValidatesImmediatelyBindingOption;
-//extern RNDBindingOption NSValueTransformerNameBindingOption;
-//extern RNDBindingOption NSValueTransformerBindingOption;
+extern RNDBindingOption NSAllowsEditingMultipleValuesSelectionBindingOption;
+extern RNDBindingOption NSAllowsNullArgumentBindingOption;
+extern RNDBindingOption NSAlwaysPresentsApplicationModalAlertsBindingOption;
+extern RNDBindingOption NSConditionallySetsEditableBindingOption;
+extern RNDBindingOption NSConditionallySetsEnabledBindingOption;
+extern RNDBindingOption NSConditionallySetsHiddenBindingOption;
+extern RNDBindingOption NSContinuouslyUpdatesValueBindingOption;
+extern RNDBindingOption NSCreatesSortDescriptorBindingOption;
+extern RNDBindingOption NSDeletesObjectsOnRemoveBindingsOption;
+extern RNDBindingOption NSDisplayNameBindingOption;
+extern RNDBindingOption NSDisplayPatternBindingOption;
+extern RNDBindingOption NSContentPlacementTagBindingOption;
+extern RNDBindingOption NSHandlesContentAsCompoundValueBindingOption;
+extern RNDBindingOption NSInsertsNullPlaceholderBindingOption;
+extern RNDBindingOption NSInvokesSeparatelyWithArrayObjectsBindingOption;
+extern RNDBindingOption NSMultipleValuesPlaceholderBindingOption;
+extern RNDBindingOption NSNoSelectionPlaceholderBindingOption;
+extern RNDBindingOption NSNotApplicablePlaceholderBindingOption;
+extern RNDBindingOption NSNullPlaceholderBindingOption;
+extern RNDBindingOption NSRaisesForNotApplicableKeysBindingOption;
+extern RNDBindingOption NSPredicateFormatBindingOption;
+extern RNDBindingOption NSSelectorNameBindingOption;
+extern RNDBindingOption NSSelectsAllWhenSettingContentBindingOption;
+extern RNDBindingOption NSValidatesImmediatelyBindingOption;
+extern RNDBindingOption NSValueTransformerNameBindingOption;
+extern RNDBindingOption NSValueTransformerBindingOption;
 
 NS_ASSUME_NONNULL_END

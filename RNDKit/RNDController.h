@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreFoundation/CoreFoundation.h>
 #import "RNDBindings.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RNDController : NSObject <RNDEditor, RNDEditorRegistration, NSCoding> {
