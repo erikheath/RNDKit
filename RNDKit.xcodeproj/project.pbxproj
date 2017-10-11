@@ -7,26 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E43B01541F7ED6A400A09C87 /* SwiftKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E43B014B1F7ED6A400A09C87 /* SwiftKit.framework */; };
-		E43B01591F7ED6A400A09C87 /* SwiftKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43B01581F7ED6A400A09C87 /* SwiftKitTests.swift */; };
-		E43B015B1F7ED6A400A09C87 /* SwiftKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E43B014D1F7ED6A400A09C87 /* SwiftKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		E43B01661F7ED6BA00A09C87 /* ObjectController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43B01621F7ED6B900A09C87 /* ObjectController.swift */; };
-		E43B01671F7ED6BA00A09C87 /* Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43B01631F7ED6BA00A09C87 /* Slider.swift */; };
-		E43B01681F7ED6BA00A09C87 /* Bindings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43B01641F7ED6BA00A09C87 /* Bindings.swift */; };
-		E43B01691F7ED6BA00A09C87 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43B01651F7ED6BA00A09C87 /* Controller.swift */; };
+		E4159F4A1F8D876200820F24 /* RNDLabel.h in Headers */ = {isa = PBXBuildFile; fileRef = E4159F481F8D876200820F24 /* RNDLabel.h */; };
+		E4159F4B1F8D876200820F24 /* RNDLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = E4159F491F8D876200820F24 /* RNDLabel.m */; };
 		E49CFBB31F7EC17900CDFF29 /* RNDKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E49CFBA91F7EC17900CDFF29 /* RNDKit.framework */; };
 		E49CFBB81F7EC17900CDFF29 /* RNDKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E49CFBB71F7EC17900CDFF29 /* RNDKitTests.m */; };
 		E49CFBBA1F7EC17900CDFF29 /* RNDKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E49CFBAC1F7EC17900CDFF29 /* RNDKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E4A7ED481F8327E10083E742 /* RNDController.m in Sources */ = {isa = PBXBuildFile; fileRef = E4A7ED471F8327E10083E742 /* RNDController.m */; };
+		E4A7ED4A1F8348B20083E742 /* RNDObjectController.m in Sources */ = {isa = PBXBuildFile; fileRef = E4A7ED491F8348B20083E742 /* RNDObjectController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		E43B01551F7ED6A400A09C87 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E49CFBA01F7EC17900CDFF29 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E43B014A1F7ED6A400A09C87;
-			remoteInfo = SwiftKit;
-		};
 		E49CFBB41F7EC17900CDFF29 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E49CFBA01F7EC17900CDFF29 /* Project object */;
@@ -37,12 +27,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E43B014B1F7ED6A400A09C87 /* SwiftKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4159F481F8D876200820F24 /* RNDLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDLabel.h; sourceTree = "<group>"; };
+		E4159F491F8D876200820F24 /* RNDLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDLabel.m; sourceTree = "<group>"; };
 		E43B014D1F7ED6A400A09C87 /* SwiftKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftKit.h; sourceTree = "<group>"; };
 		E43B014E1F7ED6A400A09C87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E43B01531F7ED6A400A09C87 /* SwiftKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E43B01581F7ED6A400A09C87 /* SwiftKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftKitTests.swift; sourceTree = "<group>"; };
-		E43B015A1F7ED6A400A09C87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E43B01621F7ED6B900A09C87 /* ObjectController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectController.swift; sourceTree = "<group>"; };
 		E43B01631F7ED6BA00A09C87 /* Slider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slider.swift; sourceTree = "<group>"; };
 		E43B01641F7ED6BA00A09C87 /* Bindings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bindings.swift; sourceTree = "<group>"; };
@@ -60,24 +48,11 @@
 		E4A7ED441F82DCBD0083E742 /* RNDDictionaryController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDDictionaryController.h; sourceTree = "<group>"; };
 		E4A7ED451F82DCCD0083E742 /* RNDTreeController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDTreeController.h; sourceTree = "<group>"; };
 		E4A7ED461F82DD310083E742 /* RNDTreeNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDTreeNode.h; sourceTree = "<group>"; };
+		E4A7ED471F8327E10083E742 /* RNDController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDController.m; sourceTree = "<group>"; };
+		E4A7ED491F8348B20083E742 /* RNDObjectController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDObjectController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E43B01471F7ED6A400A09C87 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E43B01501F7ED6A400A09C87 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E43B01541F7ED6A400A09C87 /* SwiftKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E49CFBA51F7EC17900CDFF29 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -96,6 +71,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E4159F471F8D868B00820F24 /* UIControls */ = {
+			isa = PBXGroup;
+			children = (
+				E4159F481F8D876200820F24 /* RNDLabel.h */,
+				E4159F491F8D876200820F24 /* RNDLabel.m */,
+			);
+			path = UIControls;
+			sourceTree = "<group>";
+		};
 		E43B014C1F7ED6A400A09C87 /* SwiftKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -109,22 +93,12 @@
 			path = SwiftKit;
 			sourceTree = "<group>";
 		};
-		E43B01571F7ED6A400A09C87 /* SwiftKitTests */ = {
-			isa = PBXGroup;
-			children = (
-				E43B01581F7ED6A400A09C87 /* SwiftKitTests.swift */,
-				E43B015A1F7ED6A400A09C87 /* Info.plist */,
-			);
-			path = SwiftKitTests;
-			sourceTree = "<group>";
-		};
 		E49CFB9F1F7EC17900CDFF29 = {
 			isa = PBXGroup;
 			children = (
 				E49CFBAB1F7EC17900CDFF29 /* RNDKit */,
 				E49CFBB61F7EC17900CDFF29 /* RNDKitTests */,
 				E43B014C1F7ED6A400A09C87 /* SwiftKit */,
-				E43B01571F7ED6A400A09C87 /* SwiftKitTests */,
 				E49CFBAA1F7EC17900CDFF29 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -134,8 +108,6 @@
 			children = (
 				E49CFBA91F7EC17900CDFF29 /* RNDKit.framework */,
 				E49CFBB21F7EC17900CDFF29 /* RNDKitTests.xctest */,
-				E43B014B1F7ED6A400A09C87 /* SwiftKit.framework */,
-				E43B01531F7ED6A400A09C87 /* SwiftKitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -143,10 +115,13 @@
 		E49CFBAB1F7EC17900CDFF29 /* RNDKit */ = {
 			isa = PBXGroup;
 			children = (
+				E4159F471F8D868B00820F24 /* UIControls */,
 				E49CFBAC1F7EC17900CDFF29 /* RNDKit.h */,
 				E49CFBC41F7EC86100CDFF29 /* RNDBindings.h */,
 				E49CFBC31F7EC86100CDFF29 /* RNDController.h */,
+				E4A7ED471F8327E10083E742 /* RNDController.m */,
 				E4A7ED421F82CED00083E742 /* RNDObjectController.h */,
+				E4A7ED491F8348B20083E742 /* RNDObjectController.m */,
 				E4A7ED431F82DCA90083E742 /* RNDArrayController.h */,
 				E4A7ED441F82DCBD0083E742 /* RNDDictionaryController.h */,
 				E4A7ED451F82DCCD0083E742 /* RNDTreeController.h */,
@@ -168,18 +143,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		E43B01481F7ED6A400A09C87 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E43B015B1F7ED6A400A09C87 /* SwiftKit.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E49CFBA61F7EC17900CDFF29 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4159F4A1F8D876200820F24 /* RNDLabel.h in Headers */,
 				E49CFBBA1F7EC17900CDFF29 /* RNDKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -187,42 +155,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		E43B014A1F7ED6A400A09C87 /* SwiftKit */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E43B01601F7ED6A400A09C87 /* Build configuration list for PBXNativeTarget "SwiftKit" */;
-			buildPhases = (
-				E43B01461F7ED6A400A09C87 /* Sources */,
-				E43B01471F7ED6A400A09C87 /* Frameworks */,
-				E43B01481F7ED6A400A09C87 /* Headers */,
-				E43B01491F7ED6A400A09C87 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = SwiftKit;
-			productName = SwiftKit;
-			productReference = E43B014B1F7ED6A400A09C87 /* SwiftKit.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		E43B01521F7ED6A400A09C87 /* SwiftKitTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E43B01611F7ED6A400A09C87 /* Build configuration list for PBXNativeTarget "SwiftKitTests" */;
-			buildPhases = (
-				E43B014F1F7ED6A400A09C87 /* Sources */,
-				E43B01501F7ED6A400A09C87 /* Frameworks */,
-				E43B01511F7ED6A400A09C87 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				E43B01561F7ED6A400A09C87 /* PBXTargetDependency */,
-			);
-			name = SwiftKitTests;
-			productName = SwiftKitTests;
-			productReference = E43B01531F7ED6A400A09C87 /* SwiftKitTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		E49CFBA81F7EC17900CDFF29 /* RNDKit */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E49CFBBD1F7EC17900CDFF29 /* Build configuration list for PBXNativeTarget "RNDKit" */;
@@ -269,14 +201,6 @@
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "Curated Cocoa LLC";
 				TargetAttributes = {
-					E43B014A1F7ED6A400A09C87 = {
-						CreatedOnToolsVersion = 9.0;
-						ProvisioningStyle = Automatic;
-					};
-					E43B01521F7ED6A400A09C87 = {
-						CreatedOnToolsVersion = 9.0;
-						ProvisioningStyle = Automatic;
-					};
 					E49CFBA81F7EC17900CDFF29 = {
 						CreatedOnToolsVersion = 9.0;
 						ProvisioningStyle = Automatic;
@@ -301,27 +225,11 @@
 			targets = (
 				E49CFBA81F7EC17900CDFF29 /* RNDKit */,
 				E49CFBB11F7EC17900CDFF29 /* RNDKitTests */,
-				E43B014A1F7ED6A400A09C87 /* SwiftKit */,
-				E43B01521F7ED6A400A09C87 /* SwiftKitTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		E43B01491F7ED6A400A09C87 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E43B01511F7ED6A400A09C87 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E49CFBA71F7EC17900CDFF29 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -339,29 +247,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E43B01461F7ED6A400A09C87 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E43B01661F7ED6BA00A09C87 /* ObjectController.swift in Sources */,
-				E43B01671F7ED6BA00A09C87 /* Slider.swift in Sources */,
-				E43B01691F7ED6BA00A09C87 /* Controller.swift in Sources */,
-				E43B01681F7ED6BA00A09C87 /* Bindings.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E43B014F1F7ED6A400A09C87 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E43B01591F7ED6A400A09C87 /* SwiftKitTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E49CFBA41F7EC17900CDFF29 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4159F4B1F8D876200820F24 /* RNDLabel.m in Sources */,
+				E4A7ED481F8327E10083E742 /* RNDController.m in Sources */,
+				E4A7ED4A1F8348B20083E742 /* RNDObjectController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,11 +268,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E43B01561F7ED6A400A09C87 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E43B014A1F7ED6A400A09C87 /* SwiftKit */;
-			targetProxy = E43B01551F7ED6A400A09C87 /* PBXContainerItemProxy */;
-		};
 		E49CFBB51F7EC17900CDFF29 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E49CFBA81F7EC17900CDFF29 /* RNDKit */;
@@ -389,84 +276,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		E43B015C1F7ED6A400A09C87 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Automatic;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = T5Q3QH59ZQ;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SwiftKit/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.curatedcocoa.SwiftKit;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		E43B015D1F7ED6A400A09C87 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Automatic;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = T5Q3QH59ZQ;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SwiftKit/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.curatedcocoa.SwiftKit;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		E43B015E1F7ED6A400A09C87 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = T5Q3QH59ZQ;
-				INFOPLIST_FILE = SwiftKitTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.curatedcocoa.SwiftKitTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		E43B015F1F7ED6A400A09C87 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = T5Q3QH59ZQ;
-				INFOPLIST_FILE = SwiftKitTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.curatedcocoa.SwiftKitTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 		E49CFBBB1F7EC17900CDFF29 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -580,6 +389,7 @@
 		E49CFBBE1F7EC17900CDFF29 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -600,6 +410,7 @@
 		E49CFBBF1F7EC17900CDFF29 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -620,8 +431,10 @@
 		E49CFBC11F7EC17900CDFF29 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = T5Q3QH59ZQ;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
 				INFOPLIST_FILE = RNDKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.curatedcocoa.RNDKitTests;
@@ -633,8 +446,10 @@
 		E49CFBC21F7EC17900CDFF29 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = T5Q3QH59ZQ;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
 				INFOPLIST_FILE = RNDKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.curatedcocoa.RNDKitTests;
@@ -646,24 +461,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E43B01601F7ED6A400A09C87 /* Build configuration list for PBXNativeTarget "SwiftKit" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E43B015C1F7ED6A400A09C87 /* Debug */,
-				E43B015D1F7ED6A400A09C87 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E43B01611F7ED6A400A09C87 /* Build configuration list for PBXNativeTarget "SwiftKitTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E43B015E1F7ED6A400A09C87 /* Debug */,
-				E43B015F1F7ED6A400A09C87 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		E49CFBA31F7EC17900CDFF29 /* Build configuration list for PBXProject "RNDKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

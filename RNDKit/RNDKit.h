@@ -15,5 +15,9 @@ FOUNDATION_EXPORT double RNDKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char RNDKitVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <RNDKit/PublicHeader.h>
+#import <RNDKit/RNDBindings.h>
+#import <RNDKit/RNDController.h>
+#import <RNDKit/RNDObjectController.h>
+#import <RNDKit/UIControls/RNDLabel.h>
 
 

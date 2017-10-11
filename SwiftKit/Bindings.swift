@@ -10,24 +10,34 @@ import Foundation
 import CoreData
 
 
-/// <#Description#>
+/// A set of methods that controllers can implement to enable an editor view to inform the controller when it has uncommitted changes.
+/// An implementor is responsible for tracking which editors have uncommitted changes, and sending those editors commitEditing() and discardEditing() messages, as appropriate, to force the editor to submit, or discard, their values.
+
+/// NSController provides an implementation of this informal protocol. You would implement this protocol if you wanted to provide your own controller class without subclassing NSController.
 protocol EditorRegistration {
     
-    /// <#Description#>
+    /// Invoked to inform the receiver that editor has uncommitted changes that can affect the receiver.
     ///
-    /// - Parameter editor: <#editor description#>
-    /// - Returns: <#return value description#>
-    func objectDidBeginEditing(_ editor: AnyObject) -> Void
+    /// - Parameter editor: Any object that conforms to the Editor protocol
+    /// - Returns: Void
+    func objectDidBeginEditing(_ editor: Editor) -> Void
     
-    /// <#Description#>
+    /// Invoked to inform the receiver that editor has committed or discarded its changes.
     ///
-    /// - Parameter editor: <#editor description#>
-    /// - Returns: <#return value description#>
-    func objectDidEndEditing(_ editor: AnyObject) -> Void
+    /// - Parameter editor: Any object that conforms to the Editor protocol
+    /// - Returns: Void
+    func objectDidEndEditing(_ editor: Editor) -> Void
 }
 
 
-/// <#Description#>
+/// A set of methods that controllers and UI elements can implement to manage editing.
+/// The NSEditor informal protocol provides a means for requesting that the receiver commit or discard any pending edits.
+
+/// These methods are typically invoked on user interface elements by a controller. They can also be sent to a controller in response to a user’s attempt to save a document or quit an application.
+
+/// NSController provides an implementation of this protocol, as do the AppKit user interface elements that support binding.
+
+
 protocol Editor {
     
     /// Discards any pending (uncommitted) edits, returning the editor to its last known state.
@@ -42,70 +52,125 @@ protocol Editor {
     /// - Throws: If the edits are not able to be committed to the model, this method throws an error
     func commitEditing() throws -> Void
     
-    /// <#Description#>
+    /// Attempts to commit any pending changes in known editors of the receiver.
+    /// Provides support for the NSEditor informal protocol. This method attempts to commit pending changes in known editors. Known editors are either instances of a subclass of NSController or (more rarely) user interface controls that may contain pending edits—such as text fields—that registered with the context using objectDidBeginEditing: and have not yet unregistered using a subsequent invocation of objectDidEndEditing:.
+    
+    /// The receiver iterates through the array of its known editors and invokes commitEditing on each. The receiver then sends the message specified by the didCommitSelector selector to the specified delegate.
+    
+    /// The didCommit argument is the value returned by the editor specified by editor from the commitEditing message. The contextInfo argument is the same value specified as the contextInfo parameter—you may use this value however you wish.
+    
+    /// If an error occurs while attempting to commit, for example if key-value coding validation fails, your implementation of this method should typically send the view in which editing is being performed a presentError:modalForWindow:delegate:didRecoverSelector:contextInfo: message, specifying the view's containing window.
+    
+    /// You may find this method useful in some situations (typically if you are using Cocoa Bindings) when you want to ensure that pending changes are applied before a change in user interface state. For example, you may need to ensure that changes pending in a text field are applied before a window is closed. See also commitEditing() which performs a similar function but which allows you to handle any errors directly, although it provides no information beyond simple success/failure.
     ///
     /// - Parameters:
-    ///   - delegate: <#delegate description#>
-    ///   - didCommitSelector: <#didCommitSelector description#>
-    ///   - contextInfo: <#contextInfo description#>
-    func commitEditing(withDelegate delegate: Any?, didCommit didCommitSelector: Selector?, contextInfo: UnsafeMutableRawPointer?)
     
-    /// <#Description#>
+    ///   - delegate: An object that can serve as the receiver's delegate. It should implement the method specified by didCommitSelector.
+    
+    ///   - didCommitSelector: A selector that is invoked on delegate. The method specified by the selector must have the same signature as the following method:
+    
+    /// (void)editor:(id)editor didCommit:(BOOL)didCommit contextInfo:(void  *)contextInfo
+    
+    ///   - contextInfo: Contextual information that is sent as the contextInfo argument to delegate when didCommitSelector is invoked.
+    func commitEditing(withDelegate delegate: EditorDelegate, contextInfo: Any?) -> Void
+    
+    /// A Boolean value indicating if any editors are registered with the controller.
     var editing: Bool { get }
 }
 
+protocol EditorDelegate {
+    func editor(_ editor: Editor, didCommit committed: Bool, contextInfo: Any?) -> Void
+}
 
-/// <#Description#>
+
+/// A set of methods that an object can implement to register default placeholders to be displayed for a binding, when no other placeholder is specified.
+///Individual placeholder values can be specified for each of the marker objects (described in Selection Markers), as well as when the property is nil.
+
+/// Placeholders are used when a property of an instance of the receiving class is accessed through a key value coding compliant method, and returns nil or a specialized marker.
 protocol Placeholder {
     
+    /// Sets placeholder as the default placeholder for the binding, when a key value coding compliant property of an instance of the receiving class returns the value specified by marker, and no other placeholder has been specified.
+    /// The marker can be nil or one of the constants described in Selection Markers.
+    ///
+    /// - Parameters:
+    ///   - placeholder: <#placeholder description#>
+    ///   - marker: <#marker description#>
+    ///   - binding: <#binding description#>
+    static func setDefaultPlaceholder(_ placeholder: Any?, forMarker marker: BindingMarker, withBinding binding: BindingName)
+    
+    /// Returns an object that will be used as the placeholder for the binding, when a key value coding compliant property of an instance of the receiving class returns the value specified by marker, and no other placeholder has been specified.
+    /// The marker can be nil or one of the constants described in Selection Markers.
+    ///
+    /// - Parameters:
+    ///   - marker: <#marker description#>
+    ///   - binding: <#binding description#>
+    /// - Returns: <#return value description#>
+    static func defaultPlaceholder(forMarker marker: BindingMarker, withBinding binding: BindingName) -> Any?
 }
 
 
 
-/// <#Description#>
+/// A set of methods that you can use to create and remove bindings between view objects and controllers, or between controllers and model objects.
+/// The NSKeyValueBindingCreation informal protocol also provides a means for a view subclass to advertise the bindings that it exposes. The protocol is implemented by NSObject and its methods can be overridden by view and controller subclasses.
+
+/// When a new binding is created it relates the receiver’s binding (for example, a property of the view object) to a property of the observable object specified by a key path. When the value of the specified property of the observable object changes, the receiver is notified using the key-value observing mechanism. A binding also specifies binding options that can further customize how the observing and the observed objects interact.
+
+/// Bindings are considered to be a property of the object which is bound, and all information related to bindings should be owned by the object. All standard bindings on AppKit objects (views, cells, table columns, controllers) unbind their bindings automatically when they are deallocated, but if you create key-value bindings for other kind of objects, you need to make sure that you remove those bindings before deallocation (observed objects have weak references to their observers, so controllers/model objects might continue referencing and messaging the objects that were bound to them).
+
+/// Bindings between objects are typically established in Interface Builder using the Bindings inspector. However, there are times it must be done programmatically, such as when establishing a binding between objects in different nib files.
+
+/// NSView subclasses can expose additional key-value-coding/key-value-observing compliant properties as bindings by calling the class method exposeBinding(_:) for each of the properties. This is typically done in the class’s initialize method. By exposing the bindings that an object supports and creating an Interface Builder palette, you can make instances of your own classes bindable in Interface Builder.
 protocol KeyValueBindingCreation {
     
     
-    /// <#Description#>
+    /// bindings specified here will be exposed automatically in -exposedBindings (unless implementations explicitly filter them out, for example in subclasses)
     ///
     /// - Parameter Binding: <#Binding description#>
     static func exposeBinding(_ Binding: BindingName)
     
-    /// <#Description#>
+    /// for a new key exposed through this method, the default implementation simply falls back to key-value coding
     var exposedBindings: [BindingName] { get }
     
-    /// <#Description#>
+    /// optional - mostly for matching transformers
     ///
     /// - Parameter Binding: <#Binding description#>
     func valueClassForBinding(_ Binding: BindingName) -> AnyClass? // This may need to be updated to Any to account for non-class types
     
-    /// <#Description#>
+    /// Bindings are considered to be a property of the object which is bound (the object the following two methods are sent to) and all information related to bindings should be retained by the object; all standard bindings on AppKit objects (views, cells, table columns, controllers) unbind their bindings automatically when they are released, but if you create key-value bindings for other kind of objects, you need to make sure that you remove those bindings when you release them (observed objects don't retain their observers, so controllers/model objects might continue referencing and messaging the objects that was bound to them).
+    /// placeholders and value transformers are specified in options dictionary
     ///
     /// - Parameters:
     ///   - Binding: <#Binding description#>
     ///   - observable: <#observable description#>
     ///   - keyPath: <#keyPath description#>
     ///   - options: <#options description#>
-    func bind(_ Binding: BindingName, to observable: Any, withKeyPath keyPath: String, options: [BindingOption : Any]?)
+    func bind(_ binding: BindingName, to observable: AnyObject, withKeyPath keyPath: String, options: [BindingOption : Any]?)
+    
+    /// Returns an array of NSAttributeDescriptions that describe the options for aBinding. The descriptions are used by Interface Builder to build the options editor UI of the bindings inspector. Each binding may have multiple options. The options and attribute descriptions have 3 properties in common:
+    
+    /// - The option "name" is derived from the attribute description name.
+    
+    /// - The type of UI built for the option is based on the attribute type.
+    
+    /// - The default value shown in the options editor comes from the attribute description's defaultValue.
+    ///
+    /// - Parameter Binding: <#Binding description#>
+    func optionDescriptionsForBinding(_ binding: BindingName) -> [NSAttributeDescription]
+    
+    /// Returns a dictionary with information about a binding or nil if the binding is not bound (this is mostly for use by subclasses which want to analyze the existing bindings of an object) - the dictionary contains three key/value pairs: RNDObservedObjectKey: object bound, RNDObservedKeyPathKey: key path bound, RNDOptionsKey: dictionary with the options and their values for the bindings.
+    ///
+    /// - Parameter Binding: <#Binding description#>
+    func infoForBinding(_ binding: BindingName) -> [BindingInfoKey : Any]?
     
     /// <#Description#>
     ///
     /// - Parameter Binding: <#Binding description#>
-    func optionDescriptionsForBinding(_ Binding: BindingName) -> [NSAttributeDescription]
-    
-    /// <#Description#>
-    ///
-    /// - Parameter Binding: <#Binding description#>
-    func infoForBinding(_ Binding: BindingName) -> [BindingInfoKey : Any]?
-    
-    /// <#Description#>
-    ///
-    /// - Parameter Binding: <#Binding description#>
-    func unbind(_ Binding: BindingName)
+    func unbind(_ binding: BindingName)
 }
 
 
-/// <#Description#>
+/// Values that specify a binding for certain methods.
+/// The following values are used to specify a binding to bind(_:to:withKeyPath:options:), infoForBinding(_:), unbind(_:) and valueClassForBinding(_:). See Cocoa Bindings Reference for more information.
 ///
 /// - alignment: <#alignment description#>
 /// - alternateImage: <#alternateImage description#>
@@ -270,34 +335,35 @@ enum BindingName: String {
 }
 
 
-/// <#Description#>
+/// Values that are used as keys in the options dictionary passed to the bind(_:to:withKeyPath:options:) method.
+/// These keys are also used in the dictionary returned as the options value of infoForBinding(_:). See the Cocoa Bindings Reference for more information.
 ///
-/// - allowsEditingMultipleValuesSelection: <#allowsEditingMultipleValuesSelection description#>
-/// - allowsNullArgument: <#allowsNullArgument description#>
-/// - alwaysPresentsApplicationModalAlerts: <#alwaysPresentsApplicationModalAlerts description#>
-/// - conditionallySetsEditable: <#conditionallySetsEditable description#>
-/// - conditionallySetsEnabled: <#conditionallySetsEnabled description#>
-/// - conditionallySetsHidden: <#conditionallySetsHidden description#>
-/// - continuouslyUpdatesValue: <#continuouslyUpdatesValue description#>
-/// - createsSortDescriptor: <#createsSortDescriptor description#>
-/// - deletesObjectsOnRemove: <#deletesObjectsOnRemove description#>
-/// - displayName: <#displayName description#>
-/// - displayPattern: <#displayPattern description#>
-/// - contentPlacementTag: <#contentPlacementTag description#>
-/// - handlesContentAsCompoundValue: <#handlesContentAsCompoundValue description#>
-/// - insertsNullPlaceholder: <#insertsNullPlaceholder description#>
-/// - invokesSeparatelyWithArrayObjects: <#invokesSeparatelyWithArrayObjects description#>
-/// - multipleValuesPlaceholder: <#multipleValuesPlaceholder description#>
-/// - noSelectionPlaceholder: <#noSelectionPlaceholder description#>
-/// - notApplicablePlaceholder: <#notApplicablePlaceholder description#>
-/// - nullPlaceholder: <#nullPlaceholder description#>
-/// - raisesForNotApplicableKeys: <#raisesForNotApplicableKeys description#>
-/// - predicateFormat: <#predicateFormat description#>
-/// - selectorName: <#selectorName description#>
-/// - selectsAllWhenSettingContent: <#selectsAllWhenSettingContent description#>
-/// - validatesImmediately: <#validatesImmediately description#>
-/// - valueTransformerName: <#valueTransformerName description#>
-/// - valueTransformer: <#valueTransformer description#>
+/// - allowsEditingMultipleValuesSelection: An NSNumber object containing a Boolean value that determines if the binding allows editing when the value represents a multiple selection.
+/// - allowsNullArgument: An NSNumber object containing a Boolean value that determines if the argument bindings allows passing argument values of nil.
+/// - alwaysPresentsApplicationModalAlerts: A number containing a Boolean value that determines if validation and error alert panels displayed as a result of this binding are displayed as application modal alerts.
+/// - conditionallySetsEditable: An NSNumber object containing a Boolean value that determines if the editable state of the user interface item is automatically configured based on the controller's selection.
+/// - conditionallySetsEnabled: An NSNumber object containing a Boolean value that determines if the enabled state of the user interface item is automatically configured based on the controller's selection.
+/// - conditionallySetsHidden: An NSNumber object containing a Boolean value that determines if the hidden state of the user interface item is automatically configured based on the controller's selection.
+/// - continuouslyUpdatesValue: An NSNumber object containing a Boolean value that determines whether the value of the binding is updated as edits are made to the user interface item or is updated only when the user interface item resigns as the responder.
+/// - createsSortDescriptor: An NSNumber object containing a Boolean value that determines if a sort descriptor is created for a table column.
+/// - deletesObjectsOnRemove: An NSNumber object containing a Boolean value that determines if an object is deleted from the managed context immediately upon being removed from a relationship.
+/// - displayName: An NSString object containing a human readable string to be displayed for a predicate.
+/// - displayPattern: An NSString object that specifies a format string used to construct the final value of a string.
+/// - contentPlacementTag: A number that specifies the tag id of the popup menu item to replace with the content of the array.
+/// - handlesContentAsCompoundValue: An NSNumber object containing a Boolean value that determines if the content is treated as a compound value.
+/// - insertsNullPlaceholder: An NSNumber object containing a Boolean value that determines if an additional item which represents nil is inserted into a matrix or pop-up menu before the items in the content array.
+/// - invokesSeparatelyWithArrayObjects: An NSNumber object containing a Boolean value that determines whether the specified selector is invoked with the array as the argument or is invoked repeatedly with each array item as an argument.
+/// - multipleValuesPlaceholder: An object that is used as a placeholder when the key path of the bound controller returns the NSMultipleValuesMarker marker for a binding.
+/// - noSelectionPlaceholder: An object that is used as a placeholder when the key path of the bound controller returns the NSNoSelectionMarker marker for a binding.
+/// - notApplicablePlaceholder: An object that is used as a placeholder when the key path of the bound controller returns the NSNotApplicableMarker marker for a binding.
+/// - nullPlaceholder: An object that is used as a placeholder when the key path of the bound controller returns nil for a binding.
+/// - raisesForNotApplicableKeys: An NSNumber object containing a Boolean value that specifies if an exception is raised when the binding is bound to a key that is not applicable—for example when an object is not key-value coding compliant for a key.
+/// - predicateFormat: An NSString object containing the predicate pattern string for the predicate bindings. Use $value to refer to the value in the search field.
+/// - selectorName: An NSString object that specifies the method selector invoked by the target binding when the user interface item is clicked.
+/// - selectsAllWhenSettingContent: An NSNumber object containing a Boolean value that specifies if all the items in the array controller are selected when the content is set.
+/// - validatesImmediately: An NSNumber object containing a Boolean value that determines if the contents of the binding are validated immediately.
+/// - valueTransformerName: The value for this key is an identifier of a registered NSValueTransformer instance that is applied to the bound value.
+/// - valueTransformer: An NSValueTransformer instance that is applied to the bound value.
 enum BindingOption: String {
     case allowsEditingMultipleValuesSelection = "RNDAllowsEditingMultipleValuesSelectionBindingOption"
     case allowsNullArgument = "RNDAllowsNullArgumentBindingOption"
@@ -342,15 +408,16 @@ enum BindingInfoKey: String {
 }
 
 
-/// <#Description#>
+/// The following constants are used to describe special cases for a controller’s selection.
 ///
-/// - multipleValues: <#multipleValues description#>
-/// - noSelection: <#noSelection description#>
-/// - notApplicable: <#notApplicable description#>
+/// - multipleValues: This marker indicates that a key’s value contains multiple values that differ.
+/// - noSelection: This marker indicates that the controller’s selection is currently empty.
+/// - notApplicable: This marker indicates that an object is not key-value coding compliant for the requested key.
 enum BindingMarker: String {
     case multipleValues = "RNDMultipleValuesBindingMarker"
     case noSelection = "RNDNoSelectionBindingMarker"
     case notApplicable = "RNDNotApplicableBindingMarker"
+    case nilValue = "RNDNilValue"
 }
 
 

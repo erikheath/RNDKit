@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Controller: NSObject, Editor, EditorRegistration, Coding {
+class Controller: NSObject, Editor, EditorRegistration, EditorDelegate, NSCoding {
     
     // MARK: - IB Properties
     
@@ -18,19 +18,19 @@ class Controller: NSObject, Editor, EditorRegistration, Coding {
     // MARK: - Internal Properties
     
     /// _editors is the internal tracking array for any editor that has registered as potentially altering a value mediated by the controller.
-    internal var _editors: Array<AnyObject> = []
+    internal var editors: Array<Editor> = []
     
     /// _declaredKeys is an array specifying the keys the controller has specified it supports.
-    internal var _declaredKeys: Array<String> = []
+    internal var declaredKeys: Array<String> = []
     
     /// <#Description#>
-    internal var _dependentKeyToModelKeyTable<String, String> = [:]
+    internal var dependentKeyToModelKeyTable:Dictionary<String, String> = [:]
     
     /// <#Description#>
-    internal var _modelKeyToDependentKeyTable<String, String> = [:]
+    internal var modelKeyToDependentKeyTable:Dictionary<String, String> = [:]
     
     /// <#Description#>
-    internal var _modelKeysToRefreshEachTime = []
+    internal var modelKeysToRefreshEachTime:Array<String> = []
     
     // MARK: - Object Lifecycle
     
@@ -48,24 +48,43 @@ class Controller: NSObject, Editor, EditorRegistration, Coding {
         
     }
     
-    // MARK: - RNDEditingRegistration
+    // MARK: - RND Editor Registration
     
-    /// Editors send this message to the controller to inform it that they will begin editing a value mediated by the controller.
+    /// Editors send this message to the controller to inform it that they will begin editing a value mediated by the controller. The controller maintains a list of editors that have uncommitted changes, and coordinates change tracking among them.
     ///
-    /// - Parameter editor: <#editor description#>
-    func objectDidBeginEditing(_ editor: AnyObject) {
-        
+    /// - Parameter editor: An object, typically a view, that conforms to the editor protocol.
+    func editorDidBeginEditing(_ editor: Editor) {
+        editors.append(editor)
     }
     
     /// Editors send this message to the controller to inform it that they will end editing a value mediated by the controller.
     ///
-    /// - Parameter editor: <#editor description#>
-    func objectDidEndEditing(_ editor: AnyObject) {
+    /// - Parameter editor: An object, typically a view, that conforms to the editor protocol and was previously registered as an editor.
+    func editorDidEndEditing(_ editor: Editor) {
+        editors.index { (currentEditor) -> Bool in
+            return currentEditor == editor
+        }
+    }
+    
+    // MARK: - RND Editor
+    func discardEditing() -> Void {
+        
+    }
+
+    func commitEditing() throws -> Void {
+        
+    }
+
+    func commitEditing(withDelegate delegate: EditorDelegate, contextInfo: Any?) -> Void {
         
     }
     
-    // MARK: - RNDEditor
     
+    // MARK: - RND Editor Delegate
+    func editor(_ editor: Editor, didCommit committed: Bool, contextInfo: Any?) -> Void {
+        
+    }
+
     
     /// Indicates if the controller has pending edits??
     var editing: Bool {
@@ -74,26 +93,5 @@ class Controller: NSObject, Editor, EditorRegistration, Coding {
         }
     }
     
-    
-    /// Requests that all registered editors commit or discard current edits and then attempts to commit the edits to the content object.
-    ///
-    /// - Throws: Rethrows any model object validation error.
-    func commitEditing() throws {
-        
-    }
-    
-    func commitEditing(forEditor editor: Any?, didCommit didCommitSelector: Selector?, contextInfo: UnsafeMutableRawPointer?) {
-        
-    }
-    
-    func discardEditing() {
-        
-    }
-    
 }
 
-Given that the receiver has been registered with -objectDidBeginEditing: as the editor of some object, and not yet deregistered by a subsequent invocation of -objectDidEndEditing:, attempt to commit the result of the editing. When committing has either succeeded or failed, send the selected message to the specified object with the context info as the last parameter. The method selected by didCommitSelector must have the same signature as:
-
-- (void)editor:(id)editor didCommit:(BOOL)didCommit contextInfo:(void *)contextInfo;
-
-If an error occurs while attempting to commit, because key-value coding validation fails for example, an implementation of this method should typically send the NSView in which editing is being done a -presentError:modalForWindow:delegate:didRecoverSelector:contextInfo: message, specifying the view's containing window.

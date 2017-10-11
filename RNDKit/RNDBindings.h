@@ -21,11 +21,23 @@ extern BOOL RNDIsControllerMarker(__nullable id object);
 typedef NSString * RNDBindingName NS_EXTENSIBLE_STRING_ENUM;
 typedef NSString * RNDBindingOption NS_STRING_ENUM;
 
+// Available Key Path Components
+typedef NSString * RNDBindingKeyPathComponent NS_STRING_ENUM;
+extern RNDBindingKeyPathComponent RNDCurrentSelection;
+extern RNDBindingKeyPathComponent RNDSelectedObjects;
+extern RNDBindingKeyPathComponent RNDArrangedObjects;
+extern RNDBindingKeyPathComponent RNDContentObject;
+
+
+
+
 // keys for the returned dictionary of -infoForBinding:
 typedef NSString * RNDBindingInfoKey NS_STRING_ENUM;
 extern RNDBindingInfoKey RNDObservedObjectKey;
 extern RNDBindingInfoKey RNDObservedKeyPathKey;
 extern RNDBindingInfoKey RNDOptionsKey;
+
+@protocol RNDEditorDelegate;
 
 @protocol RNDKeyValueBindingCreation <NSObject>
 
@@ -84,7 +96,7 @@ extern RNDBindingInfoKey RNDOptionsKey;
  
  If an error occurs while attempting to commit, because key-value coding validation fails for example, an implementation of this method should typically send the NSView in which editing is being done a -presentError:modalForWindow:delegate:didRecoverSelector:contextInfo: message, specifying the view's containing window.
  */
-- (void)commitEditingWithDelegate:(nullable id)delegate didCommitSelector:(nullable SEL)didCommitSelector contextInfo:(nullable void *)contextInfo;
+- (void)commitEditingWithDelegate:(nullable id<RNDEditorDelegate>)delegate didCommitSelector:(nullable SEL)didCommitSelector contextInfo:(nullable void *)contextInfo;
 
 
 /* During autosaving, commit editing may fail, due to a pending edit.  Rather than interrupt the user with an unexpected alert, this method provides the caller with the option to either present the error or fail silently, leaving the pending edit in place and the user's editing uninterrupted.  This method attempts to commit editing, but if there is a failure the error is returned to the caller to be presented or ignored as appropriate.  If an error occurs while attempting to commit, an implementation of this method should return NO as well as the generated error by reference.  Returns YES if commit is successful.
@@ -94,6 +106,25 @@ extern RNDBindingInfoKey RNDOptionsKey;
 - (BOOL)commitEditingAndReturnError:(NSError **)error;
 
 @end
+
+@protocol RNDEditorDelegate
+
+- (void)editor:(id<RNDEditor>)editor didCommit:(BOOL)didCommit contextInfo:(void *)contextInfo;
+
+@end
+
+/* Protocol implemented by validated objects */
+
+@protocol RNDValidatedUserInterfaceItem
+@property (readonly, nullable) SEL action;
+@property (readonly) NSInteger tag;
+@end
+
+/* Protocol implemented by validator objects */
+@protocol RNDUserInterfaceValidations
+- (BOOL)validateUserInterfaceItem:(id <RNDValidatedUserInterfaceItem>)item;
+@end
+
 
 // constants for binding names
 extern RNDBindingName NSAlignmentBinding;
