@@ -238,11 +238,11 @@
 - (id)targetForBindingKeyPath:(NSString *)bindingKeyPath {
     NSScanner *scanner = [[NSScanner alloc] initWithString:bindingKeyPath];
     NSString *result = [[NSString alloc] init];
-    if ([scanner scanString:RNDCurrentSelection intoString:&result]) {
+    if ([scanner scanString:RNDBindingCurrentSelectionKeyPathComponent intoString:&result]) {
         return self.content;
-    } else if ([scanner scanString:RNDSelectedObjects intoString:&result]) {
+    } else if ([scanner scanString:RNDBindingSelectedObjectsKeyPathComponent intoString:&result]) {
         return self.content;
-    } else if ([scanner scanString:RNDContentObject intoString:&result]) {
+    } else if ([scanner scanString:RNDBindingContentObjectKeyPathComponent intoString:&result]) {
         return self.content;
     }
     return self;
@@ -328,4 +328,5 @@
 }
 
 @end
+
 

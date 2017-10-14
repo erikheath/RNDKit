@@ -11,48 +11,195 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - RNDMarkers
 extern id RNDMultipleValuesMarker;
 extern id RNDNoSelectionMarker;
 extern id RNDNotApplicableMarker;
 
-
 extern BOOL RNDIsControllerMarker(__nullable id object);
 
-typedef NSString * RNDBindingName NS_EXTENSIBLE_STRING_ENUM;
-typedef NSString * RNDBindingOption NS_STRING_ENUM;
 
-// Available Key Path Components
-typedef NSString * RNDBindingKeyPathComponent NS_STRING_ENUM;
-extern RNDBindingKeyPathComponent RNDCurrentSelection;
-extern RNDBindingKeyPathComponent RNDSelectedObjects;
-extern RNDBindingKeyPathComponent RNDArrangedObjects;
-extern RNDBindingKeyPathComponent RNDContentObject;
+#pragma mark - RNDBindingType
+typedef NSString * RNDBindingType NS_STRING_ENUM;
+extern RNDBindingType RNDBindingTypeSimpleValue;
+extern RNDBindingType RNDBindingTypeSimpleValueReadOnly;
+extern RNDBindingType RNDBindingTypeMultiValueAND;
+extern RNDBindingType RNDBindingTypeMultiValueOR;
+extern RNDBindingType RNDBindingTypeMultiValueArgument;
+extern RNDBindingType RNDBindingTypeMultiValueWithPattern;
+extern RNDBindingType RNDBindingTypeMultiValuePredicate;
 
-
-
-
-// keys for the returned dictionary of -infoForBinding:
+#pragma mark - RNDBindingInfoKey
 typedef NSString * RNDBindingInfoKey NS_STRING_ENUM;
-extern RNDBindingInfoKey RNDObservedObjectKey;
-extern RNDBindingInfoKey RNDObservedKeyPathKey;
-extern RNDBindingInfoKey RNDOptionsKey;
+extern RNDBindingInfoKey RNDBindingInfoTypeKey;
+extern RNDBindingInfoKey RNDBindingInfoOptionsKey;
+extern RNDBindingInfoKey RNDBindingInfoNamesKey;
+extern RNDBindingInfoKey RNDBindingInfoExclusionsKey;
+extern RNDBindingInfoKey RNDBindingInfoRequirementsKey;
+extern RNDBindingInfoKey RNDBindingInfoValueTypeKey;
+extern RNDBindingInfoKey RNDBindingInfoValueClassKey;
+extern RNDBindingInfoKey RNDBindingInfoDefaultValueKey;
+extern RNDBindingInfoKey RNDBindingInfoObservedObjectKey;
+extern RNDBindingInfoKey RNDBindingInfoObservedKeyPathKey;
+
+#pragma mark - RNDBindingValueType
+typedef NSString * RNDBindingValueType;
+extern RNDBindingValueType RNDBindingValueInt8Type;
+extern RNDBindingValueType RNDBindingValueInt16Type;
+extern RNDBindingValueType RNDBindingValueInt32Type;
+extern RNDBindingValueType RNDBindingValueInt64Type;
+extern RNDBindingValueType RNDBindingValueFloatType;
+extern RNDBindingValueType RNDBindingValueDoubleType;
+extern RNDBindingValueType RNDBindingValueStringType;
+extern RNDBindingValueType RNDBindingValueUUIDType;
+extern RNDBindingValueType RNDBindingValueURLType;
+extern RNDBindingValueType RNDBindingValueDateType;
+extern RNDBindingValueType RNDBindingValueBooleanType;
+extern RNDBindingValueType RNDBindingValueDecimalType;
+extern RNDBindingValueType RNDBindingValueBinaryType;
+extern RNDBindingValueType RNDBindingValueUndefinedType;
+extern RNDBindingValueType RNDBindingValueObjectIDType;
+extern RNDBindingValueType RNDBindingValueTransformableType;
+
+
+#pragma mark - RNDBindingKeyPathComponent
+typedef NSString * RNDBindingKeyPathComponent NS_STRING_ENUM;
+extern RNDBindingKeyPathComponent RNDBindingCurrentSelectionKeyPathComponent;
+extern RNDBindingKeyPathComponent RNDBindingSelectedObjectsKeyPathComponent;
+extern RNDBindingKeyPathComponent RNDBindingArrangedObjectsKeyPathComponent;
+extern RNDBindingKeyPathComponent RNDBindingContentObjectKeyPathComponent;
+
+#pragma mark - RNDBindingName
+typedef NSString * RNDBindingName NS_EXTENSIBLE_STRING_ENUM;
+extern RNDBindingName RNDAlignmentBindingName;
+extern RNDBindingName RNDAlternateImageBindingName;
+extern RNDBindingName RNDAlternateTitleBindingName;
+extern RNDBindingName RNDAnimateBindingName;
+extern RNDBindingName RNDAnimationDelayBindingName;
+extern RNDBindingName RNDArgumentBindingName;
+extern RNDBindingName RNDAttributedStringBindingName;
+extern RNDBindingName RNDContentArrayBindingName;
+extern RNDBindingName RNDContentArrayForMultipleSelectionBindingName;
+extern RNDBindingName RNDContentBindingName;
+extern RNDBindingName RNDContentDictionaryBindingName;
+extern RNDBindingName RNDContentHeightBindingName;
+extern RNDBindingName RNDContentObjectBindingName;
+extern RNDBindingName RNDContentObjectsBindingName;
+extern RNDBindingName RNDContentSetBindingName;
+extern RNDBindingName RNDContentValuesBindingName;
+extern RNDBindingName RNDContentWidthBindingName;
+extern RNDBindingName RNDCriticalValueBindingName;
+extern RNDBindingName RNDDataBindingName;
+extern RNDBindingName RNDDisplayPatternTitleBindingName;
+extern RNDBindingName RNDDisplayPatternValueBindingName;
+extern RNDBindingName RNDDocumentEditedBindingName;
+extern RNDBindingName RNDDoubleClickArgumentBindingName;
+extern RNDBindingName RNDDoubleClickTargetBindingName;
+extern RNDBindingName RNDEditableBindingName;
+extern RNDBindingName RNDEnabledBindingName;
+extern RNDBindingName RNDExcludedKeysBindingName;
+extern RNDBindingName RNDFilterPredicateBindingName;
+extern RNDBindingName RNDFontBindingName;
+extern RNDBindingName RNDFontBoldBindingName;
+extern RNDBindingName RNDFontFamilyNameBindingName;
+extern RNDBindingName RNDFontItalicBindingName;
+extern RNDBindingName RNDFontNameBindingName;
+extern RNDBindingName RNDFontSizeBindingName;
+extern RNDBindingName RNDHeaderTitleBindingName;
+extern RNDBindingName RNDHiddenBindingName;
+extern RNDBindingName RNDImageBindingName;
+extern RNDBindingName RNDIncludedKeysBindingName;
+extern RNDBindingName RNDInitialKeyBindingName;
+extern RNDBindingName RNDInitialValueBindingName;
+extern RNDBindingName RNDIsIndeterminateBindingName;
+extern RNDBindingName RNDLabelBindingName;
+extern RNDBindingName RNDLocalizedKeyDictionaryBindingName;
+extern RNDBindingName RNDManagedObjectContextBindingName;
+extern RNDBindingName RNDMaximumRecentsBindingName;
+extern RNDBindingName RNDMaxValueBindingName;
+extern RNDBindingName RNDMaxWidthBindingName;
+extern RNDBindingName RNDMinValueBindingName;
+extern RNDBindingName RNDMinWidthBindingName;
+extern RNDBindingName RNDMixedStateImageBindingName;
+extern RNDBindingName RNDOffStateImageBindingName;
+extern RNDBindingName RNDOnStateImageBindingName;
+extern RNDBindingName RNDPositioningRectBindingName;
+extern RNDBindingName RNDPredicateBindingName;
+extern RNDBindingName RNDRecentSearchesBindingName;
+extern RNDBindingName RNDRepresentedFilenameBindingName;
+extern RNDBindingName RNDRowHeightBindingName;
+extern RNDBindingName RNDSelectedIdentifierBindingName;
+extern RNDBindingName RNDSelectedIndexBindingName;
+extern RNDBindingName RNDSelectedLabelBindingName;
+extern RNDBindingName RNDSelectedObjectBindingName;
+extern RNDBindingName RNDSelectedObjectsBindingName;
+extern RNDBindingName RNDSelectedTagBindingName;
+extern RNDBindingName RNDSelectedValueBindingName;
+extern RNDBindingName RNDSelectedValuesBindingName;
+extern RNDBindingName RNDSelectionIndexesBindingName;
+extern RNDBindingName RNDSelectionIndexPathsBindingName;
+extern RNDBindingName RNDSortDescriptorsBindingName;
+extern RNDBindingName RNDTargetBindingName;
+extern RNDBindingName RNDTextColorBindingName;
+extern RNDBindingName RNDTitleBindingName;
+extern RNDBindingName RNDToolTipBindingName;
+extern RNDBindingName RNDTransparentBindingName;
+extern RNDBindingName RNDValueBindingName;
+extern RNDBindingName RNDValuePathBindingName;
+extern RNDBindingName RNDValueURLBindingName;
+extern RNDBindingName RNDVisibleBindingName;
+extern RNDBindingName RNDWarningValueBindingName;
+extern RNDBindingName RNDWidthBindingName;
+
+#pragma mark - RNDBindingOption
+typedef NSString * RNDBindingOption NS_STRING_ENUM;
+extern RNDBindingOption RNDAllowsEditingMultipleValuesSelectionBindingOption;
+extern RNDBindingOption RNDAllowsNullArgumentBindingOption;
+extern RNDBindingOption RNDAlwaysPresentsApplicationModalAlertsBindingOption;
+extern RNDBindingOption RNDConditionallySetsEditableBindingOption;
+extern RNDBindingOption RNDConditionallySetsEnabledBindingOption;
+extern RNDBindingOption RNDConditionallySetsHiddenBindingOption;
+extern RNDBindingOption RNDContinuouslyUpdatesValueBindingOption;
+extern RNDBindingOption RNDCreatesSortDescriptorBindingOption;
+extern RNDBindingOption RNDDeletesObjectsOnRemoveBindingsOption;
+extern RNDBindingOption RNDDisplayNameBindingOption;
+extern RNDBindingOption RNDDisplayPatternBindingOption;
+extern RNDBindingOption RNDContentPlacementTagBindingOption;
+extern RNDBindingOption RNDHandlesContentAsCompoundValueBindingOption;
+extern RNDBindingOption RNDInsertsNullPlaceholderBindingOption;
+extern RNDBindingOption RNDInvokesSeparatelyWithArrayObjectsBindingOption;
+extern RNDBindingOption RNDMultipleValuesPlaceholderBindingOption;
+extern RNDBindingOption RNDNoSelectionPlaceholderBindingOption;
+extern RNDBindingOption RNDNotApplicablePlaceholderBindingOption;
+extern RNDBindingOption RNDNullPlaceholderBindingOption;
+extern RNDBindingOption RNDRaisesForNotApplicableKeysBindingOption;
+extern RNDBindingOption RNDPredicateFormatBindingOption;
+extern RNDBindingOption RNDSelectorNameBindingOption;
+extern RNDBindingOption RNDSelectsAllWhenSettingContentBindingOption;
+extern RNDBindingOption RNDValidatesImmediatelyBindingOption;
+extern RNDBindingOption RNDValueTransformerNameBindingOption;
+extern RNDBindingOption RNDValueTransformerBindingOption;
+
+#pragma mark - RNDBinding Protocol Declarations
 
 @protocol RNDEditorDelegate;
 
 @protocol RNDKeyValueBindingCreation <NSObject>
 
-+ (void)exposeBinding:(RNDBindingName)binding;    // bindings specified here will be exposed automatically in -exposedBindings (unless implementations explicitly filter them out, for example in subclasses)
-@property (readonly, copy) NSArray<RNDBindingName> *exposedBindings;   // for a new key exposed through this method, the default implementation simply falls back to key-value coding
-- (nullable Class)valueClassForBinding:(RNDBindingName)binding;    // optional - mostly for matching transformers
++ (void)exposeBinding:(RNDBindingName)bindingName;    // bindings specified here will be exposed automatically in -exposedBindings (unless implementations explicitly filter them out, for example in subclasses)
+@property (class, readonly, copy) NSArray<RNDBindingName> *exposedBindings;   // for a new key exposed through this method, the default implementation simply falls back to key-value coding
+@property (class, readonly, copy) NSArray<RNDBindingName> *allExposedBindings;
+@property (class, readonly, copy) NSArray<RNDBindingName> *defaultBindings;
+- (nullable Class)valueClassForBinding:(RNDBindingName)bindingName;    // optional - mostly for matching transformers
 
 /* Bindings are considered to be a property of the object which is bound (the object the following two methods are sent to) and all information related to bindings should be retained by the object; all standard bindings on AppKit objects (views, cells, table columns, controllers) unbind their bindings automatically when they are released, but if you create key-value bindings for other kind of objects, you need to make sure that you remove those bindings when you release them (observed objects don't retain their observers, so controllers/model objects might continue referencing and messaging the objects that was bound to them).
  */
 - (void)bind:(RNDBindingName)binding toObject:(id)observable withKeyPath:(NSString *)keyPath options:(nullable NSDictionary<RNDBindingOption, id> *)options;    // placeholders and value transformers are specified in options dictionary
-- (void)unbind:(RNDBindingName)binding;
+- (void)unbind:(RNDBindingName)bindingName;
 
 /* Returns a dictionary with information about a binding or nil if the binding is not bound (this is mostly for use by subclasses which want to analyze the existing bindings of an object) - the dictionary contains three key/value pairs: RNDObservedObjectKey: object bound, RNDObservedKeyPathKey: key path bound, RNDOptionsKey: dictionary with the options and their values for the bindings.
  */
-- (nullable NSDictionary<RNDBindingInfoKey, id> *)infoForBinding:(RNDBindingName)binding;
+- (nullable NSDictionary<RNDBindingInfoKey, id> *)infoForBinding:(RNDBindingName)bindingName;
 
 /* Returns an array of NSAttributeDescriptions that describe the options for aBinding. The descriptions are used by Interface Builder to build the options editor UI of the bindings inspector. Each binding may have multiple options. The options and attribute descriptions have 3 properties in common:
  
@@ -63,15 +210,15 @@ extern RNDBindingInfoKey RNDOptionsKey;
  - The default value shown in the options editor comes from the attribute description's defaultValue.*/
 
 
-- (NSArray<NSAttributeDescription *> *)optionDescriptionsForBinding:(RNDBindingName)binding;
+- (NSArray<NSAttributeDescription *> *)optionDescriptionsForBinding:(RNDBindingName)bindingName;
 
 
 @end
 
 @protocol RNDPlaceholders
 
-+ (void)setDefaultPlaceholder:(nullable id)placeholder forMarker:(nullable id)marker withBinding:(RNDBindingName)binding;    // marker can be nil or one of RNDMultipleValuesMarker, RNDNoSelectionMarker, RNDNotApplicableMarker
-+ (nullable id)defaultPlaceholderForMarker:(nullable id)marker withBinding:(RNDBindingName)binding;    // marker can be nil or one of RNDMultipleValuesMarker, RNDNoSelectionMarker, RNDNotApplicableMarker
++ (void)setDefaultPlaceholder:(nullable id)placeholder forMarker:(nullable id)marker withBinding:(RNDBindingName)bindingName;    // marker can be nil or one of RNDMultipleValuesMarker, RNDNoSelectionMarker, RNDNotApplicableMarker
++ (nullable id)defaultPlaceholderForMarker:(nullable id)marker withBinding:(RNDBindingName)bindingName;    // marker can be nil or one of RNDMultipleValuesMarker, RNDNoSelectionMarker, RNDNotApplicableMarker
 
 @end
 
@@ -126,113 +273,23 @@ extern RNDBindingInfoKey RNDOptionsKey;
 @end
 
 
-// constants for binding names
-extern RNDBindingName NSAlignmentBinding;
-extern RNDBindingName NSAlternateImageBinding;
-extern RNDBindingName NSAlternateTitleBinding;
-extern RNDBindingName NSAnimateBinding;
-extern RNDBindingName NSAnimationDelayBinding;
-extern RNDBindingName NSArgumentBinding;
-extern RNDBindingName NSAttributedStringBinding;
-extern RNDBindingName NSContentArrayBinding;
-extern RNDBindingName NSContentArrayForMultipleSelectionBinding;
-extern RNDBindingName NSContentBinding;
-extern RNDBindingName NSContentDictionaryBinding;
-extern RNDBindingName NSContentHeightBinding;
-extern RNDBindingName NSContentObjectBinding;
-extern RNDBindingName NSContentObjectsBinding;
-extern RNDBindingName NSContentSetBinding;
-extern RNDBindingName NSContentValuesBinding;
-extern RNDBindingName NSContentWidthBinding;
-extern RNDBindingName NSCriticalValueBinding;
-extern RNDBindingName NSDataBinding;
-extern RNDBindingName NSDisplayPatternTitleBinding;
-extern RNDBindingName NSDisplayPatternValueBinding;
-extern RNDBindingName NSDocumentEditedBinding;
-extern RNDBindingName NSDoubleClickArgumentBinding;
-extern RNDBindingName NSDoubleClickTargetBinding;
-extern RNDBindingName NSEditableBinding;
-extern RNDBindingName NSEnabledBinding;
-extern RNDBindingName NSExcludedKeysBinding;
-extern RNDBindingName NSFilterPredicateBinding;
-extern RNDBindingName NSFontBinding;
-extern RNDBindingName NSFontBoldBinding;
-extern RNDBindingName NSFontFamilyNameBinding;
-extern RNDBindingName NSFontItalicBinding;
-extern RNDBindingName NSFontNameBinding;
-extern RNDBindingName NSFontSizeBinding;
-extern RNDBindingName NSHeaderTitleBinding;
-extern RNDBindingName NSHiddenBinding;
-extern RNDBindingName NSImageBinding;
-extern RNDBindingName NSIncludedKeysBinding;
-extern RNDBindingName NSInitialKeyBinding;
-extern RNDBindingName NSInitialValueBinding;
-extern RNDBindingName NSIsIndeterminateBinding;
-extern RNDBindingName NSLabelBinding;
-extern RNDBindingName NSLocalizedKeyDictionaryBinding;
-extern RNDBindingName NSManagedObjectContextBinding;
-extern RNDBindingName NSMaximumRecentsBinding;
-extern RNDBindingName NSMaxValueBinding;
-extern RNDBindingName NSMaxWidthBinding;
-extern RNDBindingName NSMinValueBinding;
-extern RNDBindingName NSMinWidthBinding;
-extern RNDBindingName NSMixedStateImageBinding;
-extern RNDBindingName NSOffStateImageBinding;
-extern RNDBindingName NSOnStateImageBinding;
-extern RNDBindingName NSPositioningRectBinding;
-extern RNDBindingName NSPredicateBinding;
-extern RNDBindingName NSRecentSearchesBinding;
-extern RNDBindingName NSRepresentedFilenameBinding;
-extern RNDBindingName NSRowHeightBinding;
-extern RNDBindingName NSSelectedIdentifierBinding;
-extern RNDBindingName NSSelectedIndexBinding;
-extern RNDBindingName NSSelectedLabelBinding;
-extern RNDBindingName NSSelectedObjectBinding;
-extern RNDBindingName NSSelectedObjectsBinding;
-extern RNDBindingName NSSelectedTagBinding;
-extern RNDBindingName NSSelectedValueBinding;
-extern RNDBindingName NSSelectedValuesBinding;
-extern RNDBindingName NSSelectionIndexesBinding;
-extern RNDBindingName NSSelectionIndexPathsBinding;
-extern RNDBindingName NSSortDescriptorsBinding;
-extern RNDBindingName NSTargetBinding;
-extern RNDBindingName NSTextColorBinding;
-extern RNDBindingName NSTitleBinding;
-extern RNDBindingName NSToolTipBinding;
-extern RNDBindingName NSTransparentBinding;
-extern RNDBindingName NSValueBinding;
-extern RNDBindingName NSValuePathBinding;
-extern RNDBindingName NSValueURLBinding;
-extern RNDBindingName NSVisibleBinding;
-extern RNDBindingName NSWarningValueBinding;
-extern RNDBindingName NSWidthBinding;
+#pragma mark - RNDBinding Class Declaration
+@interface RNDBinding: NSObject
 
-// constants for binding options
-extern RNDBindingOption NSAllowsEditingMultipleValuesSelectionBindingOption;
-extern RNDBindingOption NSAllowsNullArgumentBindingOption;
-extern RNDBindingOption NSAlwaysPresentsApplicationModalAlertsBindingOption;
-extern RNDBindingOption NSConditionallySetsEditableBindingOption;
-extern RNDBindingOption NSConditionallySetsEnabledBindingOption;
-extern RNDBindingOption NSConditionallySetsHiddenBindingOption;
-extern RNDBindingOption NSContinuouslyUpdatesValueBindingOption;
-extern RNDBindingOption NSCreatesSortDescriptorBindingOption;
-extern RNDBindingOption NSDeletesObjectsOnRemoveBindingsOption;
-extern RNDBindingOption NSDisplayNameBindingOption;
-extern RNDBindingOption NSDisplayPatternBindingOption;
-extern RNDBindingOption NSContentPlacementTagBindingOption;
-extern RNDBindingOption NSHandlesContentAsCompoundValueBindingOption;
-extern RNDBindingOption NSInsertsNullPlaceholderBindingOption;
-extern RNDBindingOption NSInvokesSeparatelyWithArrayObjectsBindingOption;
-extern RNDBindingOption NSMultipleValuesPlaceholderBindingOption;
-extern RNDBindingOption NSNoSelectionPlaceholderBindingOption;
-extern RNDBindingOption NSNotApplicablePlaceholderBindingOption;
-extern RNDBindingOption NSNullPlaceholderBindingOption;
-extern RNDBindingOption NSRaisesForNotApplicableKeysBindingOption;
-extern RNDBindingOption NSPredicateFormatBindingOption;
-extern RNDBindingOption NSSelectorNameBindingOption;
-extern RNDBindingOption NSSelectsAllWhenSettingContentBindingOption;
-extern RNDBindingOption NSValidatesImmediatelyBindingOption;
-extern RNDBindingOption NSValueTransformerNameBindingOption;
-extern RNDBindingOption NSValueTransformerBindingOption;
+@property (readonly, nullable) NSArray<NSAttributeDescription *> *bindingOptionsInfo;
+@property (readonly, nonnull) RNDBindingType bindingType;
+@property (readonly, nonnull) RNDBindingName bindingName;
+@property (readonly) NSAttributeType bindingValueType;
+@property (readonly, assign, nullable) Class bindingValueClass;
+@property (readonly, nullable) NSArray<RNDBindingName> *excludedBindingsWhenActive;
+@property (readonly, nullable) NSArray<RNDBindingName> *requiredBindingsWhenActive;
+
++ (NSArray<NSString *> *)RNDBindingNames;
++ (NSArray<NSString *> *)RNDBindingOptions;
++ (NSArray<NSAttributeDescription *> *)bindingOptionsInfoForBindingName:(RNDBindingName)bindingName;
++ (RNDBinding *)bindingInfoForBindingName:(RNDBindingName)bindingName;
+
+@end
+
 
 NS_ASSUME_NONNULL_END
