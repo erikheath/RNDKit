@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>RNDBindingNames</key>
+	<key>RNDBindingInfoNameKey</key>
 	<dict>
 		<key>RNDAlignmentBindingName</key>
 		<dict>
@@ -538,11 +538,13 @@
 			<key>RNDBindingInfoTypeKey</key>
 			<string>RNDBindingTypeSimpleValue</string>
 			<key>RNDBindingInfoValueTypeKey</key>
-			<string></string>
+			<string>RNDBindingValueBooleanType</string>
 			<key>RNDBindingInfoValueClassKey</key>
 			<string></string>
 			<key>RNDBindingInfoOptionsKey</key>
-			<array/>
+			<array>
+				<string>RNDConditionallySetsHiddenBindingOption</string>
+			</array>
 		</dict>
 		<key>RNDImageBindingName</key>
 		<dict>

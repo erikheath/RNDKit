@@ -18,6 +18,4 @@ FOUNDATION_EXPORT const unsigned char RNDKitVersionString[];
 #import <RNDKit/RNDBindings.h>
 #import <RNDKit/RNDController.h>
 #import <RNDKit/RNDObjectController.h>
-#import <RNDKit/UIControls/RNDLabel.h>
-
-
+#import <RNDKit/UIControls/UIView+RNDBindings.h>

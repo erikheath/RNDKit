@@ -37,6 +37,7 @@
 
 #pragma mark Instance Properties
 @property id selected;
+@property (nonnull, readonly) NSUUID *contextMarker;
 
 @end
 
@@ -67,6 +68,15 @@
 
 - (NSString *)objectClassName {
     return NSStringFromClass(self.objectClass);
+}
+
+- (NSUUID *)contextMarker {
+    static NSUUID *marker;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        marker = [NSUUID UUID];
+    });
+    return marker;
 }
 
 
@@ -164,41 +174,63 @@
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     // Maps the incoming notification to a KVO notification for observers.
-
+    if (context != (__bridge void * _Nullable)(self.contextMarker)) {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
     // Determine what the change applied to: selection, selectedObjects, content.
     NSCountedSet *bindingKeyPaths = self.modelKeyToDependentKeyTable[keyPath];
 
     switch ([[change objectForKey:NSKeyValueChangeKindKey] integerValue]) {
         case NSKeyValueChangeSetting:
-            for (NSString *bindingKeyPath in bindingKeyPaths) {
-                [self willChangeValueForKey:bindingKeyPath];
-                [self didChangeValueForKey:bindingKeyPath];
+            if (change[NSKeyValueChangeNewKey] != nil) {
+                for (NSString *bindingKeyPath in bindingKeyPaths) {
+                    [self didChangeValueForKey:bindingKeyPath];
+                }
+            } else if (change[NSKeyValueChangeNotificationIsPriorKey] != nil) {
+                for (NSString *bindingKeyPath in bindingKeyPaths) {
+                    [self willChangeValueForKey:bindingKeyPath];
+                }
             }
             break;
         case NSKeyValueChangeInsertion:
         {
             NSIndexSet *indexSet = [change objectForKey:NSKeyValueChangeIndexesKey];
-            for (NSString *bindingKeyPath in bindingKeyPaths) {
-                [self willChange:NSKeyValueChangeInsertion valuesAtIndexes:indexSet forKey:bindingKeyPath];
-                [self didChange:NSKeyValueChangeInsertion valuesAtIndexes:indexSet forKey:bindingKeyPath];
+            if (change[NSKeyValueChangeNewKey] != nil) {
+                for (NSString *bindingKeyPath in bindingKeyPaths) {
+                    [self didChange:NSKeyValueChangeInsertion valuesAtIndexes:indexSet forKey:bindingKeyPath];
+                }
+            } else if (change[NSKeyValueChangeNotificationIsPriorKey] != nil) {
+                for (NSString *bindingKeyPath in bindingKeyPaths) {
+                    [self willChange:NSKeyValueChangeInsertion valuesAtIndexes:indexSet forKey:bindingKeyPath];
+                }
             }
             break;
         }
         case NSKeyValueChangeRemoval:
         {
             NSIndexSet *indexSet = [change objectForKey:NSKeyValueChangeIndexesKey];
-            for (NSString *bindingKeyPath in bindingKeyPaths) {
-                [self willChange:NSKeyValueChangeRemoval valuesAtIndexes:indexSet forKey:bindingKeyPath];
-                [self didChange:NSKeyValueChangeRemoval valuesAtIndexes:indexSet forKey:bindingKeyPath];
+            if (change[NSKeyValueChangeNewKey] != nil) {
+                for (NSString *bindingKeyPath in bindingKeyPaths) {
+                    [self didChange:NSKeyValueChangeRemoval valuesAtIndexes:indexSet forKey:bindingKeyPath];
+                }
+            } else if (change[NSKeyValueChangeNotificationIsPriorKey] != nil) {
+                for (NSString *bindingKeyPath in bindingKeyPaths) {
+                    [self willChange:NSKeyValueChangeRemoval valuesAtIndexes:indexSet forKey:bindingKeyPath];
+                }
             }
             break;
         }
         case NSKeyValueChangeReplacement:
         {
             NSIndexSet *indexSet = [change objectForKey:NSKeyValueChangeIndexesKey];
-            for (NSString *bindingKeyPath in bindingKeyPaths) {
-                [self willChange:NSKeyValueChangeReplacement valuesAtIndexes:indexSet forKey:bindingKeyPath];
-                [self didChange:NSKeyValueChangeReplacement valuesAtIndexes:indexSet forKey:bindingKeyPath];
+            if (change[NSKeyValueChangeNewKey] != nil) {
+                for (NSString *bindingKeyPath in bindingKeyPaths) {
+                    [self didChange:NSKeyValueChangeReplacement valuesAtIndexes:indexSet forKey:bindingKeyPath];
+                }
+            } else if (change[NSKeyValueChangeNotificationIsPriorKey] != nil) {
+                for (NSString *bindingKeyPath in bindingKeyPaths) {
+                    [self willChange:NSKeyValueChangeReplacement valuesAtIndexes:indexSet forKey:bindingKeyPath];
+                }
             }
             break;
         }
@@ -218,16 +250,12 @@
     NSCountedSet *dependentKeysSet = self.modelKeyToDependentKeyTable[modelKey] != nil ? self.modelKeyToDependentKeyTable[modelKey] : [[NSCountedSet alloc] initWithCapacity:5];
     [dependentKeysSet addObject:keyPath];
     [self.modelKeyToDependentKeyTable setObject:dependentKeysSet forKey:modelKey];
-    [self.content addObserver:self forKeyPath:modelKey options:(NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionPrior | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:nil];
-}
-
-- (void)removeObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath {
-    [self removeObserver:observer forKeyPath:keyPath context:nil];
+    [self.content addObserver:self forKeyPath:modelKey options:(NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionPrior | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:(__bridge void * _Nullable)(self.contextMarker)];
 }
 
 - (void)removeObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath context:(void *)context {
     // This should remove the entry for the observer, and therefore the observation of the model.
-    [self.content removeObserver:self forKeyPath:[self modelKeyPathFromBindingKeyPath:keyPath] context:context];
+    [self.content removeObserver:self forKeyPath:[self modelKeyPathFromBindingKeyPath:keyPath] context:(__bridge void * _Nullable)(self.contextMarker)];
     [super removeObserver:observer forKeyPath:keyPath context:context];
     
 }
@@ -280,9 +308,9 @@
 
 #pragma mark KVC Getters
 
-- (id)valueForKey:(NSString *)key {
-    return [self valueForKeyPath:key];
-}
+//- (id)valueForKey:(NSString *)key {
+//    return [super valueForKeyPath:key];
+//}
 
 - (id)valueForKeyPath:(NSString *)keyPath {
     id testObject = [self targetForBindingKeyPath:keyPath];

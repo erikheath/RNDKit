@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "RNDBindings.h"
 
-@interface UIView (RNDBindings) <RNDKeyValueBindingCreation, RNDPlaceholders, RNDEditor, RNDEditorRegistration, RNDEditorDelegate>
+@interface UIView (RNDBindings) <RNDKeyValueBindingCreation, RNDPlaceholders, RNDEditor, RNDEditorDelegate>
 
 @end

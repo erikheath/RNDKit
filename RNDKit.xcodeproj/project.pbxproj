@@ -11,6 +11,8 @@
 		E4159F581F8EDA0700820F24 /* UIView+RNDBindings.h in Headers */ = {isa = PBXBuildFile; fileRef = E4159F561F8EDA0700820F24 /* UIView+RNDBindings.h */; };
 		E4159F591F8EDA0700820F24 /* UIView+RNDBindings.m in Sources */ = {isa = PBXBuildFile; fileRef = E4159F571F8EDA0700820F24 /* UIView+RNDBindings.m */; };
 		E43C3F101F8F0CDB00F4D1B5 /* RNDBindings.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F0F1F8F0CDB00F4D1B5 /* RNDBindings.m */; };
+		E43C3F131F95318800F4D1B5 /* UIControl+RNDBindings.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F111F95318800F4D1B5 /* UIControl+RNDBindings.h */; };
+		E43C3F141F95318800F4D1B5 /* UIControl+RNDBindings.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F121F95318800F4D1B5 /* UIControl+RNDBindings.m */; };
 		E49CFBB31F7EC17900CDFF29 /* RNDKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E49CFBA91F7EC17900CDFF29 /* RNDKit.framework */; };
 		E49CFBB81F7EC17900CDFF29 /* RNDKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E49CFBB71F7EC17900CDFF29 /* RNDKitTests.m */; };
 		E49CFBBA1F7EC17900CDFF29 /* RNDKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E49CFBAC1F7EC17900CDFF29 /* RNDKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -39,6 +41,8 @@
 		E43B01641F7ED6BA00A09C87 /* Bindings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bindings.swift; sourceTree = "<group>"; };
 		E43B01651F7ED6BA00A09C87 /* Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
 		E43C3F0F1F8F0CDB00F4D1B5 /* RNDBindings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDBindings.m; sourceTree = "<group>"; };
+		E43C3F111F95318800F4D1B5 /* UIControl+RNDBindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIControl+RNDBindings.h"; sourceTree = "<group>"; };
+		E43C3F121F95318800F4D1B5 /* UIControl+RNDBindings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIControl+RNDBindings.m"; sourceTree = "<group>"; };
 		E49CFBA91F7EC17900CDFF29 /* RNDKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RNDKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E49CFBAC1F7EC17900CDFF29 /* RNDKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDKit.h; sourceTree = "<group>"; };
 		E49CFBAD1F7EC17900CDFF29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -80,6 +84,8 @@
 			children = (
 				E4159F561F8EDA0700820F24 /* UIView+RNDBindings.h */,
 				E4159F571F8EDA0700820F24 /* UIView+RNDBindings.m */,
+				E43C3F111F95318800F4D1B5 /* UIControl+RNDBindings.h */,
+				E43C3F121F95318800F4D1B5 /* UIControl+RNDBindings.m */,
 			);
 			path = UIControls;
 			sourceTree = "<group>";
@@ -155,6 +161,7 @@
 			files = (
 				E4159F581F8EDA0700820F24 /* UIView+RNDBindings.h in Headers */,
 				E49CFBBA1F7EC17900CDFF29 /* RNDKit.h in Headers */,
+				E43C3F131F95318800F4D1B5 /* UIControl+RNDBindings.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,6 +269,7 @@
 				E4A7ED481F8327E10083E742 /* RNDController.m in Sources */,
 				E43C3F101F8F0CDB00F4D1B5 /* RNDBindings.m in Sources */,
 				E4A7ED4A1F8348B20083E742 /* RNDObjectController.m in Sources */,
+				E43C3F141F95318800F4D1B5 /* UIControl+RNDBindings.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,7 +447,7 @@
 		E49CFBC11F7EC17900CDFF29 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = T5Q3QH59ZQ;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
@@ -454,7 +462,7 @@
 		E49CFBC21F7EC17900CDFF29 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = T5Q3QH59ZQ;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/**";

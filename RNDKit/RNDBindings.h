@@ -12,9 +12,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - RNDMarkers
-extern id RNDMultipleValuesMarker;
-extern id RNDNoSelectionMarker;
-extern id RNDNotApplicableMarker;
+typedef NSString * RNDBindingMarker NS_STRING_ENUM;
+extern RNDBindingMarker RNDBindingMultipleValuesMarker;
+extern RNDBindingMarker RNDBindingNoSelectionMarker;
+extern RNDBindingMarker RNDBindingNotApplicableMarker;
 
 extern BOOL RNDIsControllerMarker(__nullable id object);
 
@@ -33,7 +34,7 @@ extern RNDBindingType RNDBindingTypeMultiValuePredicate;
 typedef NSString * RNDBindingInfoKey NS_STRING_ENUM;
 extern RNDBindingInfoKey RNDBindingInfoTypeKey;
 extern RNDBindingInfoKey RNDBindingInfoOptionsKey;
-extern RNDBindingInfoKey RNDBindingInfoNamesKey;
+extern RNDBindingInfoKey RNDBindingInfoNameKey;
 extern RNDBindingInfoKey RNDBindingInfoExclusionsKey;
 extern RNDBindingInfoKey RNDBindingInfoRequirementsKey;
 extern RNDBindingInfoKey RNDBindingInfoValueTypeKey;
@@ -41,6 +42,25 @@ extern RNDBindingInfoKey RNDBindingInfoValueClassKey;
 extern RNDBindingInfoKey RNDBindingInfoDefaultValueKey;
 extern RNDBindingInfoKey RNDBindingInfoObservedObjectKey;
 extern RNDBindingInfoKey RNDBindingInfoObservedKeyPathKey;
+extern RNDBindingInfoKey RNDBindingInfoGroupKey;
+
+#pragma mark - RNDBindingInfoGroupType
+typedef NSString * RNDBindingInfoGroupType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupValueType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupValueWithPatternType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupAvailabilityType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupFontType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupParametersType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupTextColorType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupTitleType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupTitleWithPatternType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupControllerContentType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupControllerContentWithParametersType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupActionInvocationType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupTableContentType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupTabViewItemSelectionType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupSegmentSelectionType;
+extern RNDBindingInfoGroupType RNDBindingInfoGroupSearchType;
 
 #pragma mark - RNDBindingValueType
 typedef NSString * RNDBindingValueType;
@@ -187,14 +207,16 @@ extern RNDBindingOption RNDValueTransformerBindingOption;
 @protocol RNDKeyValueBindingCreation <NSObject>
 
 + (void)exposeBinding:(RNDBindingName)bindingName;    // bindings specified here will be exposed automatically in -exposedBindings (unless implementations explicitly filter them out, for example in subclasses)
+
 @property (class, readonly, copy) NSArray<RNDBindingName> *exposedBindings;   // for a new key exposed through this method, the default implementation simply falls back to key-value coding
 @property (class, readonly, copy) NSArray<RNDBindingName> *allExposedBindings;
 @property (class, readonly, copy) NSArray<RNDBindingName> *defaultBindings;
+
 - (nullable Class)valueClassForBinding:(RNDBindingName)bindingName;    // optional - mostly for matching transformers
 
 /* Bindings are considered to be a property of the object which is bound (the object the following two methods are sent to) and all information related to bindings should be retained by the object; all standard bindings on AppKit objects (views, cells, table columns, controllers) unbind their bindings automatically when they are released, but if you create key-value bindings for other kind of objects, you need to make sure that you remove those bindings when you release them (observed objects don't retain their observers, so controllers/model objects might continue referencing and messaging the objects that was bound to them).
  */
-- (void)bind:(RNDBindingName)binding toObject:(id)observable withKeyPath:(NSString *)keyPath options:(nullable NSDictionary<RNDBindingOption, id> *)options;    // placeholders and value transformers are specified in options dictionary
+- (void)bind:(RNDBindingName)bindingName toObject:(id)observable withKeyPath:(NSString *)keyPath options:(nullable NSDictionary<RNDBindingOption, id> *)options;    // placeholders and value transformers are specified in options dictionary
 - (void)unbind:(RNDBindingName)bindingName;
 
 /* Returns a dictionary with information about a binding or nil if the binding is not bound (this is mostly for use by subclasses which want to analyze the existing bindings of an object) - the dictionary contains three key/value pairs: RNDObservedObjectKey: object bound, RNDObservedKeyPathKey: key path bound, RNDOptionsKey: dictionary with the options and their values for the bindings.
@@ -217,8 +239,9 @@ extern RNDBindingOption RNDValueTransformerBindingOption;
 
 @protocol RNDPlaceholders
 
-+ (void)setDefaultPlaceholder:(nullable id)placeholder forMarker:(nullable id)marker withBinding:(RNDBindingName)bindingName;    // marker can be nil or one of RNDMultipleValuesMarker, RNDNoSelectionMarker, RNDNotApplicableMarker
-+ (nullable id)defaultPlaceholderForMarker:(nullable id)marker withBinding:(RNDBindingName)bindingName;    // marker can be nil or one of RNDMultipleValuesMarker, RNDNoSelectionMarker, RNDNotApplicableMarker
+- (void)setplaceholder:(nullable id)placeholder forMarker:(nonnull RNDBindingMarker)marker withBinding:(RNDBindingName)bindingName;    // marker can be nil or one of RNDMultipleValuesMarker, RNDNoSelectionMarker, RNDNotApplicableMarker
+- (nullable id)placeholderForMarker:(nonnull RNDBindingMarker)marker withBinding:(RNDBindingName)bindingName;    // marker can be nil or one of RNDMultipleValuesMarker, RNDNoSelectionMarker, RNDNotApplicableMarker
+
 
 @end
 
@@ -283,11 +306,16 @@ extern RNDBindingOption RNDValueTransformerBindingOption;
 @property (readonly, assign, nullable) Class bindingValueClass;
 @property (readonly, nullable) NSArray<RNDBindingName> *excludedBindingsWhenActive;
 @property (readonly, nullable) NSArray<RNDBindingName> *requiredBindingsWhenActive;
+@property (readonly, nonnull) NSString *bindingKey;
+@property (readonly, nullable) NSDictionary<RNDBindingMarker, id> *defaultPlaceholders;
 
 + (NSArray<NSString *> *)RNDBindingNames;
 + (NSArray<NSString *> *)RNDBindingOptions;
 + (NSArray<NSAttributeDescription *> *)bindingOptionsInfoForBindingName:(RNDBindingName)bindingName;
 + (RNDBinding *)bindingInfoForBindingName:(RNDBindingName)bindingName;
++ (void)setDefaultPlaceholder:(nullable id)placeholder forMarker:(RNDBindingMarker)marker withBinding:(RNDBindingName)bindingName;    // marker can be nil or one of RNDBindingMultipleValuesMarker, RNDBindingNoSelectionMarker, RNDBindingNotApplicableMarker
++ (nullable id)defaultPlaceholderForMarker:(RNDBindingMarker)marker withBinding:(RNDBindingName)bindingName;    // marker can be nil or one of RNDBindingMultipleValuesMarker, RNDBindingNoSelectionMarker, RNDBindingNotApplicableMarker
+
 
 @end
 

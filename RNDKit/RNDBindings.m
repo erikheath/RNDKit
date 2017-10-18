@@ -20,7 +20,8 @@
 @property (readwrite, assign, nullable) Class bindingValueClass;
 @property (readwrite, nullable) NSArray<RNDBindingName> *excludedBindingsWhenActive;
 @property (readwrite, nullable) NSArray<RNDBindingName> *requiredBindingsWhenActive;
-
+@property (readwrite, nonnull) NSString *bindingKey;
+@property (readwrite, nullable) NSDictionary<RNDBindingMarker, id> *defaultPlaceholders;
 
 @end
 
@@ -31,7 +32,7 @@ static NSMutableDictionary *_constructedBindingsInfo;
 
 + (void)initialize {
     [super initialize];
-    _standardBindingsInfo = [NSDictionary dictionaryWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"RNDKeyValueBindingUI" withExtension:@"plist"]];
+    _standardBindingsInfo = [NSDictionary dictionaryWithContentsOfURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"RNDKeyValueBindingUI" withExtension:@"plist"]];
     _constructedBindingsInfo = [[NSMutableDictionary alloc] init];
 }
 
@@ -44,7 +45,7 @@ static NSMutableDictionary *_constructedBindingsInfo;
 }
 
 + (NSArray<NSString *> *)RNDBindingNames {
-    return [self.standardBindingsInfo[RNDBindingInfoNamesKey] allKeys];
+    return [self.standardBindingsInfo[RNDBindingInfoNameKey] allKeys];
 }
 + (NSArray<NSString *> *)RNDBindingOptions {
     return [self.standardBindingsInfo[RNDBindingInfoOptionsKey] allKeys];
@@ -57,7 +58,7 @@ static NSMutableDictionary *_constructedBindingsInfo;
     @synchronized(self) {
         if ([self constructedBindingsInfo][bindingName] == nil) {
             // This is done once for a given binding name and then stored, making subsequent requests much faster.
-            NSMutableDictionary *infoDictionary = [NSMutableDictionary dictionaryWithDictionary:[self standardBindingsInfo][RNDBindingInfoNamesKey][bindingName]];
+            NSMutableDictionary *infoDictionary = [NSMutableDictionary dictionaryWithDictionary:[self standardBindingsInfo][RNDBindingInfoNameKey][bindingName]];
             RNDBinding *binding = [RNDBinding new];
             
             // Set the basic properties of the binding
@@ -67,6 +68,8 @@ static NSMutableDictionary *_constructedBindingsInfo;
             binding.bindingValueClass = binding.bindingValueType == NSObjectIDAttributeType ? NSClassFromString(infoDictionary[RNDBindingInfoValueClassKey]) : nil ;
             binding.excludedBindingsWhenActive = (NSArray<RNDBindingName> *)[infoDictionary[RNDBindingInfoExclusionsKey] copy];
             binding.requiredBindingsWhenActive = (NSArray<RNDBindingName> *)[infoDictionary[RNDBindingInfoRequirementsKey] copy];
+            binding.bindingKey = [self bindingKeyForBindingName:binding.bindingName];
+            binding.defaultPlaceholders = [[NSDictionary alloc] init];
             
             // Set the options
             NSMutableArray *optionsArray = [[NSMutableArray alloc] init];
@@ -86,6 +89,15 @@ static NSMutableDictionary *_constructedBindingsInfo;
         }
     }
     return [self constructedBindingsInfo][bindingName];
+}
+
++ (NSString *)bindingKeyForBindingName:(NSString *)bindingName {
+    NSError *error = nil;
+    NSRegularExpression *expression = [[NSRegularExpression alloc] initWithPattern:@"RND(.*)BindingName" options:0 error:&error];
+    NSTextCheckingResult *result = [expression firstMatchInString:bindingName options:NSMatchingAnchored range:NSMakeRange(0, bindingName.length)];
+    NSString *bindingKey = [bindingName substringWithRange:[result rangeAtIndex:1]];
+    NSString *prefix = [[bindingKey substringWithRange:NSMakeRange(0, 1)] lowercaseString];
+    return [bindingKey stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:prefix];
 }
 
 + (NSAttributeType)valueTypeForBindingValueType:(RNDBindingValueType)bindingValueType {
@@ -235,6 +247,22 @@ static NSMutableDictionary *_constructedBindingsInfo;
     return transformedValue;
 }
 
++ (void)setDefaultPlaceholder:(id)placeholder forMarker:(RNDBindingMarker)marker withBinding:(RNDBindingName)bindingName {
+    RNDBinding *binding = [self bindingInfoForBindingName:bindingName];
+    NSMutableDictionary *bindingPlaceholders = binding.defaultPlaceholders != nil ? [NSMutableDictionary dictionaryWithDictionary: binding.defaultPlaceholders] : [[NSMutableDictionary alloc] initWithCapacity:3];
+    if (placeholder == nil) {
+        [bindingPlaceholders removeObjectForKey:marker];
+    } else {
+        [bindingPlaceholders setObject:placeholder forKey:marker];
+    }
+    binding.defaultPlaceholders = [NSDictionary dictionaryWithDictionary:bindingPlaceholders];
+}
+
++ (id)defaultPlaceholderForMarker:(RNDBindingMarker)marker withBinding:(RNDBindingName)bindingName {
+    RNDBinding *binding = [self bindingInfoForBindingName:bindingName];
+    return binding.defaultPlaceholders[marker];
+}
+
 
 @end
 
@@ -258,6 +286,8 @@ RNDBindingInfoKey RNDBindingInfoValueClassKey = @"RNDBindingInfoValueClassKey";
 RNDBindingInfoKey RNDBindingInfoDefaultValueKey = @"RNDBindingInfoDefaultValueKey";
 RNDBindingInfoKey RNDBindingInfoObservedObjectKey = @"RNDBindingInfoObservedObjectKey";
 RNDBindingInfoKey RNDBindingInfoObservedKeyPathKey = @"RNDBindingInfoObservedKeyPathKey";
+RNDBindingInfoKey RNDBindingInfoGroupKey = @"RNDBindingInfoGroupKey";
+
 
 #pragma mark - RNDBindingValueType
 RNDBindingValueType RNDBindingValueInt8Type = @"RNDBindingValueInt8Type";
