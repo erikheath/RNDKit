@@ -536,14 +536,16 @@
 			<key>RNDBindingInfoRequirementsKey</key>
 			<array/>
 			<key>RNDBindingInfoTypeKey</key>
-			<string>RNDBindingTypeSimpleValue</string>
+			<string>RNDBindingTypeMultiValueOR</string>
 			<key>RNDBindingInfoValueTypeKey</key>
 			<string>RNDBindingValueBooleanType</string>
 			<key>RNDBindingInfoValueClassKey</key>
 			<string></string>
+			<key>RNDBindingInfoGroupKey</key>
+			<string>RNDBindingInfoGroupAvailabilityType</string>
 			<key>RNDBindingInfoOptionsKey</key>
 			<array>
-				<string>RNDConditionallySetsHiddenBindingOption</string>
+				<string>RNDRaisesForNotApplicableKeysBindingOption</string>
 			</array>
 		</dict>
 		<key>RNDImageBindingName</key>

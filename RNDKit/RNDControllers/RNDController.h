@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RNDBindings.h"
+#import "../RNDBindings/RNDBindings.h"
 
 
 NS_ASSUME_NONNULL_BEGIN

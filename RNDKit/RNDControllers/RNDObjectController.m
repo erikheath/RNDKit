@@ -308,10 +308,6 @@
 
 #pragma mark KVC Getters
 
-//- (id)valueForKey:(NSString *)key {
-//    return [super valueForKeyPath:key];
-//}
-
 - (id)valueForKeyPath:(NSString *)keyPath {
     id testObject = [self targetForBindingKeyPath:keyPath];
     return (testObject == self)? [super valueForKey:keyPath] : [[self targetForBindingKeyPath:keyPath] valueForKeyPath:[self modelKeyPathFromBindingKeyPath:keyPath]];
