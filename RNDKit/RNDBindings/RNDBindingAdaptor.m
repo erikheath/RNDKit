@@ -15,7 +15,6 @@
 
 @interface RNDBindingAdaptor()
 
-@property (weak, readwrite, nullable) id observer;
 @property (strong, readonly, nonnull) NSMutableDictionary<RNDBindingName, RNDBinder *> *binderDictionary;
 @property (nonnull, strong, readonly) dispatch_queue_t syncQueue;
 
@@ -28,7 +27,6 @@
 @synthesize binderDictionary = _binderDictionary;
 @synthesize syncQueue = _syncQueue;
 @synthesize identifier = _identifier;
-@synthesize exposedBindings = _exposedBindings; // TODO: This should come from the config file.
 
 - (NSDictionary<RNDBindingName, RNDBinder *> *)binders {
     return [NSDictionary dictionaryWithDictionary:self.binderDictionary];
@@ -44,11 +42,11 @@
 
 #pragma mark - Object Lifecycle
 
-+ (instancetype _Nonnull)adaptorForObject:(id)observer identifier:(NSString * _Nonnull)identifier{
++ (instancetype _Nullable)adaptorForObject:(id)observer identifier:(NSString * _Nonnull)identifier{
     return [[RNDBindingAdaptor alloc] initWithObject:observer identifier:identifier];
 }
 
-- (instancetype _Nonnull)initWithObject:(id)observer identifier:(NSString * _Nonnull)identifier {
+- (instancetype _Nullable)initWithObject:(id)observer identifier:(NSString * _Nonnull)identifier {
     if ((self = [super init]) == nil) {
         // This should never happen.
     }
@@ -57,76 +55,22 @@
     return self;
 }
 
-#pragma mark - Binding Management
-
-- (BOOL)addBinding:(RNDBindingName)bindingName forObject:(id)observable withKeyPath:(NSString *)keyPath options:(NSDictionary<RNDBindingOption,id> *)options error:(NSError *__autoreleasing  _Nullable *)error {
-   
-    __block RNDBinder *binder;
-    __block RNDBindingInfo *bindingInfo = [RNDBindingInfo bindingInfoForBindingName:bindingName];
-    __block BOOL result = YES;
-    __block NSError *internalError = nil;
-    
-    if ([self.exposedBindings containsObject:bindingName] == NO) {
-        // Set the error and return NO;
-        result = NO;
-    }
-    
-    dispatch_barrier_sync(_syncQueue, ^{
-        
-        // Determine the binding type
-        if (result) {
-            if ([bindingInfo.bindingType isEqualToString:RNDBindingTypeSimpleValue] || [bindingInfo.bindingType isEqualToString:RNDBindingTypeSimpleValueReadOnly]) {
-                binder = self.binders[bindingName] != nil ? self.binders[bindingName] : [[RNDSimpleValueBinder alloc] initWithName:bindingName error:&internalError];
-                if (internalError != nil) {
-                    // TODO: Set the error condition.
-                    result = NO;
-                    return;
-                }
-                result = [binder addBindingForObject:observable withKeyPath:keyPath options:options error:&internalError];
-                
-            } else if ([bindingInfo.bindingType isEqualToString:RNDBindingTypeMultiValueOR] || [bindingInfo.bindingType isEqualToString:RNDBindingTypeMultiValueAND]) {
-                binder = self.binders[bindingName] != nil ? self.binders[bindingName] : [[RNDMultiValueBinder alloc] initWithName:bindingName error:&internalError];
-                if (internalError != nil) {
-                    // TODO: Set the error condition.
-                    result = NO;
-                    return;
-                }
-                result = [binder addBindingForObject:observable withKeyPath:keyPath options:options error:&internalError];
-                
-            } else if ([bindingInfo.bindingType isEqualToString:RNDBindingTypeMultiValueArgument]) {
-                binder = self.binders[bindingName] != nil ? self.binders[bindingName] : [[RNDMultiValueArgumentBinder alloc] initWithName:bindingName error:&internalError];
-                if (internalError != nil) {
-                    // TODO: Set the error condition.
-                    result = NO;
-                    return;
-                }
-                result = [binder addBindingForObject:observable withKeyPath:keyPath options:options error:&internalError];
-                
-            } else if ([bindingInfo.bindingType isEqualToString:RNDBindingTypeMultiValuePredicate]) {
-                binder = self.binders[bindingName] != nil ? self.binders[bindingName] : [[RNDMultiValuePredicateBinder alloc] initWithName:bindingName error:&internalError];
-                if (internalError != nil) {
-                    // TODO: Set the error condition.
-                    result = NO;
-                    return;
-                }
-                result = [binder addBindingForObject:observable withKeyPath:keyPath options:options error:&internalError];
-            } else if ([bindingInfo.bindingType isEqualToString:RNDBindingTypeMultiValueWithPattern]) {
-                binder = self.binders[bindingName] != nil ? self.binders[bindingName] : [[RNDMultiValuePatternBinder alloc] initWithName:bindingName error:&internalError];
-                if (internalError != nil) {
-                    // TODO: Set the error condition.
-                    result = NO;
-                    return;
-                }
-                result = [binder addBindingForObject:observable withKeyPath:keyPath options:options error:&internalError];
-            }
+- (instancetype _Nullable)initWithCoder:(NSCoder *)aDecoder {
+    if ((self = [super init]) != nil) {
+        _binderDictionary = [aDecoder decodeObjectForKey:@"binders"];
+        _identifier = [aDecoder decodeObjectForKey:@"identifier"];
+        for (RNDBinder *binder in [_binderDictionary allValues]) {
+            binder.adaptor = self;
         }
-    });
-
-    if (error != NULL) {
-        *error = internalError;
     }
-    return result;
+    return self;
 }
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    
+}
+
+#pragma mark - Binding Management
 
 - (BOOL)removeBinding:(RNDBindingName)bindingName error:(NSError * _Nullable __autoreleasing * _Nullable)error {
     __block BOOL result = YES;
@@ -135,7 +79,7 @@
     dispatch_barrier_sync(_syncQueue, ^{
         RNDBinder *binder;
         if ((binder = self.binders[bindingName]) == nil) {
-            // TODOD: Set the error condition.
+            // TODO: Set the error condition.
             result = NO;
         }
         
@@ -176,7 +120,7 @@
 
 }
 
-- (BOOL)removeAllBindings:(NSError *__autoreleasing  _Nullable *)error {
+- (BOOL)disconnectAllBindings:(NSError *__autoreleasing  _Nullable *)error {
     __block BOOL result = YES;
     __block NSError *internalError = nil;
 
@@ -195,8 +139,6 @@
                 return;
             }
         }
-        [_binderDictionary removeAllObjects];
-
     });
     
     if (error != NULL) {

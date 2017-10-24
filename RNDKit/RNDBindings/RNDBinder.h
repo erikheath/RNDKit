@@ -13,15 +13,17 @@
 
 @class RNDBindingAdaptor;
 
-@interface RNDBinder : NSObject
+@interface RNDBinder : NSObject <NSCoding>
 
 @property (strong, nonnull, readonly) RNDBindingName name;
 @property (nonnull, readonly) RNDBindingInfo * bindingInfo;
 @property (nonnull, strong, readonly) NSArray<RNDBinding *> * bindings;
-@property (weak, readonly) RNDBindingAdaptor * _Nullable adaptor;
+@property (weak, readwrite, nullable) RNDBindingAdaptor * adaptor;
 
 - (instancetype _Nullable)init;
-- (instancetype _Nullable )initWithName:(RNDBindingName _Nonnull )bindingName error:(NSError *__autoreleasing  _Nullable * _Nullable)error NS_DESIGNATED_INITIALIZER;
+- (instancetype _Nullable)initWithName:(RNDBindingName _Nonnull )bindingName error:(NSError *__autoreleasing  _Nullable * _Nullable)error NS_DESIGNATED_INITIALIZER;
+- (instancetype _Nullable)initWithCoder:(NSCoder * _Nonnull)aDecoder NS_DESIGNATED_INITIALIZER;
+- (void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
 
 - (BOOL)addBindingForObject:(id _Nonnull )observable withKeyPath:(NSString *_Nonnull)keyPath options:(NSDictionary<RNDBindingOption,id> *_Nullable)options error:(NSError *__autoreleasing  _Nullable * _Nullable)error;
 

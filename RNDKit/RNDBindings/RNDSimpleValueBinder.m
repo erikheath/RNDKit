@@ -34,15 +34,6 @@
     return currentBindings;
 }
 
-- (NSMutableArray<RNDBinding *> * _Nonnull)bindingArray {
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _bindingArray = [[NSMutableArray alloc] initWithCapacity:1];
-    });
-    return _bindingArray;
-}
-
 #pragma mark - Object Lifecycle
 
 - (instancetype)initWithName:(RNDBindingName)bindingName error:(NSError * _Nullable __autoreleasing *)error {
@@ -57,8 +48,34 @@
     }
 
     _syncQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    _bindingArray = [[NSMutableArray alloc] initWithCapacity:1];
 
     return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if ((self = [super initWithCoder:aDecoder]) == nil) {
+        return nil;
+    }
+    
+    if (self.bindingInfo.bindingType != RNDBindingTypeSimpleValue && self.bindingInfo.bindingType != RNDBindingTypeSimpleValueReadOnly) {
+        // TODO: Set the error condition.
+        return nil;
+    }
+    
+    _syncQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    
+    _bindingArray = [aDecoder decodeObjectForKey:@"bindingArray"];
+    for (RNDBinding *binding in _bindingArray) {
+        binding.binder = self;
+    }
+
+    return self;
+    
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:_bindingArray forKey:@"bindingArray"];
 }
 
 #pragma mark - Binding Management

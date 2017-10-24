@@ -5,7 +5,6 @@
  All rights reserved.
  */
 
-#import <AppKit/NSObjectController.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSPredicate.h>
 

@@ -12,5 +12,6 @@
 @interface NSObject (RNDObjectBinding) <RNDEditor>
 
 @property (readonly, nullable) RNDBindingAdaptor *adaptor;
+@property (readwrite, nullable) NSString *bindingIdentifier;
 
 @end

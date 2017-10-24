@@ -62,6 +62,31 @@
     return self;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if ((self = [super initWithCoder:aDecoder]) == nil) {
+        return nil;
+    }
+    
+    if (self.bindingInfo.bindingType != RNDBindingTypeMultiValueAND && self.bindingInfo.bindingType != RNDBindingTypeMultiValueOR) {
+        // TODO: Set the error condition
+        return nil;
+    }
+
+    _syncQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    
+    _bindingArray = [aDecoder decodeObjectForKey:@"bindingArray"];
+    for (RNDBinding *binding in _bindingArray) {
+        binding.binder = self;
+    }
+
+    return self;
+    
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:_bindingArray forKey:@"bindingArray"];
+}
+
 #pragma mark - Binding Management
 
 - (BOOL)addBindingForObject:(id _Nonnull )observable withKeyPath:(NSString *_Nonnull)keyPath options:(NSDictionary<RNDBindingOption,id> *_Nullable)options error:(NSError *__autoreleasing  _Nullable * _Nullable)error {

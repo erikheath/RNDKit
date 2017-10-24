@@ -7,7 +7,6 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
-#import <AppKit/NSArrayController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

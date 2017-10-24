@@ -8,6 +8,7 @@
 
 #import "RNDBinder.h"
 #import "RNDBindingAdaptor.h"
+#import <objc/runtime.h>
 
 
 @implementation RNDBinder
@@ -15,10 +16,7 @@
 #pragma mark - Properties
 
 @synthesize name = _name;
-
-- (RNDBindingInfo *)bindingInfo {
-    return [RNDBindingInfo bindingInfoForBindingName:_name];
-}
+@synthesize adaptor = _adaptor;
 
 - (NSArray<RNDBinding *> * _Nonnull)bindings {
     return @[];
@@ -31,12 +29,7 @@
 }
 
 - (instancetype)initWithName:(RNDBindingName _Nonnull)bindingName error:(NSError *__autoreleasing  _Nullable * _Nullable)error {
-    
-    if ([[RNDBindingInfo RNDBindingNames] containsObject:bindingName] != YES) {
-        // TODO: Set error condition.
-        return nil;
-    }
-    
+        
     if ((self = [super init]) == nil) {
         // TODO: Set error condition.
         return nil;
@@ -44,6 +37,17 @@
     
     _name = bindingName;
     return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if ((self = [super init]) != nil) {
+        _name = [aDecoder decodeObjectForKey:@"name"];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:_name forKey:@"name"];
 }
 
 #pragma mark - Binding Management

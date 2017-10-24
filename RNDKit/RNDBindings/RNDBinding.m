@@ -15,7 +15,6 @@
 @property (strong, nonnull, readwrite) id observedObject;
 @property (strong, nonnull, readwrite) NSString * observedKeyPath;
 @property (strong, nonnull, readwrite) NSDictionary<RNDBindingOption, id> *options;
-@property (weak, readwrite) RNDBinder * _Nullable binder;
 @property (readwrite) BOOL isBound;
 
 @property (nonnull, strong, readonly) dispatch_queue_t syncQueue;
@@ -39,11 +38,15 @@
 
 #pragma mark - Object Lifecycle
 
-+ (instancetype _Nonnull)bindingForBinder:(RNDBinder *)binder withObserved:(id)object keyPath:(NSString *)keyPath options:(NSDictionary<RNDBindingOption,id> *)options {
++ (instancetype)bindingForBinder:(RNDBinder *)binder withObserved:(id)object keyPath:(NSString *)keyPath options:(NSDictionary<RNDBindingOption,id> *)options {
     return [[RNDBinding alloc] initWithBinder:binder observed:object keyPath:keyPath options:options];
 }
 
-- (instancetype _Nonnull)initWithBinder:(RNDBinder *)binder observed:(id)object keyPath:(NSString *)keyPath options:(NSDictionary<RNDBindingOption,id> *)options {
+- (instancetype)init {
+    return nil;
+}
+
+- (instancetype)initWithBinder:(RNDBinder *)binder observed:(id)object keyPath:(NSString *)keyPath options:(NSDictionary<RNDBindingOption,id> *)options {
     
     if ((self = [super init]) == nil) {
         // This is a program error and should never happen.
@@ -65,6 +68,25 @@
     _options = [NSDictionary dictionaryWithDictionary:optionsDictionary];
     
     return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if ((self = [super init]) != nil) {
+        // TODO: Add observed object retrieval mechanism
+        _observedKeyPath = [aDecoder decodeObjectForKey:@"observedKeyPath"];
+        _options = [aDecoder decodeObjectForKey:@"options"];
+        _isBound = NO;
+        _syncQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    }
+    
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:_observedKeyPath forKey:@"observedKeyPath"];
+    [aCoder encodeObject:_options forKey:@"options"];
+    // TODO: Add observed object retrieval mechanism
+
 }
 
 - (void)bind {

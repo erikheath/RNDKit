@@ -11,10 +11,12 @@
 
 // This category is dynamically generated and provides the shims to access the binding adaptor or to override any of the calls by the observing class to the binding adaptor.
 
+// TODO: Determine how to deal with memory management of associated objects.
+
 @implementation NSObject (RNDObjectBinding)
 
 - (RNDBindingAdaptor *)adaptor {
-    return objc_getAssociatedObject(self, @selector(initializeBindings:));
+    return objc_getAssociatedObject(self, @selector(adaptor));
 }
 
 - (void)initializeBindings:(NSString * _Nonnull)identifier {
@@ -22,12 +24,26 @@
     dispatch_once(&onceToken, ^{
         RNDBindingAdaptor *adaptor = [RNDBindingAdaptor adaptorForObject:self
                                                               identifier:identifier];
-        if (objc_getAssociatedObject(self, @selector(initializeBindings:)) == nil) {
-            objc_setAssociatedObject(self, @selector(initializeBindings:), adaptor, OBJC_ASSOCIATION_RETAIN);
+        if (objc_getAssociatedObject(self, @selector(adaptor)) == nil) {
+            objc_setAssociatedObject(self, @selector(adaptor), adaptor, OBJC_ASSOCIATION_RETAIN);
         }
     });
 }
 
+- (void)setBindingIdentifier:(NSString *)bindingIdentifier {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        objc_setAssociatedObject(self, @selector(bindingIdentifier), bindingIdentifier, OBJC_ASSOCIATION_RETAIN);
+    });
+}
+
+- (NSString *)bindingIdentifier {
+    return objc_getAssociatedObject(self, @selector(bindingIdentifier));
+}
+
+- (void)awakeFromNib {
+    
+}
 // Use these methods in subclasses to provide additional or alternate implementations.
 #pragma mark - RNDEditor
 
