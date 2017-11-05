@@ -12,7 +12,6 @@
 #import "RNDBindingProtocols/RNDEditorRegistration.h"
 #import "RNDBindingProtocols/RNDPlaceholders.h"
 #import "RNDBindingProtocols/RNDUserInterfaceValidation.h"
-#import "RNDBindingAdaptor.h"
 #import "RNDBindingInfo.h"
 #import "RNDBinder.h"
 #import "RNDSimpleValueBinder.h"

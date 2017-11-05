@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13240" systemVersion="16G29" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+    <entity name="Binder" representedClassName="Binder" isAbstract="YES" syncable="YES" codeGenerationType="class"/>
+    <entity name="Binding" representedClassName="Binding" syncable="YES" codeGenerationType="class"/>
+    <entity name="MultiValueBinder" representedClassName="MultiValueBinder" parentEntity="Binder" syncable="YES" codeGenerationType="class">
+        <relationship name="bindings" optional="YES" toMany="YES" minCount="1" deletionRule="Nullify" destinationEntity="Binder" syncable="YES"/>
+    </entity>
+    <entity name="SimpleValueBinder" representedClassName="SimpleValueBinder" parentEntity="Binder" syncable="YES" codeGenerationType="class">
+        <relationship name="bindings" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binding" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Binder" positionX="-63" positionY="-18" width="128" height="45"/>
+        <element name="Binding" positionX="-54" positionY="-9" width="128" height="45"/>
+        <element name="MultiValueBinder" positionX="-36" positionY="9" width="128" height="60"/>
+        <element name="SimpleValueBinder" positionX="-18" positionY="27" width="128" height="60"/>
+    </elements>
+</model>

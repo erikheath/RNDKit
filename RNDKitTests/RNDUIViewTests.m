@@ -26,18 +26,18 @@
     [controller prepareContent];
     [controller setValue:@YES forKeyPath:@"content.hideView"];
     
-    NSArray<RNDBindingName> *defaultBindings = [UIView defaultBindings];
+    NSArray<RNDBinderName> *defaultBindings = [UIView defaultBindings];
     XCTAssertEqualObjects(defaultBindings, @[RNDHiddenBindingName]);
     
-    NSArray<RNDBindingName> *exposedBindings = [UIView exposedBindings];
+    NSArray<RNDBinderName> *exposedBindings = [UIView exposedBindings];
     XCTAssertEqualObjects(exposedBindings, defaultBindings);
     
-    NSArray<RNDBindingName> *allExposedBindings = [UIView allExposedBindings];
+    NSArray<RNDBinderName> *allExposedBindings = [UIView allExposedBindings];
     XCTAssertEqualObjects(exposedBindings, allExposedBindings);
     
     [UIView exposeBinding:RNDEnabledBindingName];
     exposedBindings = [UIView exposedBindings];
-    NSArray<RNDBindingName> *testBindings = @[RNDHiddenBindingName, RNDEnabledBindingName];
+    NSArray<RNDBinderName> *testBindings = @[RNDHiddenBindingName, RNDEnabledBindingName];
     XCTAssertEqualObjects(exposedBindings, testBindings);
     
     //Test for both an exposed binding and an unexposed binding
