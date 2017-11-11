@@ -7,12 +7,9 @@
 //
 
 #import "RNDBindingConstants.h"
-#import "RNDBindingProtocols/RNDEditor.h"
-#import "RNDBindingProtocols/RNDEditorDelegate.h"
-#import "RNDBindingProtocols/RNDEditorRegistration.h"
-#import "RNDBindingProtocols/RNDPlaceholders.h"
-#import "RNDBindingProtocols/RNDUserInterfaceValidation.h"
-#import "RNDBindingInfo.h"
+#import "NSObject+RNDObjectBinding.h"
+#import "RNDBindingManifest.h"
+#import "RNDBinderSet.h"
 #import "RNDBinder.h"
 #import "RNDSimpleValueBinder.h"
 #import "RNDMultiValueBinder.h"
@@ -20,3 +17,7 @@
 #import "RNDMultiValueArgumentBinder.h"
 #import "RNDMultiValuePredicateBinder.h"
 #import "RNDBinding.h"
+#import "RNDInvocationBinding.h"
+#import "RNDExpressionBinding.h"
+#import "RNDPredicateBinding.h"
+#import "RNDReferenceValueBinding.h"

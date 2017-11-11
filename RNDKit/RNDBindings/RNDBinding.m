@@ -26,6 +26,7 @@
 @synthesize observedObjectBindingIdentifier = _observedObjectBindingIdentifier;
 @synthesize monitorsObservedObject = _monitorsObservedObject;
 
+@synthesize controllerKey = _controllerKey;
 @synthesize binder = _binder;
 @synthesize bindingName = _bindingName;
 
@@ -80,7 +81,7 @@
         }
     });
     
-    return objectValue != [NSNull null] ? objectValue : [NSNull null];;
+    return objectValue;
 }
 
 - (void)setBindingObjectValue:(id)bindingObjectValue {
@@ -106,122 +107,6 @@
     });
 }
 
-- (BOOL)valueAsBool {
-    __block BOOL value = NO;
-    dispatch_sync(_syncQueue, ^{
-        if ([self.bindingObjectValue respondsToSelector:@selector(boolValue)] == YES) {
-            value = [self.bindingObjectValue boolValue];
-        }
-    });
-    return value;
-}
-
-- (NSInteger)valueAsInteger {
-    __block NSInteger value = 0;
-    dispatch_sync(_syncQueue, ^{
-        if ([self.bindingObjectValue respondsToSelector:@selector(integerValue)] == YES) {
-            value = [self.bindingObjectValue integerValue];
-        }
-    });
-    return value;
-}
-
-- (long)valueAsLong {
-    __block long value = 0;
-    dispatch_sync(_syncQueue, ^{
-        if ([self.bindingObjectValue respondsToSelector:@selector(longValue)] == YES) {
-            value = [self.bindingObjectValue longValue];
-        }
-    });
-    return value;
-}
-
-- (float)valueAsFloat {
-    __block float value = 0.0;
-    dispatch_sync(_syncQueue, ^{
-        if ([self.bindingObjectValue respondsToSelector:@selector(floatValue)] == YES) {
-            value = [self.bindingObjectValue floatValue];
-        }
-    });
-    return value;
-}
-
-- (double)valueAsDouble {
-    __block double value = 0.0;
-    dispatch_sync(_syncQueue, ^{
-        if ([self.bindingObjectValue respondsToSelector:@selector(doubleValue)] == YES) {
-            value = [self.bindingObjectValue doubleValue];
-        }
-    });
-    return value;
-}
-
-- (NSString *)valueAsString {
-    __block NSString *value = nil;
-    dispatch_sync(_syncQueue, ^{
-        if (self.bindingObjectValue == nil) {
-            value = nil;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSString class]] == YES) {
-            value = self.bindingObjectValue;
-        } else if ([self.bindingObjectValue respondsToSelector:@selector(stringValue)] == YES) {
-            value = [self.bindingObjectValue stringValue];
-        } else {
-            value = [self.bindingObjectValue description];
-        }
-    });
-    return value;
-}
-
-- (NSDate *)valueAsDate {
-    __block NSDate *value = nil;
-    dispatch_sync(_syncQueue, ^{
-        if (self.bindingObjectValue == nil) {
-            value = nil;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSDate class]] == YES) {
-            value = self.bindingObjectValue;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSString class]] == YES) {
-            value = [[[NSDateFormatter alloc] init] dateFromString:self.bindingObjectValue];
-        } else {
-            value = nil;
-        }
-    });
-    return value;
-}
-
-- (NSUUID *)valueAsUUID {
-    __block NSUUID *value = nil;
-    dispatch_sync(_syncQueue, ^{
-        if (self.bindingObjectValue == nil) {
-            value = nil;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSUUID class]] == YES) {
-            value = self.bindingObjectValue;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSString class]] == YES) {
-            value = [[NSUUID alloc] initWithUUIDString:self.bindingObjectValue];
-        } else {
-            value = nil;
-        }
-    });
-    return value;
-}
-
-- (NSData *)valueAsData {
-    __block NSData *value = nil;
-    dispatch_sync(_syncQueue, ^{
-        if (self.bindingObjectValue == nil) {
-            value = nil;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSData class]] == YES) {
-            value = self.bindingObjectValue;
-        } else {
-            value = nil;
-        }
-    });
-    return value;
-}
-
-- (id)valueAsObject {
-    return [self.bindingObjectValue isEqual:[NSNull null]] ? nil : self.bindingObjectValue;
-}
-
 
 #pragma mark - Object Lifecycle
 - (instancetype)init {
@@ -238,7 +123,8 @@
             if ([propertyName isEqualToString:@"syncQueue"] ||
                 [propertyName isEqualToString:@"valueTransformer"] ||
                 [propertyName isEqualToString:@"syncQueueIdentifier"] ||
-                [propertyName isEqualToString:@"isBound"]) { continue; }
+                [propertyName isEqualToString:@"isBound"] ||
+                [propertyName isEqualToString:@"observedObject"]) { continue; }
             [self setValue:[aDecoder decodeObjectForKey:propertyName] forKey:propertyName];
         }
         
@@ -266,7 +152,8 @@
         if ([propertyName isEqualToString:@"syncQueue"] ||
             [propertyName isEqualToString:@"valueTransformer"] ||
             [propertyName isEqualToString:@"syncQueueIdentifier"] ||
-            [propertyName isEqualToString:@"isBound"]) { continue; }
+            [propertyName isEqualToString:@"isBound"] ||
+            [propertyName isEqualToString:@"observedObject"]) { continue; }
         [aCoder encodeObject:[self valueForKey:propertyName] forKey:propertyName];
     }
     
@@ -280,6 +167,17 @@
     dispatch_barrier_async(_syncQueue, ^{
         
         // The behavior is dependent upon the type.
+        NSUInteger index = [self.binder.observer.bindingDestinations indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([((id<RNDBindableObject>)obj).bindingIdentifier isEqualToString:_observedObjectBindingIdentifier]) {
+                *stop = YES;
+                return YES;
+            }
+            return NO;
+        }];
+        if (index == NSNotFound) {
+            _isBound = NO;
+            return;
+        }
         
         if (_monitorsObservedObject == YES) {
             
@@ -293,6 +191,39 @@
         
         _isBound = YES;
     });
+}
+
+- (BOOL)bind:(NSError * _Nonnull __autoreleasing *)error {
+    __block BOOL result = NO;
+    dispatch_barrier_sync(_syncQueue, ^{
+        NSUInteger index = [self.binder.observer.bindingDestinations indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([((id<RNDBindableObject>)obj).bindingIdentifier isEqualToString:_observedObjectBindingIdentifier]) {
+                _observedObject = obj;
+                *stop = YES;
+                return YES;
+            }
+            return NO;
+        }];
+        if (index == NSNotFound) {
+            _isBound = NO;
+            result = _isBound;
+            return;
+        }
+
+        if (_monitorsObservedObject == YES) {
+            
+            // Observe the model object.
+            [_observedObject addObserver:self
+                              forKeyPath:_observedObjectKeyPath
+                                 options:NSKeyValueObservingOptionNew
+                                 context:(__bridge void * _Nullable)(_bindingName)];
+            
+        }
+        
+        _isBound = YES;
+        result = _isBound;
+    });
+    return result;
 }
 
 - (void)unbind {
@@ -312,6 +243,28 @@
         _isBound = NO;
     });
 }
+
+- (BOOL)unbind:(NSError * _Nonnull __autoreleasing *)error {
+    __block BOOL result = NO;
+    dispatch_barrier_sync(_syncQueue, ^{
+        
+        // The behavior is dependent upon the type.
+        
+        if (_monitorsObservedObject == YES) {
+            
+            // Observe the controller.
+            [_observedObject removeObserver:self
+                                 forKeyPath:_observedObjectKeyPath
+                                    context:(__bridge void * _Nullable)(_bindingName)];
+            
+        }
+        
+        _isBound = NO;
+        result = _isBound;
+    });
+    return result;
+}
+
 
 #pragma mark - Key Value Observation
 

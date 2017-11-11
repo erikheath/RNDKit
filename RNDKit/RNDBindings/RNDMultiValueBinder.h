@@ -24,6 +24,4 @@
 
 @property (readonly, getter=isAndedValue) BOOL andedValue;
 
-- (id _Nullable)logicalValue:(NSError * _Nullable __autoreleasing * _Nullable)error;
-
 @end

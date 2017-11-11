@@ -25,7 +25,6 @@
 @synthesize binderIdentifier = _binderIdentifier;
 @synthesize observer = _observer;
 @synthesize observerKey = _observerKey;
-@synthesize valueTransformerName = _valueTransformerName;
 @synthesize binderMode = _binderMode;
 @synthesize monitorsObservable = _monitorsObservable;
 @synthesize monitorsObserver = _monitorsObserver;
@@ -36,122 +35,6 @@
 @synthesize multipleSelectionPlaceholder = _multipleSelectionPlaceholder;
 @synthesize noSelectionPlaceholder = _noSelectionPlaceholder;
 @synthesize notApplicablePlaceholder = _notApplicablePlaceholder;
-
-- (BOOL)valueAsBool {
-    __block BOOL value = NO;
-    dispatch_sync(_syncQueue, ^{
-        if ([self.bindingObjectValue respondsToSelector:@selector(boolValue)] == YES) {
-            value = [self.bindingObjectValue boolValue];
-        }
-    });
-    return value;
-}
-
-- (NSInteger)valueAsInteger {
-    __block NSInteger value = 0;
-    dispatch_sync(_syncQueue, ^{
-        if ([self.bindingObjectValue respondsToSelector:@selector(integerValue)] == YES) {
-            value = [self.bindingObjectValue integerValue];
-        }
-    });
-    return value;
-}
-
-- (long)valueAsLong {
-    __block long value = 0;
-    dispatch_sync(_syncQueue, ^{
-        if ([self.bindingObjectValue respondsToSelector:@selector(longValue)] == YES) {
-            value = [self.bindingObjectValue longValue];
-        }
-    });
-    return value;
-}
-
-- (float)valueAsFloat {
-    __block float value = 0.0;
-    dispatch_sync(_syncQueue, ^{
-        if ([self.bindingObjectValue respondsToSelector:@selector(floatValue)] == YES) {
-            value = [self.bindingObjectValue floatValue];
-        }
-    });
-    return value;
-}
-
-- (double)valueAsDouble {
-    __block double value = 0.0;
-    dispatch_sync(_syncQueue, ^{
-        if ([self.bindingObjectValue respondsToSelector:@selector(doubleValue)] == YES) {
-            value = [self.bindingObjectValue doubleValue];
-        }
-    });
-    return value;
-}
-
-- (NSString *)valueAsString {
-    __block NSString *value = nil;
-    dispatch_sync(_syncQueue, ^{
-        if (self.bindingObjectValue == [NSNull null]) {
-            value = nil;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSString class]] == YES) {
-            value = self.bindingObjectValue;
-        } else if ([self.bindingObjectValue respondsToSelector:@selector(stringValue)] == YES) {
-            value = [self.bindingObjectValue stringValue];
-        } else {
-            value = [self.bindingObjectValue description];
-        }
-    });
-    return value ;
-}
-
-- (NSDate *)valueAsDate {
-    __block NSDate *value = nil;
-    dispatch_sync(_syncQueue, ^{
-        if (self.bindingObjectValue == [NSNull null]) {
-            value = nil;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSDate class]] == YES) {
-            value = self.bindingObjectValue;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSString class]] == YES) {
-            value = [[[NSDateFormatter alloc] init] dateFromString:self.bindingObjectValue];
-        } else {
-            value = nil;
-        }
-    });
-    return value;
-}
-
-- (NSUUID *)valueAsUUID {
-    __block NSUUID *value = nil;
-    dispatch_sync(_syncQueue, ^{
-        if (self.bindingObjectValue == [NSNull null]) {
-            value = nil;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSUUID class]] == YES) {
-            value = self.bindingObjectValue;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSString class]] == YES) {
-            value = [[NSUUID alloc] initWithUUIDString:self.bindingObjectValue];
-        } else {
-            value = nil;
-        }
-    });
-    return value;
-}
-
-- (NSData *)valueAsData {
-    __block NSData *value = nil;
-    dispatch_sync(_syncQueue, ^{
-        if (self.bindingObjectValue == [NSNull null]) {
-            value = nil;
-        } else if ([self.bindingObjectValue isKindOfClass:[NSData class]] == YES) {
-            value = self.bindingObjectValue;
-        } else {
-            value = nil;
-        }
-    });
-    return value;
-}
-
-- (id)valueAsObject {
-    return self.bindingObjectValue;
-}
 
 #pragma mark - Object Lifecycle
 
@@ -257,7 +140,7 @@
     // This will serialize the work which removes the need for a barrier
     dispatch_barrier_async(_syncQueue, ^{
         id observedObjectValue = self.bindingObjectValue;
-        if (_observerKey == nil && [observedObjectValue isEqual:_observer.valueAsObject] == NO) {
+        if (_observerKey == nil && [observedObjectValue isEqual:_observer.bindingObjectValue] == NO) {
             // This is a value binding that uses the RNDConvertableValue protocol.
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_observer setBindingObjectValue:observedObjectValue];

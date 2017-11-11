@@ -12,6 +12,12 @@
 @class RNDBinding;
 @class RNDInvocationBinding;
 
+typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
+    RNDNoArgumentType,
+    RNDSenderArgumentType,
+    RNDSenderEventArguementType
+};
+
 
 /**
  The RNDMultiValueArgumentBinder enables the construction of an invocation with varying number of arguments that can be sent to a target object.
@@ -26,6 +32,8 @@
 
 @property (strong, nonnull, readonly) NSArray<RNDInvocationBinding *> *targetArray;
 @property (strong, nonnull, readonly) NSArray<RNDBinding *> *argumentsArray;
-@property (readonly) NSUInteger controlEventMask;
+@property (strong, nonnull, readonly) RNDInvocationBinding *bindingInvocation;
+@property (strong, nonnull, readonly) RNDInvocationBinding *unbindingInvocation;
+@property (strong, nonnull, readonly) RNDInvocationBinding *actionInvocation;
 
 @end

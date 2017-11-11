@@ -10,7 +10,6 @@
 #import "RNDBinder.h"
 #import "RNDEditor.h"
 #import "RNDEditorDelegate.h"
-#import "RNDBindingInfo.h"
 #import <objc/runtime.h>
 
 @implementation NSObject (RNDObjectBinding)
@@ -91,10 +90,11 @@
     __block NSError *internalError = nil;
 
     dispatch_barrier_sync(self.syncQueue, ^{
-        [self.bindingDictionary addEntriesFromDictionary:[RNDBindingInfo bindersForBindingIdentifier:self.bindingIdentifier error:&internalError]];
-        for (RNDBinder *binder in self.bindingDictionary) {
-            binder.observer = self;
-        }
+        // FIX:
+//        [self.bindingDictionary addEntriesFromDictionary:[RNDBindingInfo bindersForBindingIdentifier:self.bindingIdentifier error:&internalError]];
+//        for (RNDBinder *binder in self.bindingDictionary) {
+//            binder.observer = self;
+//        }
     });
     
     if (error != NULL) {

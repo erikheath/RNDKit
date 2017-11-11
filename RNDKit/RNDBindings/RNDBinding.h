@@ -11,7 +11,6 @@
 #import "../NSObject+RNDObjectBinding.h"
 
 @class RNDBinder;
-@class NSAttributeDescription;
 
 @interface RNDBinding : NSObject <NSCoding>
 
@@ -20,6 +19,7 @@
 @property (strong, nonnull, readonly) NSString *observedObjectBindingIdentifier;
 @property (readonly) BOOL monitorsObservedObject;
 
+@property (strong, nonnull, readonly) NSString *controllerKey;
 @property (weak, nullable, readonly) RNDBinder * binder;
 @property (strong, nullable, readonly) NSString *bindingName;
 @property (readwrite, nullable) id bindingObjectValue; // TODO: If the value is a placeholder, you can't write to it.
@@ -35,27 +35,16 @@
 @property (strong, nullable, readonly) NSString *argumentName;
 @property (strong, nullable, readonly) NSString *valueTransformerName;
 
-// RNDConvertable Protocol
-@property (readonly) BOOL valueAsBool;
-@property (readonly) NSInteger valueAsInteger;
-@property (readonly) long valueAsLong;
-@property (readonly) float valueAsFloat;
-@property (readonly) double valueAsDouble;
-@property (readonly, nullable) NSString * valueAsString;
-@property (readonly, nullable) NSDate * valueAsDate;
-@property (readonly, nullable) NSUUID * valueAsUUID;
-@property (readonly, nullable) NSData * valueAsData;
-@property (readonly, nullable) id valueAsObject;
-
-
 
 - (instancetype _Nullable)initWithCoder:(NSCoder * _Nullable)aDecoder NS_DESIGNATED_INITIALIZER;
 
 -(void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
 
 - (void)bind;
+- (BOOL)bind:(NSError * __autoreleasing _Nonnull * _Nonnull)error;
 
 - (void)unbind;
+- (BOOL)unbind:(NSError * __autoreleasing _Nonnull * _Nonnull)error;
 
 @end
 

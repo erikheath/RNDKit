@@ -12,7 +12,6 @@
 
 @interface RNDSimpleValueBinder()
 
-@property (strong, nullable, readonly) NSValueTransformer *valueTransformer;
 @property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
 @property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
 
@@ -20,7 +19,6 @@
 
 @implementation RNDSimpleValueBinder
 
-@synthesize valueTransformer = _valueTransformer;
 @synthesize serializerQueue = _serializerQueue;
 @synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
 
@@ -53,42 +51,24 @@
             return;
         }
         
-        id transformedObjectValue = nil;
-        transformedObjectValue = _valueTransformer != nil ? [_valueTransformer transformedValue:rawObjectValue] : rawObjectValue;
-        
-        if (transformedObjectValue == nil && self.nullPlaceholder != nil) {
+        if (rawObjectValue == nil && self.nullPlaceholder != nil) {
             objectValue = self.nullPlaceholder;
             return;
         } else {
-            objectValue = transformedObjectValue;
+            objectValue = rawObjectValue;
             return;
         }
     });
     
-    return objectValue != nil ? objectValue : [NSNull null];
+    return objectValue;
 }
 
 - (void)setBindingObjectValue:(id)bindingObjectValue {
     dispatch_async(_serializerQueue, ^{
         // There may be no actual change, in which case nothing needs to happen.
-        id objectValue = bindingObjectValue == nil ? [NSNull null] : bindingObjectValue;
+        id objectValue = bindingObjectValue;
         if ([self.bindingObjectValue isEqual:objectValue]) { return; }
-        dispatch_barrier_async(self.syncQueue, ^{
-            id transformedValue = nil;
-            if(_valueTransformer != nil && [[_valueTransformer class] allowsReverseTransformation] == YES) {
-                transformedValue = [_valueTransformer reverseTransformedValue:objectValue];
-            } else {
-                transformedValue = objectValue;
-            }
-            
-            // In some cases, a different value on screen may not actually be a different value in the model.
-            // This happens when part of the model record is split up into multiple parts.
-            if ([self.bindings.firstObject.bindingObjectValue isEqual:transformedValue] == YES) {
-                return;
-            }
-            
-            [self.bindings.firstObject setBindingObjectValue:transformedValue];
-        });
+        [self.bindings.firstObject setBindingObjectValue:objectValue];
     });
 }
 
@@ -103,7 +83,6 @@
     
     _serializerQueueIdentifier = [[NSUUID alloc] init];
     _serializerQueue = dispatch_queue_create([[_serializerQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_SERIAL);
-    _valueTransformer = self.valueTransformerName != nil ? [NSValueTransformer valueTransformerForName:self.valueTransformerName] : nil;
     
     return self;
     
@@ -122,6 +101,7 @@
     
     if (context == NULL || context == nil) {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+        return;
     } else if ([(__bridge NSString * _Nonnull)(context) isKindOfClass: [NSString class]] == NO || [(__bridge NSString * _Nonnull)(context) isEqualToString:self.binderIdentifier] == NO) {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
@@ -152,16 +132,9 @@
             });
         }
         
-        id transformedValue = nil;
-        if(_valueTransformer != nil && [[_valueTransformer class] allowsReverseTransformation] == YES) {
-            transformedValue = [_valueTransformer reverseTransformedValue:observerObjectValue];
-        } else {
-            transformedValue = observerObjectValue;
-        }
+        if ([self.bindings.firstObject.bindingObjectValue isEqual:observerObjectValue] == YES) { return; }
         
-        if ([self.bindings.firstObject.bindingObjectValue isEqual:transformedValue] == YES) { return; }
-        
-        [self.bindings.firstObject setBindingObjectValue:transformedValue];
+        [self.bindings.firstObject setBindingObjectValue:observerObjectValue];
     });
 }
 

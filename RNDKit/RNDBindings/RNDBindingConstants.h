@@ -10,6 +10,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - RNDArgumentNames
+typedef NSString * RNDArgument NS_STRING_ENUM;
+extern RNDArgument RNDEventArgument;
+extern RNDArgument RNDSenderArgument;
+extern RNDArgument RNDContextArgument;
+extern RNDArgument RNDBindingSelectorArgument;
+extern RNDArgument RNDUnbindingSelectorArgument;
+extern RNDArgument RNDActionSelectorArgument;
+extern RNDArgument RNDBinderArgument;
+extern RNDArgument RNDObserverArgument;
+
 #pragma mark - RNDNotifications
 typedef NSString * RNDBindingNotifications NS_STRING_ENUM;
 extern RNDBindingNotifications RNDValueOfObserverObjectDidChange;
@@ -21,6 +32,7 @@ typedef NSString * RNDBindingMarker NS_STRING_ENUM;
 extern RNDBindingMarker RNDBindingMultipleValuesMarker;
 extern RNDBindingMarker RNDBindingNoSelectionMarker;
 extern RNDBindingMarker RNDBindingNotApplicableMarker;
+extern RNDBindingMarker RNDBindingNullValueMarker;
 
 extern BOOL RNDIsControllerMarker(__nullable id object);
 

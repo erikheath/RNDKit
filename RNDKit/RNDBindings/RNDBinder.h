@@ -25,7 +25,6 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 @property (nonnull, strong, readonly) NSArray<RNDBinding *> *bindings;
 @property (weak, readwrite, nullable) NSObject<RNDBindableObject> *observer;
 @property (strong, nonnull, readonly) NSString *observerKey;
-@property (strong, nonnull, readonly) NSString *valueTransformerName;
 @property (readonly) RNDBinderMode binderMode;
 @property (readonly) BOOL monitorsObservable;
 @property (readonly) BOOL monitorsObserver;
@@ -38,18 +37,6 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 @property (strong, nullable, readonly) id multipleSelectionPlaceholder;
 @property (strong, nullable, readonly) id noSelectionPlaceholder;
 @property (strong, nullable, readonly) id notApplicablePlaceholder;
-
-// These properties must be overridden to do anything
-@property (readonly) BOOL valueAsBool;
-@property (readonly) NSInteger valueAsInteger;
-@property (readonly) long valueAsLong;
-@property (readonly) float valueAsFloat;
-@property (readonly) double valueAsDouble;
-@property (readonly, nullable) NSString * valueAsString;
-@property (readonly, nullable) NSDate * valueAsDate;
-@property (readonly, nullable) NSUUID * valueAsUUID;
-@property (readonly, nullable) NSData * valueAsData;
-@property (readonly, nullable) id valueAsObject;
 
 - (instancetype _Nullable)init;
 - (instancetype _Nullable)initWithCoder:(NSCoder * _Nullable)aDecoder NS_DESIGNATED_INITIALIZER;

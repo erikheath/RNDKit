@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		E4159F511F8E8C3A00820F24 /* RNDKeyValueBindingUI.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4159F501F8E8C3A00820F24 /* RNDKeyValueBindingUI.plist */; };
-		E41AF83D1FAA9404008F90AC /* RNDBinderDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = E41AF83C1FAA9404008F90AC /* RNDBinderDelegate.h */; };
 		E41AF83F1FAE4BE9008F90AC /* RNDInvocationBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = E41AF83E1FAE4BE9008F90AC /* RNDInvocationBinding.m */; };
 		E4295BB71F9C4FAE0040BAC4 /* NSObject+RNDObjectBinding.h in Headers */ = {isa = PBXBuildFile; fileRef = E4295BB51F9C4FAE0040BAC4 /* NSObject+RNDObjectBinding.h */; };
 		E4295BB81F9C4FAE0040BAC4 /* NSObject+RNDObjectBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BB61F9C4FAE0040BAC4 /* NSObject+RNDObjectBinding.m */; };
@@ -27,12 +26,8 @@
 		E438AF441FA25F7C00C856A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E438AF431FA25F7C00C856A5 /* Assets.xcassets */; };
 		E438AF471FA25F7C00C856A5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E438AF451FA25F7C00C856A5 /* LaunchScreen.storyboard */; };
 		E438AF4A1FA25F7C00C856A5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF491FA25F7C00C856A5 /* main.m */; };
-		E438AF4F1FA4013400C856A5 /* RNDBinderSet.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF4E1FA4013400C856A5 /* RNDBinderSet.m */; };
 		E438AF521FA4063700C856A5 /* RNDBinderInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = E438AF511FA4063700C856A5 /* RNDBinderInfo.h */; };
-		E438AF541FA4065900C856A5 /* RNDBinderInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF531FA4065900C856A5 /* RNDBinderInfo.m */; };
-		E438AF561FA406A400C856A5 /* RNDBinderSetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF551FA406A400C856A5 /* RNDBinderSetInfo.m */; };
 		E438AF581FA406BF00C856A5 /* RNDBinderSetInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = E438AF571FA406BF00C856A5 /* RNDBinderSetInfo.h */; };
-		E438AF5D1FA408E400C856A5 /* RNDBindingManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF5C1FA408E400C856A5 /* RNDBindingManifest.m */; };
 		E438AF5F1FA40CD100C856A5 /* RNDMutableBinderSetTemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = E438AF5E1FA40CD100C856A5 /* RNDMutableBinderSetTemplate.h */; };
 		E438AF611FA40CE300C856A5 /* RNDMutableBinderSetTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF601FA40CE300C856A5 /* RNDMutableBinderSetTemplate.m */; };
 		E438AF631FA5110200C856A5 /* RNDMutableBinderTemplate.h in Headers */ = {isa = PBXBuildFile; fileRef = E438AF621FA5110200C856A5 /* RNDMutableBinderTemplate.h */; };
@@ -64,15 +59,19 @@
 		E43C3F401F9A7A7700F4D1B5 /* RNDMultiValuePatternBinder.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F3E1F9A7A7700F4D1B5 /* RNDMultiValuePatternBinder.h */; };
 		E43C3F411F9A7A7700F4D1B5 /* RNDMultiValuePatternBinder.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F3F1F9A7A7700F4D1B5 /* RNDMultiValuePatternBinder.m */; };
 		E43C3F441F9A7BC300F4D1B5 /* RNDBindingInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F421F9A7BC300F4D1B5 /* RNDBindingInfo.h */; };
-		E43C3F451F9A7BC300F4D1B5 /* RNDBindingInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F431F9A7BC300F4D1B5 /* RNDBindingInfo.m */; };
 		E43C3F481F9A806800F4D1B5 /* RNDEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F471F9A806800F4D1B5 /* RNDEditor.h */; };
 		E43C3F4A1F9A80DF00F4D1B5 /* RNDEditorRegistration.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F491F9A80DF00F4D1B5 /* RNDEditorRegistration.h */; };
 		E43C3F4E1F9A81CB00F4D1B5 /* RNDEditorDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F4D1F9A81CB00F4D1B5 /* RNDEditorDelegate.h */; };
 		E43C3F501F9A81EE00F4D1B5 /* RNDPlaceholders.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F4F1F9A81EE00F4D1B5 /* RNDPlaceholders.h */; };
 		E43C3F521F9A822E00F4D1B5 /* RNDUserInterfaceValidation.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F511F9A822E00F4D1B5 /* RNDUserInterfaceValidation.h */; };
+		E446D4E71FB511570078346D /* RNDReferenceValueBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = E446D4E61FB511570078346D /* RNDReferenceValueBinding.m */; };
+		E446D4EA1FB6763B0078346D /* RNDBinderSet.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF4E1FA4013400C856A5 /* RNDBinderSet.m */; };
+		E446D4EB1FB676D70078346D /* RNDBindingManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF5C1FA408E400C856A5 /* RNDBindingManifest.m */; };
 		E49CFBB31F7EC17900CDFF29 /* RNDKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E49CFBA91F7EC17900CDFF29 /* RNDKit.framework */; };
 		E49CFBB81F7EC17900CDFF29 /* RNDKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E49CFBB71F7EC17900CDFF29 /* RNDKitTests.m */; };
 		E49CFBBA1F7EC17900CDFF29 /* RNDKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E49CFBAC1F7EC17900CDFF29 /* RNDKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E49D5F731FB39D6A00604372 /* RNDExpressionBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = E49D5F721FB39D6A00604372 /* RNDExpressionBinding.m */; };
+		E49D5F761FB4D25B00604372 /* RNDPredicateBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = E49D5F751FB4D25B00604372 /* RNDPredicateBinding.m */; };
 		E4A7ED481F8327E10083E742 /* RNDController.m in Sources */ = {isa = PBXBuildFile; fileRef = E4A7ED471F8327E10083E742 /* RNDController.m */; };
 		E4A7ED4A1F8348B20083E742 /* RNDObjectController.m in Sources */ = {isa = PBXBuildFile; fileRef = E4A7ED491F8348B20083E742 /* RNDObjectController.m */; };
 		E4D116551FA93E0D003F5096 /* RNDFontBinder.m in Sources */ = {isa = PBXBuildFile; fileRef = E4D116541FA93E0D003F5096 /* RNDFontBinder.m */; };
@@ -104,7 +103,6 @@
 
 /* Begin PBXFileReference section */
 		E4159F501F8E8C3A00820F24 /* RNDKeyValueBindingUI.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = RNDKeyValueBindingUI.plist; sourceTree = "<group>"; };
-		E41AF83C1FAA9404008F90AC /* RNDBinderDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNDBinderDelegate.h; path = RNDKit/RNDBindings/RNDBinder/RNDBinderDelegate.h; sourceTree = "<group>"; };
 		E41AF83E1FAE4BE9008F90AC /* RNDInvocationBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDInvocationBinding.m; sourceTree = "<group>"; };
 		E41AF8401FAE4BFE008F90AC /* RNDInvocationBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDInvocationBinding.h; sourceTree = "<group>"; };
 		E4295BB51F9C4FAE0040BAC4 /* NSObject+RNDObjectBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSObject+RNDObjectBinding.h"; path = "RNDKit/RNDBindings/NSObject+RNDObjectBinding.h"; sourceTree = SOURCE_ROOT; };
@@ -198,6 +196,10 @@
 		E43C3F4F1F9A81EE00F4D1B5 /* RNDPlaceholders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDPlaceholders.h; sourceTree = "<group>"; };
 		E43C3F511F9A822E00F4D1B5 /* RNDUserInterfaceValidation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDUserInterfaceValidation.h; sourceTree = "<group>"; };
 		E43C3F561F9A87B300F4D1B5 /* RNDBindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDBindings.h; sourceTree = "<group>"; };
+		E446D4E61FB511570078346D /* RNDReferenceValueBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDReferenceValueBinding.m; sourceTree = "<group>"; };
+		E446D4E81FB511650078346D /* RNDReferenceValueBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDReferenceValueBinding.h; sourceTree = "<group>"; };
+		E446D4E91FB6485D0078346D /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		E47349E51FB28038002B1303 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		E49CFBA91F7EC17900CDFF29 /* RNDKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RNDKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E49CFBAC1F7EC17900CDFF29 /* RNDKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDKit.h; sourceTree = "<group>"; };
 		E49CFBAD1F7EC17900CDFF29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -205,6 +207,10 @@
 		E49CFBB71F7EC17900CDFF29 /* RNDKitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDKitTests.m; sourceTree = "<group>"; };
 		E49CFBB91F7EC17900CDFF29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E49CFBC31F7EC86100CDFF29 /* RNDController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDController.h; sourceTree = "<group>"; };
+		E49D5F711FB39B5700604372 /* RNDExpressionBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDExpressionBinding.h; sourceTree = "<group>"; };
+		E49D5F721FB39D6A00604372 /* RNDExpressionBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDExpressionBinding.m; sourceTree = "<group>"; };
+		E49D5F741FB4D24900604372 /* RNDPredicateBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDPredicateBinding.h; sourceTree = "<group>"; };
+		E49D5F751FB4D25B00604372 /* RNDPredicateBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDPredicateBinding.m; sourceTree = "<group>"; };
 		E4A7ED421F82CED00083E742 /* RNDObjectController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDObjectController.h; sourceTree = "<group>"; };
 		E4A7ED431F82DCA90083E742 /* RNDArrayController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDArrayController.h; sourceTree = "<group>"; };
 		E4A7ED441F82DCBD0083E742 /* RNDDictionaryController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDDictionaryController.h; sourceTree = "<group>"; };
@@ -273,6 +279,8 @@
 		E4295BBE1FA010440040BAC4 /* RND Workbench */ = {
 			isa = PBXGroup;
 			children = (
+				E438AF591FA406DB00C856A5 /* RNDBindingInfo-Mac */,
+				E438AF661FA5116F00C856A5 /* RNDMutableBinderTemplates-Mac */,
 				E4295BBF1FA010440040BAC4 /* AppDelegate.h */,
 				E4295BC01FA010440040BAC4 /* AppDelegate.m */,
 				E4295BC21FA010440040BAC4 /* ViewController.h */,
@@ -323,11 +331,9 @@
 			path = RNDKitTestApp;
 			sourceTree = "<group>";
 		};
-		E438AF591FA406DB00C856A5 /* RNDBindingInfo */ = {
+		E438AF591FA406DB00C856A5 /* RNDBindingInfo-Mac */ = {
 			isa = PBXGroup;
 			children = (
-				E438AF5B1FA408CB00C856A5 /* RNDBindingManifest.h */,
-				E438AF5C1FA408E400C856A5 /* RNDBindingManifest.m */,
 				E438AF571FA406BF00C856A5 /* RNDBinderSetInfo.h */,
 				E438AF551FA406A400C856A5 /* RNDBinderSetInfo.m */,
 				E438AF511FA4063700C856A5 /* RNDBinderInfo.h */,
@@ -335,38 +341,10 @@
 				E43C3F421F9A7BC300F4D1B5 /* RNDBindingInfo.h */,
 				E43C3F431F9A7BC300F4D1B5 /* RNDBindingInfo.m */,
 			);
-			path = RNDBindingInfo;
+			path = "RNDBindingInfo-Mac";
 			sourceTree = "<group>";
 		};
-		E438AF5A1FA406F900C856A5 /* RNDBinder */ = {
-			isa = PBXGroup;
-			children = (
-				E438AF501FA4014A00C856A5 /* RNDBinderSet.h */,
-				E438AF4E1FA4013400C856A5 /* RNDBinderSet.m */,
-				E43C3F221F9A77C200F4D1B5 /* RNDBinder.h */,
-				E43C3F231F9A77C300F4D1B5 /* RNDBinder.m */,
-				E4D116531FA93938003F5096 /* RNDFontBinder.h */,
-				E4D116541FA93E0D003F5096 /* RNDFontBinder.m */,
-				E43C3F361F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.h */,
-				E43C3F371F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.m */,
-				E43C3F3A1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.h */,
-				E43C3F3B1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.m */,
-				E43C3F3E1F9A7A7700F4D1B5 /* RNDMultiValuePatternBinder.h */,
-				E43C3F3F1F9A7A7700F4D1B5 /* RNDMultiValuePatternBinder.m */,
-				E43C3F321F9A79DE00F4D1B5 /* RNDMultiValuePredicateBinder.h */,
-				E43C3F331F9A79DE00F4D1B5 /* RNDMultiValuePredicateBinder.m */,
-				E43C3F2E1F9A79BA00F4D1B5 /* RNDSimpleValueBinder.h */,
-				E43C3F2F1F9A79BA00F4D1B5 /* RNDSimpleValueBinder.m */,
-				E43C3F2A1F9A78B000F4D1B5 /* RNDBinding.h */,
-				E43C3F2B1F9A78B000F4D1B5 /* RNDBinding.m */,
-				E41AF8401FAE4BFE008F90AC /* RNDInvocationBinding.h */,
-				E41AF83E1FAE4BE9008F90AC /* RNDInvocationBinding.m */,
-				E438AF661FA5116F00C856A5 /* RNDMutableBinderTemplates */,
-			);
-			path = RNDBinder;
-			sourceTree = "<group>";
-		};
-		E438AF661FA5116F00C856A5 /* RNDMutableBinderTemplates */ = {
+		E438AF661FA5116F00C856A5 /* RNDMutableBinderTemplates-Mac */ = {
 			isa = PBXGroup;
 			children = (
 				E438AF5E1FA40CD100C856A5 /* RNDMutableBinderSetTemplate.h */,
@@ -387,7 +365,7 @@
 				E438AF6A1FA511CB00C856A5 /* RNDMutableBindingTemplate.m */,
 				E4159F501F8E8C3A00820F24 /* RNDKeyValueBindingUI.plist */,
 			);
-			path = RNDMutableBinderTemplates;
+			path = "RNDMutableBinderTemplates-Mac";
 			sourceTree = "<group>";
 		};
 		E43B014C1F7ED6A400A09C87 /* SwiftKit */ = {
@@ -439,17 +417,50 @@
 				E43C3F0F1F8F0CDB00F4D1B5 /* RNDBindingConstants.m */,
 				E4295BB51F9C4FAE0040BAC4 /* NSObject+RNDObjectBinding.h */,
 				E4295BB61F9C4FAE0040BAC4 /* NSObject+RNDObjectBinding.m */,
-				E43C3F541F9A854900F4D1B5 /* RNDBindingProtocols */,
-				E438AF591FA406DB00C856A5 /* RNDBindingInfo */,
-				E438AF5A1FA406F900C856A5 /* RNDBinder */,
+				E438AF5B1FA408CB00C856A5 /* RNDBindingManifest.h */,
+				E438AF5C1FA408E400C856A5 /* RNDBindingManifest.m */,
+				E438AF501FA4014A00C856A5 /* RNDBinderSet.h */,
+				E438AF4E1FA4013400C856A5 /* RNDBinderSet.m */,
+				E43C3F221F9A77C200F4D1B5 /* RNDBinder.h */,
+				E43C3F231F9A77C300F4D1B5 /* RNDBinder.m */,
+				E4D116531FA93938003F5096 /* RNDFontBinder.h */,
+				E4D116541FA93E0D003F5096 /* RNDFontBinder.m */,
+				E43C3F361F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.h */,
+				E43C3F371F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.m */,
+				E43C3F3A1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.h */,
+				E43C3F3B1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.m */,
+				E43C3F3E1F9A7A7700F4D1B5 /* RNDMultiValuePatternBinder.h */,
+				E43C3F3F1F9A7A7700F4D1B5 /* RNDMultiValuePatternBinder.m */,
+				E43C3F321F9A79DE00F4D1B5 /* RNDMultiValuePredicateBinder.h */,
+				E43C3F331F9A79DE00F4D1B5 /* RNDMultiValuePredicateBinder.m */,
+				E43C3F2E1F9A79BA00F4D1B5 /* RNDSimpleValueBinder.h */,
+				E43C3F2F1F9A79BA00F4D1B5 /* RNDSimpleValueBinder.m */,
+				E43C3F2A1F9A78B000F4D1B5 /* RNDBinding.h */,
+				E43C3F2B1F9A78B000F4D1B5 /* RNDBinding.m */,
+				E41AF8401FAE4BFE008F90AC /* RNDInvocationBinding.h */,
+				E41AF83E1FAE4BE9008F90AC /* RNDInvocationBinding.m */,
+				E49D5F711FB39B5700604372 /* RNDExpressionBinding.h */,
+				E49D5F721FB39D6A00604372 /* RNDExpressionBinding.m */,
+				E49D5F741FB4D24900604372 /* RNDPredicateBinding.h */,
+				E49D5F751FB4D25B00604372 /* RNDPredicateBinding.m */,
+				E446D4E81FB511650078346D /* RNDReferenceValueBinding.h */,
+				E446D4E61FB511570078346D /* RNDReferenceValueBinding.m */,
 			);
 			path = RNDBindings;
+			sourceTree = "<group>";
+		};
+		E47349E41FB28037002B1303 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E446D4E91FB6485D0078346D /* MapKit.framework */,
+				E47349E51FB28038002B1303 /* UIKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		E49CFB9F1F7EC17900CDFF29 = {
 			isa = PBXGroup;
 			children = (
-				E41AF83C1FAA9404008F90AC /* RNDBinderDelegate.h */,
 				E49CFBAB1F7EC17900CDFF29 /* RNDKit */,
 				E49CFBB61F7EC17900CDFF29 /* RNDKitTests */,
 				E43B014C1F7ED6A400A09C87 /* SwiftKit */,
@@ -458,6 +469,7 @@
 				E4295BE61FA010440040BAC4 /* RND WorkbenchUITests */,
 				E438AF391FA25F7C00C856A5 /* RNDKitTestApp */,
 				E49CFBAA1F7EC17900CDFF29 /* Products */,
+				E47349E41FB28037002B1303 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -479,6 +491,7 @@
 			children = (
 				E49CFBAC1F7EC17900CDFF29 /* RNDKit.h */,
 				E43C3F551F9A857900F4D1B5 /* RNDBindings */,
+				E43C3F541F9A854900F4D1B5 /* RNDBindingProtocols */,
 				E4159F471F8D868B00820F24 /* UIControls */,
 				E43C3F531F9A850E00F4D1B5 /* RNDControllers */,
 				E49CFBAD1F7EC17900CDFF29 /* Info.plist */,
@@ -511,7 +524,6 @@
 				E438AF581FA406BF00C856A5 /* RNDBinderSetInfo.h in Headers */,
 				E43C3F301F9A79BA00F4D1B5 /* RNDSimpleValueBinder.h in Headers */,
 				E43C3F4A1F9A80DF00F4D1B5 /* RNDEditorRegistration.h in Headers */,
-				E41AF83D1FAA9404008F90AC /* RNDBinderDelegate.h in Headers */,
 				E43C3F381F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.h in Headers */,
 				E43C3F241F9A77C300F4D1B5 /* RNDBinder.h in Headers */,
 				E49CFBBA1F7EC17900CDFF29 /* RNDKit.h in Headers */,
@@ -799,25 +811,25 @@
 				E438AF771FA511CC00C856A5 /* RNDMutableMultiValueBinderTemplate.m in Sources */,
 				E43C3F411F9A7A7700F4D1B5 /* RNDMultiValuePatternBinder.m in Sources */,
 				E4A7ED481F8327E10083E742 /* RNDController.m in Sources */,
-				E43C3F451F9A7BC300F4D1B5 /* RNDBindingInfo.m in Sources */,
+				E446D4EB1FB676D70078346D /* RNDBindingManifest.m in Sources */,
+				E446D4E71FB511570078346D /* RNDReferenceValueBinding.m in Sources */,
 				E4D116551FA93E0D003F5096 /* RNDFontBinder.m in Sources */,
 				E438AF761FA511CC00C856A5 /* RNDMutableMultiValuePatternBinderTemplate.m in Sources */,
-				E438AF5D1FA408E400C856A5 /* RNDBindingManifest.m in Sources */,
+				E49D5F731FB39D6A00604372 /* RNDExpressionBinding.m in Sources */,
 				E43C3F101F8F0CDB00F4D1B5 /* RNDBindingConstants.m in Sources */,
 				E438AF651FA5111300C856A5 /* RNDMutableBinderTemplate.m in Sources */,
 				E4A7ED4A1F8348B20083E742 /* RNDObjectController.m in Sources */,
 				E438AF781FA511CC00C856A5 /* RNDMutableMultiValueArgumentBinderTemplate.m in Sources */,
 				E438AF611FA40CE300C856A5 /* RNDMutableBinderSetTemplate.m in Sources */,
 				E43C3F351F9A79DE00F4D1B5 /* RNDMultiValuePredicateBinder.m in Sources */,
+				E446D4EA1FB6763B0078346D /* RNDBinderSet.m in Sources */,
 				E438AF731FA511CC00C856A5 /* RNDMutableSimpleValueBinderTemplate.m in Sources */,
 				E43C3F2D1F9A78B000F4D1B5 /* RNDBinding.m in Sources */,
-				E438AF561FA406A400C856A5 /* RNDBinderSetInfo.m in Sources */,
 				E438AF751FA511CC00C856A5 /* RNDMutableMultiValuePredicateBinderTemplate.m in Sources */,
 				E43C3F311F9A79BA00F4D1B5 /* RNDSimpleValueBinder.m in Sources */,
 				E4295BB81F9C4FAE0040BAC4 /* NSObject+RNDObjectBinding.m in Sources */,
-				E438AF4F1FA4013400C856A5 /* RNDBinderSet.m in Sources */,
 				E41AF83F1FAE4BE9008F90AC /* RNDInvocationBinding.m in Sources */,
-				E438AF541FA4065900C856A5 /* RNDBinderInfo.m in Sources */,
+				E49D5F761FB4D25B00604372 /* RNDPredicateBinding.m in Sources */,
 				E438AF741FA511CC00C856A5 /* RNDMutableBindingTemplate.m in Sources */,
 				E43C3F391F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.m in Sources */,
 			);

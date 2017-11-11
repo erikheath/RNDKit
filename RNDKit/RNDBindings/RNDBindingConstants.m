@@ -7,10 +7,25 @@
 //
 #import "RNDBindingConstants.h"
 
+#pragma mark - RNDMarkers
+RNDBindingMarker RNDBindingMultipleValuesMarker = @"RNDBindingMultipleValuesMarker";
+RNDBindingMarker RNDBindingNoSelectionMarker = @"RNDBindingNoSelectionMarker";
+RNDBindingMarker RNDBindingNotApplicableMarker = @"RNDBindingNotApplicableMarker";
+RNDBindingMarker RNDBindingNullValueMarker = @"RNDBindingNullValueMarker";
+
+#pragma mark - RNDArgumentNames
+RNDArgument RNDEventArgument = @"RNDEventArgument";
+RNDArgument RNDSenderArgument = @"RNDSenderArgument";
+RNDArgument RNDContextArgument = @"RNDContextArgument";
+RNDArgument RNDBindingSelectorArgument = @"RNDBindingSelectorArgument";
+RNDArgument RNDUnbindingSelectorArgument = @"RNDUnbindingSelectorArgument";
+RNDArgument RNDActionSelectorArgument = @"RNDActionSelectorArgument";
+RNDArgument RNDBinderArgument = @"RNDBinderArgument";
+RNDArgument RNDObserverArgument = @"RNDObserverArgument";
+
 #pragma mark - RNDNotifications
 RNDBindingNotifications RNDValueOfObserverObjectDidChange = @"RNDValueOfObserverObjectDidChange";
 RNDBindingNotifications RNDValueOfObservedObjectDidChange = @"RNDValueOfObservedObjectDidChange";
-
 
 #pragma mark - RNDBindingType Definitions
 RNDBinderType RNDBindingTypeSimpleValue = @"RNDBindingTypeSimpleValue";
