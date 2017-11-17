@@ -16,18 +16,34 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 
 @class RNDBinding;
 @class NSAttributeDescription;
+@class RNDInvocationProcessor;
 
 @protocol RNDBindableObject;
 
 @interface RNDBinder : NSObject <NSCoding>
 
+/** A system generated string identifier used to uniquely refer to an RNDBindings object. */
 @property (strong, nonnull, readonly) NSString *binderIdentifier;
-@property (nonnull, strong, readonly) NSArray<RNDBinding *> *bindings;
+
+
+
+/** An array of RNDBinding objects that monitor, read from, and/or write to objects in the application. */
+@property (nonnull, strong, readonly) NSMutableArray<RNDBinding *> *observedObjectbindings;
+
+/** The RNDInvocationProcessors that may be executed once data collection, processing, and status evaluation have been completed for the binder's reverse data pipeline. */
+@property (strong, nonnull, readonly) NSMutableArray<RNDInvocationProcessor *> *reverseObjectInvocations;
+
+
+/** The to-one object within the one-to-many binding relationship. */
 @property (weak, readwrite, nullable) NSObject<RNDBindableObject> *observer;
-@property (strong, nonnull, readonly) NSString *observerKey;
-@property (readonly) RNDBinderMode binderMode;
-@property (readonly) BOOL monitorsObservable;
+
+/** Indicates if the binder will monitor it */
 @property (readonly) BOOL monitorsObserver;
+
+/** The RNDInvocationProcessors that may be executed once data collection, processing, and status evaluation have been completed for the binder's forward data pipeline. */
+@property (strong, nonnull, readonly) NSMutableArray<RNDInvocationProcessor *> *observerInvocations;
+
+
 @property (strong, nullable, readonly) dispatch_queue_t syncQueue;
 
 @property (strong, readwrite, nullable) id bindingObjectValue;

@@ -6,19 +6,17 @@
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "RNDExpressionBinding.h"
+#import "RNDRegExBindingTask.h"
 
-@interface RNDExpressionBinding()
+@interface RNDRegExBindingTask()
 
-@property (strong, nullable, readonly) NSValueTransformer *valueTransformer;
 @property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
 @property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
 @property (strong, nonnull, readonly) NSString *evaluatedObjectBindingIdentifier;
 
 @end
 
-@implementation RNDExpressionBinding
+@implementation RNDRegExBindingTask
 
 #pragma mark - Properties
 @synthesize expression = _expression;
@@ -26,7 +24,6 @@
 @synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
 @synthesize serializerQueue = _serializerQueue;
 @synthesize evaluatedObjectBindingIdentifier = _evaluatedObjectBindingIdentifier;
-@synthesize valueTransformer = _valueTransformer;
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;

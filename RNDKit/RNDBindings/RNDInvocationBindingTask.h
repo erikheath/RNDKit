@@ -7,12 +7,11 @@
 //
 
 
-#import <Foundation/Foundation.h>
-#import "RNDBinding.h"
+#import "RNDBindingTask.h"
 
 @protocol RNDBindableObject;
 
-@interface RNDInvocationBinding : RNDBinding 
+@interface RNDInvocationBinding : RNDBindingTask
 
 @property (readonly, nonnull) SEL bindingSelector;
 @property (readonly, nullable) id<RNDBindableObject> bindingSelectorTarget;
@@ -22,7 +21,12 @@
 @property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
 
 
-- (NSInvocation * _Nullable)bindingObjectValueWithSubstitutionVariables:(NSDictionary * _Nullable)substitutions;
-- (NSInvocation * _Nullable)bindingObjectValueForBindingTargetWithSubstitutionVariables:(NSDictionary * _Nullable)substitutions;
-- (BOOL)evaluteBindingWithSubstitutionVariables:(NSDictionary * _Nullable)substitutions;
+- (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype _Nullable)initWithCoder:(NSCoder * _Nullable)aDecoder NS_DESIGNATED_INITIALIZER;
+
+-(void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
+
+-(BOOL)evaluate:(NSMutableDictionary * _Nonnull)context;
+
 @end

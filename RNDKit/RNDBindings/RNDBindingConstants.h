@@ -10,6 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - RNDProcessorQueueNames
+typedef NSString * RNDProcessorQueueName NS_STRING_ENUM;
+extern RNDProcessorQueueName RNDForwardProcessingQueue;
+extern RNDProcessorQueueName RNDReverseProcessingQueue;
+
 #pragma mark - RNDArgumentNames
 typedef NSString * RNDArgument NS_STRING_ENUM;
 extern RNDArgument RNDEventArgument;

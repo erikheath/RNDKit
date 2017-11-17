@@ -7,42 +7,40 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "../RNDBindingConstants.h"
-#import "../NSObject+RNDObjectBinding.h"
+#import "RNDBindingTask.h"
 
-@class RNDBinder;
+@class RNDPropertyBindingTask;
 
-@interface RNDBinding : NSObject <NSCoding>
+@interface RNDBinding : NSObject <NSCoding, RNDBindingTaskQueueCoordinator>
 
-@property (strong, nullable, readonly) NSObject *observedObject;
-@property (strong, nonnull, readonly) NSString * observedObjectKeyPath;
-@property (strong, nonnull, readonly) NSString *observedObjectBindingIdentifier;
-@property (readonly) BOOL monitorsObservedObject;
+#pragma mark - Binding Tasks
+@property (strong, nonnull, readonly) NSMutableDictionary<NSString *, NSMutableArray<RNDBindingTask *> *> *processors;
 
-@property (strong, nonnull, readonly) NSString *controllerKey;
-@property (weak, nullable, readonly) RNDBinder * binder;
-@property (strong, nullable, readonly) NSString *bindingName;
-@property (readwrite, nullable) id bindingObjectValue; // TODO: If the value is a placeholder, you can't write to it.
+#pragma mark - Binding Identification
+@property (copy, nonnull, readwrite) NSString *bindingName;
+@property (copy, nonnull, readwrite) NSString *bindingIdentifier;
+@property (copy, nonnull, readwrite) NSString *bindingProcessorName;
 
-@property (nonnull, strong, readonly) dispatch_queue_t syncQueue;
-@property (readonly) BOOL isBound;
+#pragma mark - Coordination Queues
+@property (strong, nonnull, readonly) dispatch_queue_t syncQueue;
+@property (strong, nonnull, readonly) dispatch_queue_t bindingQueue;
+@property (strong, nonnull, readonly) dispatch_queue_t unbindingQueue;
+@property (strong, nonnull, readonly) dispatch_queue_t processorQueue;
 
-@property (strong, nullable, readonly) id nullPlaceholder;
-@property (strong, nullable, readonly) id multipleSelectionPlaceholder;
-@property (strong, nullable, readonly) id noSelectionPlaceholder;
-@property (strong, nullable, readonly) id notApplicablePlaceholder;
+#pragma mark - Binding Marker Substitutions
+@property (strong, nullable, readwrite) id nullPlaceholder;
+@property (strong, nullable, readwrite) id multipleSelectionPlaceholder;
+@property (strong, nullable, readwrite) id noSelectionPlaceholder;
+@property (strong, nullable, readwrite) id notApplicablePlaceholder;
 
-@property (strong, nullable, readonly) NSString *argumentName;
-@property (strong, nullable, readonly) NSString *valueTransformerName;
-
-
+#pragma mark - Object Lifecycle
+- (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;
 - (instancetype _Nullable)initWithCoder:(NSCoder * _Nullable)aDecoder NS_DESIGNATED_INITIALIZER;
-
 -(void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
 
+#pragma mark - Binding Management
 - (void)bind;
 - (BOOL)bind:(NSError * __autoreleasing _Nonnull * _Nonnull)error;
-
 - (void)unbind;
 - (BOOL)unbind:(NSError * __autoreleasing _Nonnull * _Nonnull)error;
 

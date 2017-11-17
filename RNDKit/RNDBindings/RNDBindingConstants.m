@@ -7,6 +7,10 @@
 //
 #import "RNDBindingConstants.h"
 
+#pragma mark - RNDProcessorQueueNames
+RNDProcessorQueueName RNDForwardProcessingQueue = @"RNDForwardProcessingQueue";
+RNDProcessorQueueName RNDReverseProcessingQueue = @"RNDReverseProcessingQueue";
+
 #pragma mark - RNDMarkers
 RNDBindingMarker RNDBindingMultipleValuesMarker = @"RNDBindingMultipleValuesMarker";
 RNDBindingMarker RNDBindingNoSelectionMarker = @"RNDBindingNoSelectionMarker";

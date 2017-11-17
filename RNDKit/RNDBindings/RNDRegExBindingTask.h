@@ -6,10 +6,9 @@
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "RNDBinding.h"
+#import "RNDBindingTask.h"
 
-@interface RNDExpressionBinding : RNDBinding
+@interface RNDRegExBindingTask : RNDBindingTask
 
 @property (strong, readonly, nonnull) NSRegularExpression *expression;
 @property (strong, readonly, nonnull) NSString *replacementTemplate;
