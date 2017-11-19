@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "../RNDBindings/RNDBindings.h"
+#import "../RNDBindingProtocols/RNDEditor.h"
+#import "../RNDBindingProtocols/RNDEditorRegistration.h"
+#import "../RNDBindingProtocols/RNDEditorDelegate.h"
 
 
 NS_ASSUME_NONNULL_BEGIN

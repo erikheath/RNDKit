@@ -9,7 +9,7 @@
 #import "RNDMultiValueArgumentBinder.h"
 #import "RNDBinding.h"
 #import "RNDInvocationBinding.h"
-#import "../NSObject+RNDObjectBinding.h"
+#import "NSObject+RNDObjectBinding.h"
 #import <objc/runtime.h>
 
 @interface RNDMultiValueArgumentBinder ()

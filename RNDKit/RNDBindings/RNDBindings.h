@@ -18,6 +18,6 @@
 #import "RNDMultiValuePredicateBinder.h"
 #import "RNDBinding.h"
 #import "RNDInvocationBinding.h"
-#import "RNDExpressionBinding.h"
+#import "RNDRegExBinding.h"
 #import "RNDPredicateBinding.h"
 #import "RNDReferenceValueBinding.h"

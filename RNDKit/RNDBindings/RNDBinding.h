@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "../RNDBindingConstants.h"
-#import "../NSObject+RNDObjectBinding.h"
+#import "RNDBindingConstants.h"
+#import "NSObject+RNDObjectBinding.h"
 
 @class RNDBinder;
 
@@ -34,6 +34,8 @@
 
 @property (strong, nullable, readonly) NSString *argumentName;
 @property (strong, nullable, readonly) NSString *valueTransformerName;
+@property (strong, readonly, nullable) NSArray<RNDBinding *> *bindingArguments;
+
 
 
 - (instancetype _Nullable)initWithCoder:(NSCoder * _Nullable)aDecoder NS_DESIGNATED_INITIALIZER;

@@ -8,7 +8,7 @@
 
 #import "RNDInvocationBinding.h"
 #import "RNDBinder.h"
-#import "../NSObject+RNDObjectBinding.h"
+#import "NSObject+RNDObjectBinding.h"
 #import <objc/runtime.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <AVKit/AVKit.h>
@@ -22,7 +22,6 @@
 @interface RNDInvocationBinding()
 
 @property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
-@property (strong, nonnull, readonly) NSString *evaluatedObjectBindingIdentifier;
 
 @end
 
@@ -31,12 +30,8 @@
 #pragma mark - Properties
 @synthesize bindingSelector = _bindingSelector;
 @synthesize bindingSelectorTarget = _bindingSelectorTarget;
-@synthesize bindingSelectorArguments = _bindingSelectorArguments;
-@synthesize evaluator = _evaluator;
-@synthesize evaluatedObject = _evaluatedObject;
 @synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
 @synthesize serializerQueue = _serializerQueue;
-@synthesize evaluatedObjectBindingIdentifier = _evaluatedObjectBindingIdentifier;
 
 
 - (id _Nullable)bindingObjectValue {
@@ -49,7 +44,7 @@
         }
         
         NSMutableDictionary *argumentsDictionary = [NSMutableDictionary dictionary];
-        for (RNDBinding *binding in _bindingSelectorArguments) {
+        for (RNDBinding *binding in self.bindingArguments) {
             id objectValue = binding.bindingObjectValue;
             if (objectValue == nil) { objectValue = [NSNull null];}
             [argumentsDictionary setObject:objectValue forKey:binding.argumentName];
@@ -57,18 +52,13 @@
         NSDictionary *contextDictionary = (dispatch_get_context(_serializerQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_serializerQueue)) : nil);
         [argumentsDictionary addEntriesFromDictionary:contextDictionary];
         
-        if ([_evaluator evaluateWithObject:_evaluatedObject substitutionVariables:argumentsDictionary] == NO) {
-            objectValue == nil;
-            return;
-        }
-        
         NSInvocation * __block invocation = [NSInvocation invocationWithMethodSignature: [NSObject methodSignatureForSelector:_bindingSelector]];
         if (invocation != nil && _bindingSelectorTarget != nil) {
             [invocation retainArguments];
             [invocation setSelector:_bindingSelector];
             [invocation setTarget:_bindingSelectorTarget];
 
-            [_bindingSelectorArguments enumerateObjectsUsingBlock:^(RNDBinding * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [self.bindingArguments enumerateObjectsUsingBlock:^(RNDBinding * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
                 RNDBinding *binding = obj;
                 id argumentValue = [argumentsDictionary objectForKey:binding.argumentName];
@@ -97,7 +87,13 @@
                     return;
                 }
                 
-                [self addBindingArgumentValue:argumentValue toInvocation:invocation atPosition:idx + 2];
+                BOOL result = [self addBindingArgumentValue:argumentValue toInvocation:invocation atPosition:idx + 2];
+                if (result == NO) {
+                    // There was an error. The invocation will be nil'd and the process will end.
+                    invocation = nil;
+                    *stop = YES;
+                    return;
+                }
             }];
             
         }
@@ -121,10 +117,6 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder]) != nil) {
         _bindingSelector = NSSelectorFromString([aDecoder decodeObjectForKey:@"bindingSelector"]);
-        _bindingSelectorArguments = [aDecoder decodeObjectForKey:@"bindingSelectorArguments"];
-        _evaluator = [aDecoder decodeObjectForKey:@"evaluator"];
-        _evaluatedObject = nil;
-        _evaluatedObjectBindingIdentifier = [aDecoder decodeObjectForKey:@"evaluatedObjectBindingIdentifier"];
         _serializerQueueIdentifier = [[NSUUID alloc] init];
         _serializerQueue = dispatch_queue_create([[_serializerQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_SERIAL);
     }
@@ -134,9 +126,6 @@
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     [aCoder encodeObject:NSStringFromSelector(_bindingSelector) forKey:@"bindingSelector"];
-    [aCoder encodeObject:_bindingSelectorArguments forKey:@"bindingSelectorArguments"];
-    [aCoder encodeObject:_evaluator forKey:@"evaluator"];
-    [aCoder encodeObject:_evaluatedObject.bindingIdentifier forKey:@"evaluatedObjectBindingIdentifier"];
 }
 
 #pragma mark - Binding Management
@@ -152,23 +141,12 @@
             _bindingSelectorTarget = self.observedObject;
         }
         
-        if (_evaluatedObjectBindingIdentifier != nil) {
-            NSUInteger index = [self.binder.observer.bindingDestinations indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                if ([((id<RNDBindableObject>)obj).bindingIdentifier isEqualToString: _evaluatedObjectBindingIdentifier]) {
-                    *stop = YES;
-                }
-                return NO;
-            }];
-            if (index != NSNotFound) {
-                _evaluatedObject = self.binder.observer.bindingDestinations[index];
-            }
-        }
     });
 }
 
 #pragma mark - Invocation Processing
 
-- (void)addBindingArgumentValue:(id)argumentValue
+- (BOOL)addBindingArgumentValue:(id)argumentValue
               toInvocation:(NSInvocation *)invocation
                 atPosition:(NSUInteger)position {
     const char *argumentType = [invocation.methodSignature getArgumentTypeAtIndex:position];

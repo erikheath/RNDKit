@@ -37,3 +37,9 @@ typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
 @property (strong, nonnull, readonly) RNDInvocationBinding *actionInvocation;
 
 @end
+
+//@property (strong, nullable, readonly) NSPredicate *evaluator; // Predicate string with arguments replaced at rt
+//@property (strong, nullable, readonly) id<RNDBindableObject> evaluatedObject; // An argument string is replaced at runtime
+//
+//@property (strong, nonnull, readonly) NSString *evaluatedObjectBindingIdentifier;
+//

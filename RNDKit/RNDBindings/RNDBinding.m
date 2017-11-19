@@ -42,6 +42,8 @@
 
 @synthesize syncQueue = _syncQueue;
 
+@synthesize bindingArguments = _bindingArguments;
+
 - (id _Nullable)bindingObjectValue {
      id __block objectValue = nil;
 

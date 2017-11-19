@@ -16,13 +16,6 @@
 
 @property (readonly, nonnull) SEL bindingSelector;
 @property (readonly, nullable) id<RNDBindableObject> bindingSelectorTarget;
-@property (strong, readonly, nullable) NSArray<RNDBinding *> *bindingSelectorArguments;
-@property (strong, nullable, readonly) NSPredicate *evaluator; // Predicate string with arguments replaced at rt
-@property (strong, nullable, readonly) id<RNDBindableObject> evaluatedObject; // An argument string is replaced at runtime
 @property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
 
-
-- (NSInvocation * _Nullable)bindingObjectValueWithSubstitutionVariables:(NSDictionary * _Nullable)substitutions;
-- (NSInvocation * _Nullable)bindingObjectValueForBindingTargetWithSubstitutionVariables:(NSDictionary * _Nullable)substitutions;
-- (BOOL)evaluteBindingWithSubstitutionVariables:(NSDictionary * _Nullable)substitutions;
 @end
