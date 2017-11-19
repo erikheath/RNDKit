@@ -11,6 +11,7 @@
 
 @class RNDBinding;
 @class RNDInvocationBinding;
+@class RNDPredicateBinding;
 
 typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
     RNDNoArgumentType,
@@ -30,11 +31,11 @@ typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
  */
 @interface RNDMultiValueArgumentBinder : RNDBinder
 
-@property (strong, nonnull, readonly) NSArray<RNDInvocationBinding *> *targetArray;
-@property (strong, nonnull, readonly) NSArray<RNDBinding *> *argumentsArray;
+@property (strong, nonnull, readonly) NSArray<NSDictionary<RNDPredicateBinding *, RNDInvocationBinding *> *> *invocationArray;
 @property (strong, nonnull, readonly) RNDInvocationBinding *bindingInvocation;
 @property (strong, nonnull, readonly) RNDInvocationBinding *unbindingInvocation;
 @property (strong, nonnull, readonly) RNDInvocationBinding *actionInvocation;
+@property (readonly) BOOL mutuallyExclusive;
 
 @end
 

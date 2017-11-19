@@ -8,17 +8,8 @@
 
 #import "RNDPredicateBinding.h"
 
-@interface RNDPredicateBinding()
-@property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
-@property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
-
-@end
-
 @implementation RNDPredicateBinding
 #pragma mark - Properties
-@synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
-@synthesize serializerQueue = _serializerQueue;
-@synthesize predicateArguments = _predicateArguments;
 @synthesize predicateFormatString = _predicateFormatString;
 
 - (id _Nullable)bindingObjectValue {
@@ -26,13 +17,13 @@
     
     NSMutableDictionary * __block argumentsDictionary = [NSMutableDictionary dictionary];
     
-    dispatch_sync(_serializerQueue, ^{
+    dispatch_sync(self.serializerQueue, ^{
         
         if (self.isBound == NO) {
             return;
         }
         
-        [_predicateArguments enumerateObjectsUsingBlock:^(RNDBinding * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.bindingArguments enumerateObjectsUsingBlock:^(RNDBinding * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             
             RNDBinding *binding = obj;
             id argumentValue = binding.bindingObjectValue;
@@ -88,9 +79,6 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder]) != nil) {
         _predicateFormatString = [aDecoder decodeObjectForKey:@"predicateFormatString"];
-        _predicateArguments = [aDecoder decodeObjectForKey:@"predicateArguments"];
-        _serializerQueueIdentifier = [[NSUUID alloc] init];
-        _serializerQueue = dispatch_queue_create([[_serializerQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_SERIAL);
     }
     
     return self;
@@ -99,7 +87,6 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     if (aCoder == nil) { return; }
     [aCoder encodeObject:_predicateFormatString forKey:@"predicateFormatString"];
-    [aCoder encodeObject:_predicateArguments forKey:@"predicateArguments"];
 }
 
 #pragma mark - Binding Management

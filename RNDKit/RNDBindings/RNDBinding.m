@@ -15,6 +15,8 @@
 
 @property (strong, nullable, readonly) NSValueTransformer *valueTransformer;
 @property (strong, nullable, readonly) NSUUID *syncQueueIdentifier;
+@property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
+
 
 @end
 
@@ -40,9 +42,13 @@
 @synthesize valueTransformerName = _valueTransformerName;
 @synthesize valueTransformer = _valueTransformer;
 
+@synthesize syncQueueIdentifier = _syncQueueIdentifier;
 @synthesize syncQueue = _syncQueue;
+@synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
+@synthesize serializerQueue = _serializerQueue;
 
 @synthesize bindingArguments = _bindingArguments;
+@synthesize evaluatedObject = _evaluatedObject;
 
 - (id _Nullable)bindingObjectValue {
      id __block objectValue = nil;
@@ -109,6 +115,17 @@
     });
 }
 
+- (id)evaluatedObject {
+    dispatch_sync(_syncQueue, ^{
+    if (_observedObjectKeyPath != nil) {
+        _evaluatedObject = [self.observedObject valueForKeyPath:self.observedObjectKeyPath];
+    } else {
+        _evaluatedObject = self.observedObject;
+    }
+    });
+    return _evaluatedObject;
+}
+
 
 #pragma mark - Object Lifecycle
 - (instancetype)init {
@@ -125,6 +142,8 @@
             if ([propertyName isEqualToString:@"syncQueue"] ||
                 [propertyName isEqualToString:@"valueTransformer"] ||
                 [propertyName isEqualToString:@"syncQueueIdentifier"] ||
+                [propertyName isEqualToString:@"serializerQueueIdentifier"] ||
+                [propertyName isEqualToString:@"serializerQueue"] ||
                 [propertyName isEqualToString:@"isBound"] ||
                 [propertyName isEqualToString:@"observedObject"]) { continue; }
             [self setValue:[aDecoder decodeObjectForKey:propertyName] forKey:propertyName];
@@ -136,6 +155,10 @@
         
         _syncQueueIdentifier = [[NSUUID alloc] init];
         _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
+        
+        _serializerQueueIdentifier = [[NSUUID alloc] init];
+        _serializerQueue = dispatch_queue_create([[_serializerQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_SERIAL);
+
         
         if (_valueTransformerName != nil) {
             _valueTransformer = [NSValueTransformer valueTransformerForName:_valueTransformerName];

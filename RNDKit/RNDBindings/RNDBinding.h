@@ -18,6 +18,8 @@
 @property (strong, nonnull, readonly) NSString * observedObjectKeyPath;
 @property (strong, nonnull, readonly) NSString *observedObjectBindingIdentifier;
 @property (readonly) BOOL monitorsObservedObject;
+@property (strong, nullable, readonly) id evaluatedObject;
+
 
 @property (strong, nonnull, readonly) NSString *controllerKey;
 @property (weak, nullable, readonly) RNDBinder * binder;
@@ -25,6 +27,8 @@
 @property (readwrite, nullable) id bindingObjectValue; // TODO: If the value is a placeholder, you can't write to it.
 
 @property (nonnull, strong, readonly) dispatch_queue_t syncQueue;
+@property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
+
 @property (readonly) BOOL isBound;
 
 @property (strong, nullable, readonly) id nullPlaceholder;

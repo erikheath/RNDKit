@@ -9,24 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "RNDRegExBinding.h"
 
-@interface RNDRegExBinding()
-
-@property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
-@property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
-
-@end
-
 @implementation RNDRegExBinding
 
 #pragma mark - Properties
 @synthesize expressionTemplate = _expressionTemplate;
-@synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
-@synthesize serializerQueue = _serializerQueue;
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
     
-    dispatch_sync(_serializerQueue, ^{
+    dispatch_sync(self.serializerQueue, ^{
         
         if (self.isBound == NO) {
             return;
@@ -83,8 +74,6 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder]) != nil) {
         _expressionTemplate = [aDecoder decodeObjectForKey:@"expressionTemplate"];
-        _serializerQueueIdentifier = [[NSUUID alloc] init];
-        _serializerQueue = dispatch_queue_create([[_serializerQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_SERIAL);
     }
     
     return self;

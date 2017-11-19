@@ -15,7 +15,5 @@
 @interface RNDInvocationBinding : RNDBinding 
 
 @property (readonly, nonnull) SEL bindingSelector;
-@property (readonly, nullable) id<RNDBindableObject> bindingSelectorTarget;
-@property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
 
 @end

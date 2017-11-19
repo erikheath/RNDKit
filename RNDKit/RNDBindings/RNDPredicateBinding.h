@@ -12,6 +12,5 @@
 @interface RNDPredicateBinding: RNDBinding
 
 @property (strong, readonly, nonnull) NSString *predicateFormatString;
-@property (strong, readonly, nonnull) NSArray<RNDBinding *> *predicateArguments;
 
 @end

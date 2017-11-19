@@ -9,6 +9,7 @@
 #import "RNDMultiValueArgumentBinder.h"
 #import "RNDBinding.h"
 #import "RNDInvocationBinding.h"
+#import "RNDPredicateBinding.h"
 #import "NSObject+RNDObjectBinding.h"
 #import <objc/runtime.h>
 
@@ -24,16 +25,16 @@
 @implementation RNDMultiValueArgumentBinder
 
 #pragma mark - Properties
-@synthesize targetArray = _targetArray;
-@synthesize argumentsArray = _argumentsArray;
+@synthesize invocationArray = _invocationArray;
 @synthesize serializerQueue = _serializerQueue;
 @synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
 @synthesize bindingInvocation = _bindingInvocation;
 @synthesize unbindingInvocation = _unbindingInvocation;
 @synthesize actionInvocation = _actionInvocation;
+@synthesize mutuallyExclusive = _mutuallyExclusive;
 
 - (id _Nullable)bindingObjectValue {
-    id __block objectValue = nil;
+    NSMutableArray * __block objectValue = [NSMutableArray array];
     
     dispatch_sync(self.syncQueue, ^{
         
@@ -41,17 +42,26 @@
             objectValue = nil;
         }
         
-        for (RNDInvocationBinding *binding in _targetArray) {
+        for (NSDictionary<RNDPredicateBinding *, RNDInvocationBinding *> *invocationDictionary in _invocationArray) {
+            NSInvocation *invocation = nil;
+            RNDPredicateBinding *predicateBinding = invocationDictionary.allKeys.firstObject;
+            if (predicateBinding != nil && [predicateBinding.bindingObjectValue evaluateWithObject:predicateBinding.evaluatedObject] == NO) {
+                continue;
+            }
+            RNDInvocationBinding *binding = invocationDictionary.allValues.firstObject;
             NSDictionary *contextDictionary = (dispatch_get_context(self.syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(self.syncQueue)) : nil);
             
             if (contextDictionary != nil) {
                 dispatch_set_context(binding.serializerQueue, (__bridge void * _Nullable)(contextDictionary));
             }
             
-            if ((objectValue = binding.bindingObjectValue) != nil) {
+            if ((invocation = binding.bindingObjectValue) != nil) {
+                [objectValue addObject:invocation];
                 dispatch_set_context(binding.serializerQueue, NULL);
-                break;
+                if (_mutuallyExclusive == YES) { break; }
+                continue;
             }
+            
             dispatch_set_context(binding.serializerQueue, NULL);
         }
     });
@@ -154,9 +164,10 @@
 - (void)performBindingObjectAction {
     dispatch_sync(_serializerQueue, ^{
         dispatch_set_context(self.syncQueue, NULL);
-        NSInvocation *invocation = self.bindingObjectValue;
-        if (invocation == nil) { return; }
-        [invocation invoke];
+        for (NSInvocation *invocation in self.bindingObjectValue) {
+            [invocation invoke];
+        }
+        dispatch_set_context(self.syncQueue, NULL);
     });
 }
 
@@ -165,10 +176,10 @@
         NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithCapacity:2];
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
-        NSInvocation *invocation = self.bindingObjectValue;
+        for (NSInvocation *invocation in self.bindingObjectValue) {
+            [invocation invoke];
+        }
         dispatch_set_context(self.syncQueue, NULL);
-        if (invocation == nil) { return; }
-        [invocation invoke];
     });
 }
 
@@ -178,10 +189,11 @@
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
         if (event != nil) { [contextDictionary setObject:event forKey:RNDEventArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
-        NSInvocation *invocation = self.bindingObjectValue;
+        for (NSInvocation *invocation in self.bindingObjectValue) {
+            [invocation invoke];
+        }
         dispatch_set_context(self.syncQueue, NULL);
-        if (invocation == nil) { return; }
-        [invocation invoke];
+
     });
 }
 
@@ -192,10 +204,11 @@
         if (event != nil) { [contextDictionary setObject:event forKey:RNDEventArgument]; }
         if (context != nil) { [contextDictionary setObject:context forKey:RNDContextArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
-        NSInvocation *invocation = self.bindingObjectValue;
+        for (NSInvocation *invocation in self.bindingObjectValue) {
+            [invocation invoke];
+        }
         dispatch_set_context(self.syncQueue, NULL);
-        if (invocation == nil) { return; }
-        [invocation invoke];
+
     });
 }
 

@@ -18,26 +18,16 @@
 #import <SceneKit/SceneKit.h>
 
 
-
-@interface RNDInvocationBinding()
-
-@property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
-
-@end
-
 @implementation RNDInvocationBinding
 
 #pragma mark - Properties
 @synthesize bindingSelector = _bindingSelector;
-@synthesize bindingSelectorTarget = _bindingSelectorTarget;
-@synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
-@synthesize serializerQueue = _serializerQueue;
 
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
     
-    dispatch_sync(_serializerQueue, ^{
+    dispatch_sync(self.serializerQueue, ^{
         
         if (self.isBound == NO) {
             return;
@@ -49,14 +39,14 @@
             if (objectValue == nil) { objectValue = [NSNull null];}
             [argumentsDictionary setObject:objectValue forKey:binding.argumentName];
         }
-        NSDictionary *contextDictionary = (dispatch_get_context(_serializerQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_serializerQueue)) : nil);
+        NSDictionary *contextDictionary = (dispatch_get_context(self.serializerQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(self.serializerQueue)) : nil);
         [argumentsDictionary addEntriesFromDictionary:contextDictionary];
         
         NSInvocation * __block invocation = [NSInvocation invocationWithMethodSignature: [NSObject methodSignatureForSelector:_bindingSelector]];
-        if (invocation != nil && _bindingSelectorTarget != nil) {
+        if (invocation != nil && self.evaluatedObject != nil) {
             [invocation retainArguments];
             [invocation setSelector:_bindingSelector];
-            [invocation setTarget:_bindingSelectorTarget];
+            [invocation setTarget:self.evaluatedObject];
 
             [self.bindingArguments enumerateObjectsUsingBlock:^(RNDBinding * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
@@ -117,8 +107,6 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder]) != nil) {
         _bindingSelector = NSSelectorFromString([aDecoder decodeObjectForKey:@"bindingSelector"]);
-        _serializerQueueIdentifier = [[NSUUID alloc] init];
-        _serializerQueue = dispatch_queue_create([[_serializerQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_SERIAL);
     }
     
     return self;
@@ -130,19 +118,6 @@
 
 #pragma mark - Binding Management
 
-- (void)bind {
-    
-    dispatch_async(_serializerQueue, ^{
-        [super bind];
-        if (self.isBound == NO) { return; }
-        if (self.observedObjectKeyPath != nil) {
-            _bindingSelectorTarget = [self.observedObject valueForKeyPath:self.observedObjectKeyPath];
-        } else {
-            _bindingSelectorTarget = self.observedObject;
-        }
-        
-    });
-}
 
 #pragma mark - Invocation Processing
 
