@@ -146,6 +146,14 @@
 
 #pragma mark - Invocation Processing
 
+/**
+ This method is used to fill in invocation arguments. It attempts to test the arguments and the expected type of the argument position. If the two match, it will attempt to assign the argument. If the two do not match, it will return a NO value indicating that the invocation should not be used.
+
+ @param argumentValue The value that should be assigned to the parameter
+ @param invocation The invocation object that should receive the value assignment
+ @param position The position within the method that should receive the value assignment
+ @return If the assignment was successful according to the type/value matching rules.
+ */
 - (BOOL)addBindingArgumentValue:(id)argumentValue
               toInvocation:(NSInvocation *)invocation
                 atPosition:(NSUInteger)position {
@@ -208,7 +216,7 @@
         // This is a structure argument that must be
         // of one of the supported types.
         if ([argumentValue isKindOfClass:[NSValue class]] == NO) {
-            return;
+            return NO;
         }
         if (strncmp(argumentType, "{NSRange", 8)) {
             NSRange bindingValue = [argumentValue rangeValue];
@@ -274,19 +282,24 @@
             NSDirectionalEdgeInsets bindingValue = ((NSValue *)argumentValue).directionalEdgeInsetsValue;
             [invocation setArgument:&bindingValue atIndex:position];
         } else if (strncmp(argumentType, "{NSEdgeInsets", 13)) {
+            return NO;
 //            NSEdgeInsets bindingValue = argumentValue.NSEdgeInsetsValue;
 //            [invocation setArgument:&bindingValue atIndex:position];
         }
     } else if (strncmp(argumentType, "(", 1) == 0) {
+        return NO;
 //
     } else if (strncmp(argumentType, "b", 1) == 0) {
+        return NO;
 //
     } else if (strncmp(argumentType, "^", 1) == 0) {
         void *bindingValue = [argumentValue pointerValue];
         [invocation setArgument:bindingValue atIndex:position];
     } else if (strcmp(argumentType, "?") == 0) {
+        return NO;
 //
     }
+    return YES;
 }
 
 @end
