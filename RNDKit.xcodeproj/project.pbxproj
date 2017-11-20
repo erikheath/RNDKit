@@ -45,8 +45,8 @@
 		E43C3F351F9A79DE00F4D1B5 /* RNDMultiValuePredicateBinder.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F331F9A79DE00F4D1B5 /* RNDMultiValuePredicateBinder.m */; };
 		E43C3F381F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F361F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.h */; };
 		E43C3F391F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F371F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.m */; };
-		E43C3F3C1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F3A1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.h */; };
-		E43C3F3D1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F3B1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.m */; };
+		E43C3F3C1F9A7A5D00F4D1B5 /* RNDMultiValueBooleanBinder.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F3A1F9A7A5D00F4D1B5 /* RNDMultiValueBooleanBinder.h */; };
+		E43C3F3D1F9A7A5D00F4D1B5 /* RNDMultiValueBooleanBinder.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F3B1F9A7A5D00F4D1B5 /* RNDMultiValueBooleanBinder.m */; };
 		E43C3F401F9A7A7700F4D1B5 /* RNDMultiValuePatternedBinder.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F3E1F9A7A7700F4D1B5 /* RNDMultiValuePatternedBinder.h */; };
 		E43C3F411F9A7A7700F4D1B5 /* RNDMultiValuePatternedBinder.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F3F1F9A7A7700F4D1B5 /* RNDMultiValuePatternedBinder.m */; };
 		E43C3F441F9A7BC300F4D1B5 /* RNDBindingInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F421F9A7BC300F4D1B5 /* RNDBindingInfo.h */; };
@@ -178,8 +178,8 @@
 		E43C3F331F9A79DE00F4D1B5 /* RNDMultiValuePredicateBinder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDMultiValuePredicateBinder.m; sourceTree = "<group>"; };
 		E43C3F361F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDMultiValueArgumentBinder.h; sourceTree = "<group>"; };
 		E43C3F371F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDMultiValueArgumentBinder.m; sourceTree = "<group>"; };
-		E43C3F3A1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDMultiValueBinder.h; sourceTree = "<group>"; };
-		E43C3F3B1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDMultiValueBinder.m; sourceTree = "<group>"; };
+		E43C3F3A1F9A7A5D00F4D1B5 /* RNDMultiValueBooleanBinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDMultiValueBooleanBinder.h; sourceTree = "<group>"; };
+		E43C3F3B1F9A7A5D00F4D1B5 /* RNDMultiValueBooleanBinder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDMultiValueBooleanBinder.m; sourceTree = "<group>"; };
 		E43C3F3E1F9A7A7700F4D1B5 /* RNDMultiValuePatternedBinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDMultiValuePatternedBinder.h; sourceTree = "<group>"; };
 		E43C3F3F1F9A7A7700F4D1B5 /* RNDMultiValuePatternedBinder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDMultiValuePatternedBinder.m; sourceTree = "<group>"; };
 		E43C3F421F9A7BC300F4D1B5 /* RNDBindingInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDBindingInfo.h; sourceTree = "<group>"; };
@@ -426,8 +426,8 @@
 				E4D116541FA93E0D003F5096 /* RNDFontBinder.m */,
 				E43C3F361F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.h */,
 				E43C3F371F9A79FC00F4D1B5 /* RNDMultiValueArgumentBinder.m */,
-				E43C3F3A1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.h */,
-				E43C3F3B1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.m */,
+				E43C3F3A1F9A7A5D00F4D1B5 /* RNDMultiValueBooleanBinder.h */,
+				E43C3F3B1F9A7A5D00F4D1B5 /* RNDMultiValueBooleanBinder.m */,
 				E43C3F3E1F9A7A7700F4D1B5 /* RNDMultiValuePatternedBinder.h */,
 				E43C3F3F1F9A7A7700F4D1B5 /* RNDMultiValuePatternedBinder.m */,
 				E43C3F321F9A79DE00F4D1B5 /* RNDMultiValuePredicateBinder.h */,
@@ -538,7 +538,7 @@
 				E43C3F481F9A806800F4D1B5 /* RNDEditor.h in Headers */,
 				E43C3F501F9A81EE00F4D1B5 /* RNDPlaceholders.h in Headers */,
 				E43C3F401F9A7A7700F4D1B5 /* RNDMultiValuePatternedBinder.h in Headers */,
-				E43C3F3C1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.h in Headers */,
+				E43C3F3C1F9A7A5D00F4D1B5 /* RNDMultiValueBooleanBinder.h in Headers */,
 				E43C3F4E1F9A81CB00F4D1B5 /* RNDEditorDelegate.h in Headers */,
 				E438AF5F1FA40CD100C856A5 /* RNDMutableBinderSetTemplate.h in Headers */,
 				E464A5DC1FC2633C00C1972C /* RNDPatternedBinding.h in Headers */,
@@ -810,7 +810,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E43C3F3D1F9A7A5D00F4D1B5 /* RNDMultiValueBinder.m in Sources */,
+				E43C3F3D1F9A7A5D00F4D1B5 /* RNDMultiValueBooleanBinder.m in Sources */,
 				E43C3F251F9A77C300F4D1B5 /* RNDBinder.m in Sources */,
 				E43C3F411F9A7A7700F4D1B5 /* RNDMultiValuePatternedBinder.m in Sources */,
 				E464A5DE1FC2636B00C1972C /* RNDPatternedBinding.m in Sources */,

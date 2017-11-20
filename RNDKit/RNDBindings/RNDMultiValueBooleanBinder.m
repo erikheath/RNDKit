@@ -6,17 +6,17 @@
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "RNDMultiValueBinder.h"
+#import "RNDMultiValueBooleanBinder.h"
 #import "RNDBinding.h"
 
-@interface RNDMultiValueBinder ()
+@interface RNDMultiValueBooleanBinder ()
 
 @property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
 @property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
 
 @end
 
-@implementation RNDMultiValueBinder
+@implementation RNDMultiValueBooleanBinder
 
 #pragma mark - Properties
 
