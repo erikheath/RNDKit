@@ -38,6 +38,7 @@
 
 @property (strong, nullable, readonly) NSString *argumentName;
 @property (strong, nullable, readonly) NSString *valueTransformerName;
+@property (strong, nullable, readonly) NSValueTransformer *valueTransformer;
 @property (strong, readonly, nullable) NSArray<RNDBinding *> *bindingArguments;
 
 

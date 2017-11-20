@@ -38,7 +38,7 @@
         
         [_predicates enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             id rawObjectValue = ((RNDBinding *)obj).bindingObjectValue;
-            NSString *entryString = _userStrings[idx] == [NSNull null] ? [NSString stringWithFormat:@"Entry %lu", (unsigned long)idx] : _userStrings[idx];
+            NSString *entryString = _userStrings[idx] == nil ? [NSString stringWithFormat:@"Entry %lu", (unsigned long)idx] : _userStrings[idx];
             
             if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
                 if (_filtersNonPredicateValues == YES) { return; }

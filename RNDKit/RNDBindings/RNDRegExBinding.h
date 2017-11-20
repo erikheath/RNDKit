@@ -12,5 +12,7 @@
 @interface RNDRegExBinding : RNDBinding
 
 @property (strong, readonly, nonnull) NSString *expressionTemplate;
+@property (strong, readonly, nonnull) NSString *replacementTemplate;
+@property (readonly) BOOL evaluates;
 
 @end

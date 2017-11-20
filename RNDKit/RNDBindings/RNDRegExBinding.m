@@ -13,6 +13,8 @@
 
 #pragma mark - Properties
 @synthesize expressionTemplate = _expressionTemplate;
+@synthesize replacementTemplate = _replacementTemplate;
+@synthesize evaluates = _evaluates;
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
@@ -55,7 +57,28 @@
                                                         range:NSMakeRange(0, replacableObjectValue.length)];
         }
         
-        objectValue = [NSRegularExpression regularExpressionWithPattern:replacableObjectValue options:0 error:nil]; // TODO: Error Handling
+        
+        NSMutableString *replacementTemplateValue = _replacementTemplate != nil ? [NSMutableString stringWithString:_replacementTemplate] : nil;
+        if (replacementTemplateValue != nil) {
+            for (RNDBinding *binding in self.bindingArguments) {
+                [replacementTemplateValue replaceOccurrencesOfString:binding.argumentName
+                                                          withString:binding.bindingObjectValue
+                                                             options:0
+                                                               range:NSMakeRange(0, _replacementTemplate.length)];
+            }
+            
+        }
+        
+        NSRegularExpression *expression = [NSRegularExpression regularExpressionWithPattern:replacableObjectValue options:0 error:nil];
+        if (_evaluates == NO) {
+            objectValue = @[expression, replacementTemplateValue];
+            return;
+            // TODO: Error Handling
+        } else {
+            objectValue = [expression stringByReplacingMatchesInString:self.evaluatedObject options:0 range:NSMakeRange(0, ((NSString *)self.evaluatedObject).length) withTemplate:replacementTemplateValue];
+            objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:objectValue] : objectValue;
+        }
+
 
     });
     
@@ -74,6 +97,8 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder]) != nil) {
         _expressionTemplate = [aDecoder decodeObjectForKey:@"expressionTemplate"];
+        _replacementTemplate = [aDecoder decodeObjectForKey:@"replacementTemplate"];
+        _evaluates = [aDecoder decodeBoolForKey:@"evaluates"];
     }
     
     return self;
@@ -81,6 +106,8 @@
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     [aCoder encodeObject:_expressionTemplate forKey:@"expressionTemplate"];
+    [aCoder encodeObject:_replacementTemplate forKey:@"replacementTemplate"];
+    [aCoder encodeBool:_evaluates forKey:@"evaluates"];
 }
 
 #pragma mark - Binding Management

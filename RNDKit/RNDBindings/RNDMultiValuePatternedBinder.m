@@ -39,7 +39,7 @@
         
         [_patternedStrings enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             id rawObjectValue = ((RNDBinding *)obj).bindingObjectValue;
-            NSString *entryString = _userStrings[idx].bindingObjectValue == [NSNull null] ? [NSString stringWithFormat:@"Entry %lu", (unsigned long)idx] : _userStrings[idx].bindingObjectValue;
+            NSString *entryString = _userStrings[idx].bindingObjectValue == nil ? [NSString stringWithFormat:@"Entry %lu", (unsigned long)idx] : _userStrings[idx].bindingObjectValue;
             
             if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
                 if (_filtersNonPatternValues == YES) { return; }

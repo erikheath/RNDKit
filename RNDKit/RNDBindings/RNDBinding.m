@@ -13,7 +13,6 @@
 
 @interface RNDBinding ()
 
-@property (strong, nullable, readonly) NSValueTransformer *valueTransformer;
 @property (strong, nullable, readonly) NSUUID *syncQueueIdentifier;
 @property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
 

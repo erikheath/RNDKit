@@ -55,7 +55,9 @@
                                                         range:NSMakeRange(0, replacableObjectValue.length)];
         }
         
-        objectValue = replacableObjectValue;
+        
+        
+        objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:replacableObjectValue] : replacableObjectValue;;
 
     });
     

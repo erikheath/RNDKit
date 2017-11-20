@@ -1,5 +1,5 @@
 //
-//  RNDMultiValueArgumentBinder.h
+//  RNDMultiValueTargetActionBinder.h
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 10/20/17.
@@ -21,7 +21,7 @@ typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
 
 
 /**
- The RNDMultiValueArgumentBinder enables the construction of an invocation with varying number of arguments that can be sent to a target object.
+ The RNDMultiValueTargetActionBinder enables the construction of an invocation with varying number of arguments that can be sent to a target object.
  
  This binder has one or more bindings that connect to the properties of model objects and provide those values to the binder when requested. The values are treated as named arguments for the selector associated with the binder. This binder constructs an invocation based on the selector and arguments, and then executes the invocation for the target that has been set for the binding.
  
@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
  
  This binder is a read only binder which means it can not write to its model objects, but it does update the values of its observer when requested.
  */
-@interface RNDMultiValueArgumentBinder : RNDBinder
+@interface RNDMultiValueTargetActionBinder : RNDBinder
 
 @property (strong, nonnull, readonly) NSArray<NSDictionary<RNDPredicateBinding *, RNDInvocationBinding *> *> *invocationArray;
 @property (strong, nonnull, readonly) RNDInvocationBinding *bindingInvocation;

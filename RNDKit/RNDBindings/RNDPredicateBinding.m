@@ -11,6 +11,7 @@
 @implementation RNDPredicateBinding
 #pragma mark - Properties
 @synthesize predicateFormatString = _predicateFormatString;
+@synthesize evaluates = _evaluates;
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
@@ -60,7 +61,16 @@
         
         if (argumentsDictionary == nil) { return; }
         NSPredicate *predicate = [[NSPredicate predicateWithFormat:_predicateFormatString]  predicateWithSubstitutionVariables: argumentsDictionary];
-        objectValue = predicate;
+        
+        if (_evaluates == NO) {
+            objectValue = predicate;
+            return;
+            // TODO: Error Handling
+        } else {
+            objectValue = @([predicate evaluateWithObject:self.evaluatedObject]);
+            objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:objectValue] : objectValue;
+        }
+        
     });
     
     return objectValue;
@@ -79,6 +89,8 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder]) != nil) {
         _predicateFormatString = [aDecoder decodeObjectForKey:@"predicateFormatString"];
+        _evaluates = [aDecoder decodeBoolForKey:@"evaluates"];
+
     }
     
     return self;
@@ -87,6 +99,8 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     if (aCoder == nil) { return; }
     [aCoder encodeObject:_predicateFormatString forKey:@"predicateFormatString"];
+    [aCoder encodeBool:_evaluates forKey:@"evaluates"];
+
 }
 
 #pragma mark - Binding Management
