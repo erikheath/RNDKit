@@ -13,7 +13,7 @@
 #import "RNDBinder.h"
 #import "RNDSimpleValueBinder.h"
 #import "RNDMultiValueBinder.h"
-#import "RNDMultiValuePatternBinder.h"
+#import "RNDMultiValuePatternedBinder.h"
 #import "RNDMultiValueArgumentBinder.h"
 #import "RNDMultiValuePredicateBinder.h"
 #import "RNDBinding.h"

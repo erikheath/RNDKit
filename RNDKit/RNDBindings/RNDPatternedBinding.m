@@ -1,42 +1,34 @@
 //
-//  RNDMultiValuePatternBinder.m
+//  RNDPatternedBinding.m
 //  RNDKit
 //
-//  Created by Erikheath Thomas on 10/20/17.
+//  Created by Erikheath Thomas on 11/8/17.
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "RNDMultiValuePatternBinder.h"
-#import "RNDBinding.h"
+#import <Foundation/Foundation.h>
+#import "RNDPatternedBinding.h"
 
-@interface RNDMultiValuePatternBinder ()
-
-@property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
-@property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
-
-@end
-
-@implementation RNDMultiValuePatternBinder
+@implementation RNDPatternedBinding
 
 #pragma mark - Properties
-@synthesize patternString = _patternString;
-@synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
-@synthesize serializerQueue = _serializerQueue;
+@synthesize patternTemplate = _patternTemplate;
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.serializerQueue, ^{
+        
         if (self.isBound == NO) {
-            objectValue = nil;
+            return;
         }
         
-        NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_patternString];
-
-        for (RNDBinding *binding in self.bindings) {
+        NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_patternTemplate];
+        
+        for (RNDBinding *binding in self.bindingArguments) {
             
             id rawObjectValue = binding.bindingObjectValue;
-                        
+            
             if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
                 objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder : rawObjectValue;
                 return;
@@ -64,34 +56,33 @@
         }
         
         objectValue = replacableObjectValue;
+
     });
     
     return objectValue;
 }
 
+- (void)setBindingObjectValue:(id)bindingObjectValue {
+    return;
+}
+
 #pragma mark - Object Lifecycle
+- (instancetype)init {
+    return [self initWithCoder:nil];
+}
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if ((self = [super initWithCoder:aDecoder]) == nil) {
-        return nil;
+    if ((self = [super initWithCoder:aDecoder]) != nil) {
+        _patternTemplate = [aDecoder decodeObjectForKey:@"patternTemplate"];
     }
-
-    _patternString = [aDecoder decodeObjectForKey:@"patternString"];
-    _serializerQueueIdentifier = [[NSUUID alloc] init];
-    _serializerQueue = dispatch_queue_create([[_serializerQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_SERIAL);
-
-    return self;
     
+    return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
-    [aCoder encodeObject:_patternString forKey:@"patternString"];
+    [aCoder encodeObject:_patternTemplate forKey:@"patternTemplate"];
 }
 
-
 #pragma mark - Binding Management
-
-
-
 
 @end
