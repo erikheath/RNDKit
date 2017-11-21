@@ -11,7 +11,10 @@
 
 @interface RNDReferenceValueBinding: RNDBinding
 
-@property(strong, readonly, nonnull) id referenceValue;
+@property NSExpressionType expressionType;
+@property (strong, readonly, nullable) NSString *expressionFunctionName;
+@property (strong, readonly, nullable) NSString *expressionTemplate;
+@property (readonly) BOOL evaluates;
 
 @end
 

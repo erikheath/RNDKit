@@ -12,7 +12,7 @@
 @implementation RNDRegExBinding
 
 #pragma mark - Properties
-@synthesize expressionTemplate = _expressionTemplate;
+@synthesize regExTemplate = _regExTemplate;
 @synthesize replacementTemplate = _replacementTemplate;
 @synthesize evaluates = _evaluates;
 
@@ -25,7 +25,7 @@
             return;
         }
         
-        NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_expressionTemplate];
+        NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_regExTemplate];
         
         for (RNDBinding *binding in self.bindingArguments) {
             
@@ -96,7 +96,7 @@
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder]) != nil) {
-        _expressionTemplate = [aDecoder decodeObjectForKey:@"expressionTemplate"];
+        _regExTemplate = [aDecoder decodeObjectForKey:@"expressionTemplate"];
         _replacementTemplate = [aDecoder decodeObjectForKey:@"replacementTemplate"];
         _evaluates = [aDecoder decodeBoolForKey:@"evaluates"];
     }
@@ -105,7 +105,7 @@
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
-    [aCoder encodeObject:_expressionTemplate forKey:@"expressionTemplate"];
+    [aCoder encodeObject:_regExTemplate forKey:@"expressionTemplate"];
     [aCoder encodeObject:_replacementTemplate forKey:@"replacementTemplate"];
     [aCoder encodeBool:_evaluates forKey:@"evaluates"];
 }

@@ -15,7 +15,7 @@
 @interface RNDBinding : NSObject <NSCoding>
 
 @property (strong, nullable, readonly) NSObject *observedObject;
-@property (strong, nonnull, readonly) NSString * observedObjectKeyPath;
+@property (strong, nullable, readonly) NSString * observedObjectKeyPath;
 @property (strong, nonnull, readonly) NSString *observedObjectBindingIdentifier;
 @property (readonly) BOOL monitorsObservedObject;
 @property (strong, nullable, readonly) id evaluatedObject;
