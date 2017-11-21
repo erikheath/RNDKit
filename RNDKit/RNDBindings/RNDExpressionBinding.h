@@ -1,5 +1,5 @@
 //
-//  RNDStaticValueBinding.h
+//  RNDExpressionBinding.h
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/9/17.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "RNDBinding.h"
 
-@interface RNDReferenceValueBinding: RNDBinding
+@interface RNDExpressionBinding: RNDBinding
 
 @property NSExpressionType expressionType;
 @property (strong, readonly, nullable) NSString *expressionFunctionName;

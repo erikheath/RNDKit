@@ -55,7 +55,7 @@
 		E43C3F4E1F9A81CB00F4D1B5 /* RNDEditorDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F4D1F9A81CB00F4D1B5 /* RNDEditorDelegate.h */; };
 		E43C3F501F9A81EE00F4D1B5 /* RNDPlaceholders.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F4F1F9A81EE00F4D1B5 /* RNDPlaceholders.h */; };
 		E43C3F521F9A822E00F4D1B5 /* RNDUserInterfaceValidation.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F511F9A822E00F4D1B5 /* RNDUserInterfaceValidation.h */; };
-		E446D4E71FB511570078346D /* RNDReferenceValueBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = E446D4E61FB511570078346D /* RNDReferenceValueBinding.m */; };
+		E446D4E71FB511570078346D /* RNDExpressionBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = E446D4E61FB511570078346D /* RNDExpressionBinding.m */; };
 		E446D4EA1FB6763B0078346D /* RNDBinderSet.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF4E1FA4013400C856A5 /* RNDBinderSet.m */; };
 		E446D4EB1FB676D70078346D /* RNDBindingManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF5C1FA408E400C856A5 /* RNDBindingManifest.m */; };
 		E464A5D81FC25A6A00C1972C /* RNDMultiValueRegExBinder.h in Headers */ = {isa = PBXBuildFile; fileRef = E464A5D71FC25A6A00C1972C /* RNDMultiValueRegExBinder.h */; };
@@ -191,8 +191,8 @@
 		E43C3F4F1F9A81EE00F4D1B5 /* RNDPlaceholders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDPlaceholders.h; sourceTree = "<group>"; };
 		E43C3F511F9A822E00F4D1B5 /* RNDUserInterfaceValidation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDUserInterfaceValidation.h; sourceTree = "<group>"; };
 		E43C3F561F9A87B300F4D1B5 /* RNDBindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDBindings.h; sourceTree = "<group>"; };
-		E446D4E61FB511570078346D /* RNDReferenceValueBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDReferenceValueBinding.m; sourceTree = "<group>"; };
-		E446D4E81FB511650078346D /* RNDReferenceValueBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDReferenceValueBinding.h; sourceTree = "<group>"; };
+		E446D4E61FB511570078346D /* RNDExpressionBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDExpressionBinding.m; sourceTree = "<group>"; };
+		E446D4E81FB511650078346D /* RNDExpressionBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDExpressionBinding.h; sourceTree = "<group>"; };
 		E446D4E91FB6485D0078346D /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		E464A5D71FC25A6A00C1972C /* RNDMultiValueRegExBinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNDMultiValueRegExBinder.h; sourceTree = "<group>"; };
 		E464A5D91FC25A8E00C1972C /* RNDMultiValueRegExBinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDMultiValueRegExBinder.m; sourceTree = "<group>"; };
@@ -446,8 +446,8 @@
 				E49D5F751FB4D25B00604372 /* RNDPredicateBinding.m */,
 				E49D5F711FB39B5700604372 /* RNDRegExBinding.h */,
 				E49D5F721FB39D6A00604372 /* RNDRegExBinding.m */,
-				E446D4E81FB511650078346D /* RNDReferenceValueBinding.h */,
-				E446D4E61FB511570078346D /* RNDReferenceValueBinding.m */,
+				E446D4E81FB511650078346D /* RNDExpressionBinding.h */,
+				E446D4E61FB511570078346D /* RNDExpressionBinding.m */,
 			);
 			path = RNDBindings;
 			sourceTree = "<group>";
@@ -816,7 +816,7 @@
 				E464A5DE1FC2636B00C1972C /* RNDPatternedBinding.m in Sources */,
 				E4A7ED481F8327E10083E742 /* RNDController.m in Sources */,
 				E446D4EB1FB676D70078346D /* RNDBindingManifest.m in Sources */,
-				E446D4E71FB511570078346D /* RNDReferenceValueBinding.m in Sources */,
+				E446D4E71FB511570078346D /* RNDExpressionBinding.m in Sources */,
 				E4D116551FA93E0D003F5096 /* RNDFontBinder.m in Sources */,
 				E49D5F731FB39D6A00604372 /* RNDRegExBinding.m in Sources */,
 				E43C3F101F8F0CDB00F4D1B5 /* RNDBindingConstants.m in Sources */,

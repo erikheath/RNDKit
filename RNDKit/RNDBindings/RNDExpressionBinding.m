@@ -1,15 +1,15 @@
 //
-//  RNDStaticValueBinding.m
+//  RNDExpressionBinding.m
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/9/17.
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "RNDReferenceValueBinding.h"
+#import "RNDExpressionBinding.h"
 
 
-@implementation RNDReferenceValueBinding
+@implementation RNDExpressionBinding
 
 #pragma mark - Properties
 
@@ -48,10 +48,9 @@
             objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:objectValue] : objectValue;
         }
         
-        if (objectValue == nil && self.nullPlaceholder != nil) {
-            objectValue = self.nullPlaceholder;
-        }
+        // NOTE: Expression bindings do not support placeholder values as part of resolving the binding object value. This is because placeholder values are inconsistent with the intent of the expression binding - the creation of expressions, not the retrieval of data. While data retrieval may result in placeholder values being delivered to an expression, there is nothing the binding system can do to intervene during evaluation of an expression.
         
+        // NOTE: Expression bindings do support value transformation post expression evaluation which is consistent with how all other bindings provide value transformation.
     });
     
     return objectValue;
