@@ -28,35 +28,11 @@
         NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_regExTemplate];
         
         for (RNDBinding *binding in self.bindingArguments) {
-            
-            id rawObjectValue = binding.bindingObjectValue;
-            
-            if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-                objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder : rawObjectValue;
-                return;
-            }
-            
-            if ([rawObjectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-                objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder : rawObjectValue;
-                return;
-            }
-            
-            if ([rawObjectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-                objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder : rawObjectValue;
-                return;
-            }
-            
-            if (rawObjectValue == nil) {
-                objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder : objectValue;
-                return;
-            }
-            
             [replacableObjectValue replaceOccurrencesOfString:binding.argumentName
                                                    withString:binding.bindingObjectValue
                                                       options:0
                                                         range:NSMakeRange(0, replacableObjectValue.length)];
         }
-        
         
         NSMutableString *replacementTemplateValue = _replacementTemplate != nil ? [NSMutableString stringWithString:_replacementTemplate] : nil;
         if (replacementTemplateValue != nil) {
@@ -76,9 +52,34 @@
             // TODO: Error Handling
         } else {
             objectValue = [expression stringByReplacingMatchesInString:self.evaluatedObject options:0 range:NSMakeRange(0, ((NSString *)self.evaluatedObject).length) withTemplate:replacementTemplateValue];
+            
+            if ([objectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
+                objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : objectValue;
+                return;
+            }
+            
+            if ([objectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
+                objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : objectValue;
+                return;
+            }
+            
+            if ([objectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
+                objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : objectValue;
+                return;
+            }
+            
+            if ([objectValue isEqual: RNDBindingNullValueMarker] == YES) {
+                objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : objectValue;
+                return;
+            }
+            
+            if (objectValue == nil) {
+                objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : objectValue;
+                return;
+            }
+            
             objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:objectValue] : objectValue;
         }
-
 
     });
     

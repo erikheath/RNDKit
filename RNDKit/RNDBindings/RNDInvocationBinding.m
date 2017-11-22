@@ -22,7 +22,7 @@
 
 #pragma mark - Properties
 @synthesize bindingSelector = _bindingSelector;
-
+@synthesize evaluates = _evaluates;
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
@@ -52,31 +52,6 @@
                 
                 RNDBinding *binding = obj;
                 id argumentValue = [argumentsDictionary objectForKey:binding.argumentName];
-                
-                if ([argumentValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-                    objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder : RNDBindingMultipleValuesMarker;
-                    *stop = YES;
-                    return;
-                }
-                
-                if ([argumentValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-                    objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder : RNDBindingNoSelectionMarker;
-                    *stop = YES;
-                    return;
-                }
-                
-                if ([argumentValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-                    objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder : RNDBindingNotApplicableMarker;
-                    *stop = YES;
-                    return;
-                }
-                
-                if ([argumentValue isEqual: RNDBindingNullValueMarker] == YES) {
-                    objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder : RNDBindingNullValueMarker;
-                    *stop = YES;
-                    return;
-                }
-                
                 BOOL result = [self addBindingArgumentValue:argumentValue toInvocation:invocation atPosition:idx + 2];
                 if (result == NO) {
                     // There was an error. The invocation will be nil'd and the process will end.
@@ -85,10 +60,42 @@
                     return;
                 }
             }];
+        }
+        
+        if (_evaluates == YES) {
+            [invocation invoke];
+            id result = [self objectValueForInvocation:invocation];
+            if ([result isEqual: RNDBindingMultipleValuesMarker] == YES) {
+                objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : RNDBindingMultipleValuesMarker;
+                return;
+            }
             
+            if ([result isEqual: RNDBindingNoSelectionMarker] == YES) {
+                objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : RNDBindingNoSelectionMarker;
+                return;
+            }
+            
+            if ([result isEqual: RNDBindingNotApplicableMarker] == YES) {
+                objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : RNDBindingNotApplicableMarker;
+                return;
+            }
+            
+            if ([result isEqual: RNDBindingNullValueMarker] == YES) {
+                objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : RNDBindingNullValueMarker;
+                return;
+            }
+            
+            if (result == nil) {
+                objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : result;
+                return;
+            }
+
+            objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:result] : result;
+
+        } else {
+            objectValue = invocation;
         }
 
-        objectValue = invocation;
     });
     
     return objectValue;
@@ -277,5 +284,216 @@
     return YES;
 }
 
+
+- (id)objectValueForInvocation:(NSInvocation *)invocation {
+    const char *argumentType = invocation.methodSignature.methodReturnType;
+    if (strcmp(argumentType, "c") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        char *buffer = (char *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithChar:*buffer];
+    } else if (strcmp(argumentType, "i") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        int *buffer = (int *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithInt:*buffer];
+    } else if (strcmp(argumentType, "s") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        short *buffer = (short *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithShort:*buffer];
+    } else if (strcmp(argumentType, "l") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        long *buffer = (long *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithLong:*buffer];
+    } else if (strcmp(argumentType, "q") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        long long *buffer = (long long *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithLongLong:*buffer];
+    } else if (strcmp(argumentType, "C") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        unsigned char *buffer = (unsigned char *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithUnsignedChar:*buffer];
+    } else if (strcmp(argumentType, "I") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        unsigned int *buffer = (unsigned int *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithUnsignedInt:*buffer];
+    } else if (strcmp(argumentType, "S") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        unsigned short *buffer = (unsigned short *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithUnsignedShort:*buffer];
+    } else if (strcmp(argumentType, "L") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        unsigned long *buffer = (unsigned long *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithUnsignedLong:*buffer];
+    } else if (strcmp(argumentType, "Q") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        unsigned long long *buffer = (unsigned long long *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithUnsignedLongLong:*buffer];
+    } else if (strcmp(argumentType, "f") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        float *buffer = (float *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithFloat:*buffer];
+    } else if (strcmp(argumentType, "d") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        double *buffer = (double *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithDouble:*buffer];
+    } else if (strcmp(argumentType, "B") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        BOOL *buffer = (BOOL *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSNumber numberWithBool:*buffer];
+    } else if (strcmp(argumentType, "*") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        char *buffer = (char *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSString stringWithCString:buffer encoding:[NSString defaultCStringEncoding]];
+    } else if (strcmp(argumentType, "@") == 0) {
+        id buffer;
+        [invocation getReturnValue:&buffer];
+        return buffer;
+    } else if (strcmp(argumentType, "#") == 0) {
+        Class buffer;
+        [invocation getReturnValue:&buffer];
+        return buffer;
+    } else if (strcmp(argumentType, ":") == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        SEL *buffer = (SEL *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSValue valueWithPointer:buffer];
+    } else if (strncmp(argumentType, "[", 1) == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        void *buffer = (void *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSValue valueWithPointer:buffer];
+    } else if (strncmp(argumentType, "{", 1) == 0) {
+        // This is a structure argument that must be
+        // of one of the supported types.
+        if (strncmp(argumentType, "{NSRange", 8)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            NSRange *buffer = (NSRange *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithRange:*buffer];
+        } else if (strncmp(argumentType, "{NSPoint", 8)) {
+            //            NSPoint bindingValue = [argumentValue pointValue];
+            //            [invocation setArgument:&bindingValue atIndex:position];
+        } else if (strncmp(argumentType, "{NSSize", 7)) {
+            //            NSSize bindingValue = [argumentValue sizeValue];
+            //            [invocation setArgument:&bindingValue atIndex:position];
+        } else if (strncmp(argumentType, "{NSRect", 7)) {
+            //            NSRect bindingValue = [argumentValue rectValue];
+            //            [invocation setArgument:&bindingValue atIndex:position];
+        } else if (strncmp(argumentType, "{CGPoint", 8)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            CGPoint *buffer = (CGPoint *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithCGPoint:*buffer];
+        } else if (strncmp(argumentType, "{CGVector", 9)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            CGVector *buffer = (CGVector *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithCGVector:*buffer];
+        } else if (strncmp(argumentType, "{CGSize", 7)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            CGSize *buffer = (CGSize *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithCGSize:*buffer];
+        } else if (strncmp(argumentType, "{CGRect", 7)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            CGRect *buffer = (CGRect *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithCGRect:*buffer];
+        } else if (strncmp(argumentType, "{CGAffineTransform", 18)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            CGAffineTransform *buffer = (CGAffineTransform *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithCGAffineTransform:*buffer];
+        } else if (strncmp(argumentType, "{UIEdgeInsets", 13)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            UIEdgeInsets *buffer = (UIEdgeInsets *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithUIEdgeInsets:*buffer];
+        } else if (strncmp(argumentType, "{UIOffset", 9)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            UIOffset *buffer = (UIOffset *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithUIOffset:*buffer];
+        } else if (strncmp(argumentType, "{CATransform3D", 14)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            CATransform3D *buffer = (CATransform3D *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithCATransform3D:*buffer];
+        } else if (strncmp(argumentType, "{CMTime", 7)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            CMTime *buffer = (CMTime *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithCMTime:*buffer];
+        } else if (strncmp(argumentType, "{CMTimeRange", 12)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            CMTimeRange *buffer = (CMTimeRange *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithCMTimeRange:*buffer];
+        } else if (strncmp(argumentType, "{CMTimeMapping", 14)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            CMTimeMapping *buffer = (CMTimeMapping *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithCMTimeMapping:*buffer];
+        } else if (strncmp(argumentType, "{CLLocationCoordinate2D", 13)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            CLLocationCoordinate2D *buffer = (CLLocationCoordinate2D *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithMKCoordinate:*buffer];
+        } else if (strncmp(argumentType, "{MKCoordinateSpan", 17)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            MKCoordinateSpan *buffer = (MKCoordinateSpan *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithMKCoordinateSpan:*buffer];
+        } else if (strncmp(argumentType, "{SCNVector3", 11)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            SCNVector3 *buffer = (SCNVector3 *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithSCNVector3:*buffer];
+        } else if (strncmp(argumentType, "{SCNVector4", 11)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            SCNVector4 *buffer = (SCNVector4 *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithSCNVector4:*buffer];
+        } else if (strncmp(argumentType, "{SCNMatrix4", 11)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            SCNMatrix4 *buffer = (SCNMatrix4 *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithSCNMatrix4:*buffer];
+        } else if (strncmp(argumentType, "{NSDirectionalEdgeInsets", 24)) {
+            NSUInteger length = invocation.methodSignature.methodReturnLength;
+            NSDirectionalEdgeInsets *buffer = (NSDirectionalEdgeInsets *)malloc(length);
+            [invocation getReturnValue:buffer];
+            return [NSValue valueWithDirectionalEdgeInsets:*buffer];
+        } else if (strncmp(argumentType, "{NSEdgeInsets", 13)) {
+            //            NSEdgeInsets bindingValue = argumentValue.NSEdgeInsetsValue;
+            //            [invocation setArgument:&bindingValue atIndex:position];
+        }
+    } else if (strncmp(argumentType, "(", 1) == 0) {
+        //
+    } else if (strncmp(argumentType, "b", 1) == 0) {
+        //
+    } else if (strncmp(argumentType, "^", 1) == 0) {
+        NSUInteger length = invocation.methodSignature.methodReturnLength;
+        void *buffer = (void *)malloc(length);
+        [invocation getReturnValue:buffer];
+        return [NSValue valueWithPointer:buffer];
+    } else if (strcmp(argumentType, "?") == 0) {
+        //
+    }
+    return nil;
+}
 @end
 

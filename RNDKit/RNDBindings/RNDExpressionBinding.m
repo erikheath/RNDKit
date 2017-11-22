@@ -45,12 +45,35 @@
         } else {
             NSMutableDictionary *workingDictionary = [NSMutableDictionary dictionary];
             objectValue = [rawObjectValue expressionValueWithObject:self.evaluatedObject context:workingDictionary];
+            
+            if ([objectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
+                objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : objectValue;
+                return;
+            }
+            
+            if ([objectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
+                objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : objectValue;
+                return;
+            }
+            
+            if ([objectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
+                objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : objectValue;
+                return;
+            }
+            
+            if ([objectValue isEqual: RNDBindingNullValueMarker] == YES) {
+                objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : objectValue;
+                return;
+            }
+            
+            if (objectValue == nil) {
+                objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : objectValue;
+                return;
+            }
+            
             objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:objectValue] : objectValue;
         }
-        
-        // NOTE: Expression bindings do not support placeholder values as part of resolving the binding object value. This is because placeholder values are inconsistent with the intent of the expression binding - the creation of expressions, not the retrieval of data. While data retrieval may result in placeholder values being delivered to an expression, there is nothing the binding system can do to intervene during evaluation of an expression.
-        
-        // NOTE: Expression bindings do support value transformation post expression evaluation which is consistent with how all other bindings provide value transformation.
+
     });
     
     return objectValue;

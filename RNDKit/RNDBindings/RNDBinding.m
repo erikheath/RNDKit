@@ -36,6 +36,8 @@
 @synthesize nullPlaceholder = _nullPlaceholder;
 @synthesize multipleSelectionPlaceholder = _multipleSelectionPlaceholder;
 @synthesize notApplicablePlaceholder = _notApplicablePlaceholder;
+@synthesize nilPlaceholder = _nilPlaceholder;
+@synthesize noSelectionPlaceholder = _noSelectionPlaceholder;
 
 @synthesize argumentName = _argumentName;
 @synthesize valueTransformerName = _valueTransformerName;
@@ -62,30 +64,33 @@
         
         
         if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-            objectValue = _multipleSelectionPlaceholder != nil ? _multipleSelectionPlaceholder : rawObjectValue;
+            objectValue = _multipleSelectionPlaceholder != nil ? _multipleSelectionPlaceholder.bindingObjectValue : rawObjectValue;
             return;
         }
         
         if ([rawObjectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-            objectValue = _noSelectionPlaceholder != nil ? _noSelectionPlaceholder : rawObjectValue;
+            objectValue = _noSelectionPlaceholder != nil ? _noSelectionPlaceholder.bindingObjectValue : rawObjectValue;
             return;
         }
         
         if ([rawObjectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-            objectValue = _notApplicablePlaceholder != nil ? _notApplicablePlaceholder : rawObjectValue;
+            objectValue = _notApplicablePlaceholder != nil ? _notApplicablePlaceholder.bindingObjectValue : rawObjectValue;
             return;
         }
         
-        id transformedObjectValue = nil;
-        transformedObjectValue = _valueTransformer != nil ? [_valueTransformer transformedValue:rawObjectValue] : rawObjectValue;
-        
-        if (transformedObjectValue == nil && _nullPlaceholder != nil) {
-            objectValue = _nullPlaceholder;
-            return;
-        } else {
-            objectValue = transformedObjectValue;
+        if ([rawObjectValue isEqual: RNDBindingNullValueMarker] == YES) {
+            objectValue = _nullPlaceholder != nil ? _nullPlaceholder.bindingObjectValue : rawObjectValue;
             return;
         }
+        
+        if (rawObjectValue == nil) {
+            objectValue = _nilPlaceholder != nil ? _nilPlaceholder.bindingObjectValue : rawObjectValue;
+            return;
+        }
+
+
+        objectValue = _valueTransformer != nil ? [_valueTransformer transformedValue:rawObjectValue] : rawObjectValue;
+        
     });
     
     return objectValue;

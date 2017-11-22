@@ -15,5 +15,6 @@
 @interface RNDInvocationBinding : RNDBinding 
 
 @property (readonly, nonnull) SEL bindingSelector;
+@property (readonly) BOOL evaluates;
 
 @end

@@ -31,10 +31,11 @@
 
 @property (readonly) BOOL isBound;
 
-@property (strong, nullable, readonly) id nullPlaceholder;
-@property (strong, nullable, readonly) id multipleSelectionPlaceholder;
-@property (strong, nullable, readonly) id noSelectionPlaceholder;
-@property (strong, nullable, readonly) id notApplicablePlaceholder;
+@property (strong, nullable, readonly) RNDBinding *nullPlaceholder;
+@property (strong, nullable, readonly) RNDBinding *multipleSelectionPlaceholder;
+@property (strong, nullable, readonly) RNDBinding *noSelectionPlaceholder;
+@property (strong, nullable, readonly) RNDBinding *notApplicablePlaceholder;
+@property (strong, nullable, readonly) RNDBinding *nilPlaceholder;
 
 @property (strong, nullable, readonly) NSString *argumentName;
 @property (strong, nullable, readonly) NSString *valueTransformerName;
