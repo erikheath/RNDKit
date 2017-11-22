@@ -35,6 +35,8 @@
 @synthesize multipleSelectionPlaceholder = _multipleSelectionPlaceholder;
 @synthesize noSelectionPlaceholder = _noSelectionPlaceholder;
 @synthesize notApplicablePlaceholder = _notApplicablePlaceholder;
+@synthesize nilPlaceholder = _nilPlaceholder;
+
 
 #pragma mark - Object Lifecycle
 
