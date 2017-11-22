@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "RNDBinder.h"
 
-
+@class RNDPredicateBinding;
+@class RNDPatternedBinding;
 
 /**
  The RNDMultiValuePredicateBinder enables the construction of a set of predicates that can be used to provide filtering options in search boxes, column headers, or any other scenario where uses can choose from a set of named options that correspond to a predicate.
@@ -21,9 +22,9 @@
  */
 @interface RNDMultiValuePredicateBinder : RNDBinder
 
-@property (strong, nonnull, readonly) NSArray *predicates;
-@property (strong, nonnull, readonly) NSArray *userStrings;
-@property (strong, nonnull, readonly) NSDictionary *keyedPredicates;
+@property (strong, nonnull, readonly) NSArray<RNDPredicateBinding *> *predicates;
+@property (strong, nonnull, readonly) NSArray<RNDPatternedBinding *> *userStrings;
+@property (strong, nonnull, readonly) NSDictionary<NSString *, NSPredicate *> *keyedPredicates;
 @property (readonly) BOOL filtersNilValues;
 @property (readonly) BOOL filtersNonPredicateValues;
 

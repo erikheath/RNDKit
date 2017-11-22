@@ -8,6 +8,8 @@
 
 #import "RNDMultiValuePredicateBinder.h"
 #import "RNDBinding.h"
+#import "RNDPatternedBinding.h"
+#import "RNDPredicateBinding.h"
 
 @interface RNDMultiValuePredicateBinder ()
 

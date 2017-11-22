@@ -12,7 +12,6 @@
 #import "RNDBinderSet.h"
 #import "RNDBinder.h"
 #import "RNDSimpleValueBinder.h"
-#import "RNDMultiValueBooleanBinder.h"
 #import "RNDMultiValuePatternedBinder.h"
 #import "RNDMultiValueTargetActionBinder.h"
 #import "RNDMultiValuePredicateBinder.h"
@@ -21,4 +20,4 @@
 #import "RNDInvocationBinding.h"
 #import "RNDRegExBinding.h"
 #import "RNDPredicateBinding.h"
-#import "RNDReferenceValueBinding.h"
+#import "RNDExpressionBinding.h"
