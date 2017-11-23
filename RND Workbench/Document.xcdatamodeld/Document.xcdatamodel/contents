@@ -1,24 +1,102 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13533" systemVersion="16G1036" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
-    <entity name="Binder" representedClassName="Binder" isAbstract="YES" syncable="YES" codeGenerationType="class">
-        <fetchedProperty name="fetchedProperty" optional="YES" syncable="YES">
-            <fetchRequest name="fetchedPropertyFetchRequest" entity="Binder"/>
-        </fetchedProperty>
+    <entity name="Binder" representedClassName="Binder" syncable="YES" codeGenerationType="class">
+        <attribute name="binderIdentifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="binderMode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="bound" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="monitorsObserver" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="observerKey" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="binderValue" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Binding" inverseName="binderValue" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="bindings" toMany="YES" deletionRule="Cascade" destinationEntity="Binding" inverseName="binder" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="multipleSelectionPlaceholder" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Binding" inverseName="binderMultipleSelectionPlaceholder" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="nilPlaceholder" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Binding" inverseName="binderNilPlaceholder" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="noSelectionPlaceholder" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Binding" inverseName="binderNoSelectionPlaceholder" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="notApplicablePlaceholder" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Binding" inverseName="binderNotApplicablePlaceholder" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="nullPlaceholder" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Binding" inverseName="binderNullPlaceholder" inverseEntity="Binding" syncable="YES"/>
     </entity>
-    <entity name="Binding" representedClassName="Binding" syncable="YES" codeGenerationType="class"/>
-    <entity name="Entity" representedClassName="Entity" syncable="YES" codeGenerationType="class"/>
+    <entity name="Binding" representedClassName="Binding" syncable="YES" codeGenerationType="class">
+        <attribute name="argumentName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="bindingName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="controllerKey" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="monitorsObservedObject" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="observedObjectBindingIdentifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="observedObjectKeyPath" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="valueTransformerName" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="argument" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binding" inverseName="argumentsBinding" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="argumentsBinding" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Binding" inverseName="argument" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="binder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binder" inverseName="bindings" inverseEntity="Binder" syncable="YES"/>
+        <relationship name="binderMultipleSelectionPlaceholder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binder" inverseName="multipleSelectionPlaceholder" inverseEntity="Binder" syncable="YES"/>
+        <relationship name="binderNilPlaceholder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binder" inverseName="nilPlaceholder" inverseEntity="Binder" syncable="YES"/>
+        <relationship name="binderNoSelectionPlaceholder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binder" inverseName="noSelectionPlaceholder" inverseEntity="Binder" syncable="YES"/>
+        <relationship name="binderNotApplicablePlaceholder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binder" inverseName="notApplicablePlaceholder" inverseEntity="Binder" syncable="YES"/>
+        <relationship name="binderNullPlaceholder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binder" inverseName="nullPlaceholder" inverseEntity="Binder" syncable="YES"/>
+        <relationship name="binderValue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binder" inverseName="binderValue" inverseEntity="Binder" syncable="YES"/>
+        <relationship name="multipleSelectionBinding" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Binding" inverseName="multipleSelectionPlaceholder" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="multipleSelectionPlaceholder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binding" inverseName="multipleSelectionBinding" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="nilPlaceholderBinding" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Binding" inverseName="niPlaceholder" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="niPlaceholder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binding" inverseName="nilPlaceholderBinding" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="noSelectionBinding" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Binding" inverseName="noSelectionPlaceholder" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="noSelectionPlaceholder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binding" inverseName="noSelectionBinding" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="notApplicableBinding" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Binding" inverseName="notApplicablePlaceholder" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="notApplicablePlaceholder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binding" inverseName="notApplicableBinding" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="nullBinding" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Binding" inverseName="nullPlaceholder" inverseEntity="Binding" syncable="YES"/>
+        <relationship name="nullPlaceholder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binding" inverseName="nullBinding" inverseEntity="Binding" syncable="YES"/>
+    </entity>
+    <entity name="ConditionalInvocation" representedClassName="ConditionalInvocation" syncable="YES" codeGenerationType="class">
+        <relationship name="invocationBinding" maxCount="1" deletionRule="Cascade" destinationEntity="InvocationBinding" inverseName="conditionalInvocation" inverseEntity="InvocationBinding" syncable="YES"/>
+        <relationship name="predicateBinding" maxCount="1" deletionRule="Cascade" destinationEntity="PredicateBinding" inverseName="invocationCondition" inverseEntity="PredicateBinding" syncable="YES"/>
+        <relationship name="targetActionBinder" maxCount="1" deletionRule="Nullify" destinationEntity="MultiValueTargetActionBinder" inverseName="invocationArray" inverseEntity="MultiValueTargetActionBinder" syncable="YES"/>
+    </entity>
+    <entity name="ExpressionBinding" representedClassName="ExpressionBinding" parentEntity="Binding" syncable="YES" codeGenerationType="class">
+        <attribute name="evaluates" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="expressionFunctionName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="expressionTemplate" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="expressionType" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+    </entity>
+    <entity name="InvocationBinding" representedClassName="InvocationBinding" parentEntity="Binding" syncable="YES" codeGenerationType="class">
+        <attribute name="bindingSelector" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="evaluates" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="actionInvocation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MultiValueTargetActionBinder" inverseName="actionInvocation" inverseEntity="MultiValueTargetActionBinder" syncable="YES"/>
+        <relationship name="bindingInvocation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MultiValueTargetActionBinder" inverseName="bindingInvocation" inverseEntity="MultiValueTargetActionBinder" syncable="YES"/>
+        <relationship name="conditionalInvocation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ConditionalInvocation" inverseName="invocationBinding" inverseEntity="ConditionalInvocation" syncable="YES"/>
+        <relationship name="unbindingInvocation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MultiValueTargetActionBinder" inverseName="unbindingInvocation" inverseEntity="MultiValueTargetActionBinder" syncable="YES"/>
+    </entity>
     <entity name="MultiValueBinder" representedClassName="MultiValueBinder" parentEntity="Binder" syncable="YES" codeGenerationType="class">
-        <relationship name="bindings" optional="YES" toMany="YES" minCount="1" deletionRule="Nullify" destinationEntity="Binder" syncable="YES"/>
+        <attribute name="filtersMarkerValues" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="filtersNilValues" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="userStrings" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="PatternedStringBinding" inverseName="userString" inverseEntity="PatternedStringBinding" syncable="YES"/>
     </entity>
-    <entity name="SimpleValueBinder" representedClassName="SimpleValueBinder" parentEntity="Binder" syncable="YES" codeGenerationType="class">
-        <relationship name="bindings" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Binding" syncable="YES"/>
+    <entity name="MultiValueTargetActionBinder" representedClassName="MultiValueTargetActionBinder" parentEntity="Binder" syncable="YES" codeGenerationType="class">
+        <attribute name="mutuallyExclusive" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="actionInvocation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InvocationBinding" inverseName="actionInvocation" inverseEntity="InvocationBinding" syncable="YES"/>
+        <relationship name="bindingInvocation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InvocationBinding" inverseName="bindingInvocation" inverseEntity="InvocationBinding" syncable="YES"/>
+        <relationship name="invocationArray" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ConditionalInvocation" inverseName="targetActionBinder" inverseEntity="ConditionalInvocation" syncable="YES"/>
+        <relationship name="unbindingInvocation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InvocationBinding" inverseName="unbindingInvocation" inverseEntity="InvocationBinding" syncable="YES"/>
     </entity>
-    <fetchRequest name="FetchRequest" entity="Binder" predicateString="FALSEPREDICATE"/>
+    <entity name="PatternedStringBinding" representedClassName="PatternedStringBinding" parentEntity="Binding" syncable="YES" codeGenerationType="class">
+        <attribute name="patternTemplate" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="userString" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MultiValueBinder" inverseName="userStrings" inverseEntity="MultiValueBinder" syncable="YES"/>
+    </entity>
+    <entity name="PredicateBinding" representedClassName="PredicateBinding" parentEntity="Binding" syncable="YES" codeGenerationType="class">
+        <attribute name="evaluates" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="predicateFormatString" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="invocationCondition" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ConditionalInvocation" inverseName="predicateBinding" inverseEntity="ConditionalInvocation" syncable="YES"/>
+    </entity>
+    <entity name="RegExBinding" representedClassName="RegExBinding" parentEntity="Binding" syncable="YES" codeGenerationType="class">
+        <attribute name="evaluates" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="regExTemplate" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="replacementTemplate" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <elements>
-        <element name="Binder" positionX="-1908" positionY="-3348" width="128" height="71"/>
-        <element name="Binding" positionX="-2034" positionY="-2988" width="128" height="45"/>
-        <element name="MultiValueBinder" positionX="-2079" positionY="-3195" width="128" height="60"/>
-        <element name="SimpleValueBinder" positionX="-1775" positionY="-3150" width="128" height="60"/>
-        <element name="Entity" positionX="-1926" positionY="-3168" width="128" height="45"/>
+        <element name="Binder" positionX="-1721" positionY="-2815" width="128" height="223"/>
+        <element name="Binding" positionX="-2034" positionY="-2988" width="128" height="433"/>
+        <element name="MultiValueBinder" positionX="-1721" positionY="-3105" width="128" height="88"/>
+        <element name="MultiValueTargetActionBinder" positionX="-1890" positionY="-3277" width="128" height="118"/>
+        <element name="InvocationBinding" positionX="-2331" positionY="-3292" width="128" height="133"/>
+        <element name="PatternedStringBinding" positionX="-2331" positionY="-3123" width="128" height="73"/>
+        <element name="PredicateBinding" positionX="-2324" positionY="-3015" width="128" height="88"/>
+        <element name="RegExBinding" positionX="-2322" positionY="-2880" width="128" height="90"/>
+        <element name="ExpressionBinding" positionX="-2322" positionY="-2772" width="128" height="105"/>
+        <element name="ConditionalInvocation" positionX="-2081" positionY="-3157" width="128" height="88"/>
     </elements>
 </model>

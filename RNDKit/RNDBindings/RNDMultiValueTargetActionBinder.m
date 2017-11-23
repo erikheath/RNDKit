@@ -45,7 +45,7 @@
         for (NSDictionary<RNDPredicateBinding *, RNDInvocationBinding *> *invocationDictionary in _invocationArray) {
             NSInvocation *invocation = nil;
             RNDPredicateBinding *predicateBinding = invocationDictionary.allKeys.firstObject;
-            if (predicateBinding != nil && [predicateBinding.bindingObjectValue evaluateWithObject:predicateBinding.evaluatedObject] == NO) {
+            if ([predicateBinding.bindingObjectValue evaluateWithObject:predicateBinding.evaluatedObject] == NO) {
                 continue;
             }
             RNDInvocationBinding *binding = invocationDictionary.allValues.firstObject;

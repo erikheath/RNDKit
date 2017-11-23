@@ -32,10 +32,10 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 
 @property (strong, nonnull, readonly) NSString *binderIdentifier;
 @property (nonnull, strong, readonly) NSArray<RNDBinding *> *bindings;
+@property (strong, nonnull, readonly) NSArray<RNDBinding *> *binderValue;
 @property (weak, readwrite, nullable) NSObject<RNDBindableObject> *observer;
 @property (strong, nonnull, readonly) NSString *observerKey;
 @property (readonly) RNDBinderMode binderMode;
-@property (readonly) BOOL monitorsObservable;
 @property (readonly) BOOL monitorsObserver;
 @property (strong, nullable, readonly) dispatch_queue_t syncQueue;
 

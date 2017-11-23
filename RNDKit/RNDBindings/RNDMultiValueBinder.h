@@ -11,11 +11,10 @@
 
 @class RNDPatternedBinding;
 
-@interface RNDMultiValuePatternedBinder : RNDBinder
+@interface RNDMultiValueBinder : RNDBinder
 
-@property (strong, nonnull, readonly) NSArray<RNDBinding *> *binderValues;
 @property (strong, nonnull, readonly) NSArray<RNDPatternedBinding *> *userStrings;
 @property (readonly) BOOL filtersNilValues;
-@property (readonly) BOOL filtersNonTypeValues;
+@property (readonly) BOOL filtersMarkerValues;
 
 @end
