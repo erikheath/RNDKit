@@ -8,6 +8,8 @@
 
 #import "RNDBinding.h"
 #import "RNDBinder.h"
+#import "RNDPredicateBinding.h"
+#import "RNDPatternedBinding.h"
 #import <objc/runtime.h>
 
 
@@ -50,6 +52,8 @@
 
 @synthesize bindingArguments = _bindingArguments;
 @synthesize evaluatedObject = _evaluatedObject;
+@synthesize evaluator = _evaluator;
+@synthesize runtimeArguments = _runtimeArguments;
 
 - (id _Nullable)bindingObjectValue {
      id __block objectValue = nil;
@@ -57,6 +61,12 @@
     dispatch_sync(_syncQueue, ^{
         
         if (_isBound == NO) {
+            objectValue = nil;
+            return;
+        }
+        
+        if (((NSNumber *)_evaluator.bindingObjectValue).boolValue == NO ) {
+            objectValue = nil;
             return;
         }
         
@@ -120,16 +130,41 @@
 }
 
 - (id)evaluatedObject {
+    id __block localObject = nil;
     dispatch_sync(_syncQueue, ^{
     if (_observedObjectKeyPath != nil) {
-        _evaluatedObject = [self.observedObject valueForKeyPath:self.observedObjectKeyPath];
+        localObject = [self.observedObject valueForKeyPath:self.observedObjectKeyPath];
     } else {
-        _evaluatedObject = self.observedObject;
+        localObject = self.observedObject;
     }
     });
-    return _evaluatedObject;
+    return localObject;
 }
 
+- (void)setRuntimeArguments:(NSDictionary *)runtimeArguments {
+    dispatch_sync(_syncQueue, ^{
+        _runtimeArguments = runtimeArguments == nil ? @{} : runtimeArguments;
+        for (RNDBinding *binding in _bindingArguments) {
+            binding.runtimeArguments = _runtimeArguments;
+        }
+        if (_userString != nil) { _userString.runtimeArguments = _runtimeArguments; }
+        if (_evaluator != nil) { _evaluator.runtimeArguments = _runtimeArguments; }
+        if (_nilPlaceholder != nil) { _nilPlaceholder.runtimeArguments = _runtimeArguments; }
+        if (_nullPlaceholder != nil) { _nullPlaceholder.runtimeArguments = _runtimeArguments; }
+        if (_multipleSelectionPlaceholder != nil) { _multipleSelectionPlaceholder.runtimeArguments = _runtimeArguments; }
+        if (_noSelectionPlaceholder != nil) { _noSelectionPlaceholder.runtimeArguments = _runtimeArguments; }
+        if (_notApplicablePlaceholder != nil) { _notApplicablePlaceholder.runtimeArguments = _runtimeArguments; }
+
+    });
+}
+
+- (NSDictionary *)runtimeArguments {
+    id __block localObject = nil;
+    dispatch_sync(_syncQueue, ^{
+        localObject = _runtimeArguments;
+    });
+    return localObject;
+}
 
 #pragma mark - Object Lifecycle
 - (instancetype)init {

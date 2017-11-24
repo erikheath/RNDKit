@@ -41,8 +41,6 @@
 		E43C3F2D1F9A78B000F4D1B5 /* RNDBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F2B1F9A78B000F4D1B5 /* RNDBinding.m */; };
 		E43C3F381F9A79FC00F4D1B5 /* RNDMultiValueTargetActionBinder.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F361F9A79FC00F4D1B5 /* RNDMultiValueTargetActionBinder.h */; };
 		E43C3F391F9A79FC00F4D1B5 /* RNDMultiValueTargetActionBinder.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F371F9A79FC00F4D1B5 /* RNDMultiValueTargetActionBinder.m */; };
-		E43C3F401F9A7A7700F4D1B5 /* RNDMultiValueBinder.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F3E1F9A7A7700F4D1B5 /* RNDMultiValueBinder.h */; };
-		E43C3F411F9A7A7700F4D1B5 /* RNDMultiValueBinder.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F3F1F9A7A7700F4D1B5 /* RNDMultiValueBinder.m */; };
 		E43C3F441F9A7BC300F4D1B5 /* RNDBindingInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F421F9A7BC300F4D1B5 /* RNDBindingInfo.h */; };
 		E43C3F481F9A806800F4D1B5 /* RNDEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F471F9A806800F4D1B5 /* RNDEditor.h */; };
 		E43C3F4A1F9A80DF00F4D1B5 /* RNDEditorRegistration.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F491F9A80DF00F4D1B5 /* RNDEditorRegistration.h */; };
@@ -165,8 +163,6 @@
 		E43C3F2B1F9A78B000F4D1B5 /* RNDBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDBinding.m; sourceTree = "<group>"; };
 		E43C3F361F9A79FC00F4D1B5 /* RNDMultiValueTargetActionBinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDMultiValueTargetActionBinder.h; sourceTree = "<group>"; };
 		E43C3F371F9A79FC00F4D1B5 /* RNDMultiValueTargetActionBinder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDMultiValueTargetActionBinder.m; sourceTree = "<group>"; };
-		E43C3F3E1F9A7A7700F4D1B5 /* RNDMultiValueBinder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDMultiValueBinder.h; sourceTree = "<group>"; };
-		E43C3F3F1F9A7A7700F4D1B5 /* RNDMultiValueBinder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDMultiValueBinder.m; sourceTree = "<group>"; };
 		E43C3F421F9A7BC300F4D1B5 /* RNDBindingInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDBindingInfo.h; sourceTree = "<group>"; };
 		E43C3F431F9A7BC300F4D1B5 /* RNDBindingInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDBindingInfo.m; sourceTree = "<group>"; };
 		E43C3F461F9A7EE400F4D1B5 /* RNDBindingConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDBindingConstants.h; sourceTree = "<group>"; };
@@ -405,8 +401,6 @@
 				E43C3F231F9A77C300F4D1B5 /* RNDBinder.m */,
 				E43C3F361F9A79FC00F4D1B5 /* RNDMultiValueTargetActionBinder.h */,
 				E43C3F371F9A79FC00F4D1B5 /* RNDMultiValueTargetActionBinder.m */,
-				E43C3F3E1F9A7A7700F4D1B5 /* RNDMultiValueBinder.h */,
-				E43C3F3F1F9A7A7700F4D1B5 /* RNDMultiValueBinder.m */,
 				E43C3F2A1F9A78B000F4D1B5 /* RNDBinding.h */,
 				E43C3F2B1F9A78B000F4D1B5 /* RNDBinding.m */,
 				E41AF8401FAE4BFE008F90AC /* RNDInvocationBinding.h */,
@@ -506,7 +500,6 @@
 				E438AF521FA4063700C856A5 /* RNDBinderInfo.h in Headers */,
 				E43C3F481F9A806800F4D1B5 /* RNDEditor.h in Headers */,
 				E43C3F501F9A81EE00F4D1B5 /* RNDPlaceholders.h in Headers */,
-				E43C3F401F9A7A7700F4D1B5 /* RNDMultiValueBinder.h in Headers */,
 				E43C3F4E1F9A81CB00F4D1B5 /* RNDEditorDelegate.h in Headers */,
 				E438AF5F1FA40CD100C856A5 /* RNDMutableBinderSetTemplate.h in Headers */,
 				E464A5DC1FC2633C00C1972C /* RNDPatternedBinding.h in Headers */,
@@ -778,7 +771,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E43C3F251F9A77C300F4D1B5 /* RNDBinder.m in Sources */,
-				E43C3F411F9A7A7700F4D1B5 /* RNDMultiValueBinder.m in Sources */,
 				E464A5DE1FC2636B00C1972C /* RNDPatternedBinding.m in Sources */,
 				E4A7ED481F8327E10083E742 /* RNDController.m in Sources */,
 				E446D4EB1FB676D70078346D /* RNDBindingManifest.m in Sources */,

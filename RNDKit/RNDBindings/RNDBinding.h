@@ -11,6 +11,8 @@
 #import "NSObject+RNDObjectBinding.h"
 
 @class RNDBinder;
+@class RNDPatternedBinding;
+@class RNDPredicateBinding;
 
 @interface RNDBinding : NSObject <NSCoding>
 
@@ -18,12 +20,14 @@
 @property (strong, nullable, readonly) NSString * observedObjectKeyPath;
 @property (strong, nonnull, readonly) NSString *observedObjectBindingIdentifier;
 @property (readonly) BOOL monitorsObservedObject;
+@property (strong, nullable, readonly) RNDPredicateBinding *evaluator;
 @property (strong, nullable, readonly) id evaluatedObject;
 
 
 @property (strong, nonnull, readonly) NSString *controllerKey;
 @property (weak, nullable, readonly) RNDBinder * binder;
 @property (strong, nullable, readonly) NSString *bindingName;
+@property (strong, nullable, readonly) RNDPatternedBinding *userString;
 @property (readwrite, nullable) id bindingObjectValue; // TODO: If the value is a placeholder, you can't write to it.
 
 @property (nonnull, strong, readonly) dispatch_queue_t syncQueue;
@@ -41,6 +45,7 @@
 @property (strong, nullable, readonly) NSString *valueTransformerName;
 @property (strong, nullable, readonly) NSValueTransformer *valueTransformer;
 @property (strong, readonly, nullable) NSArray<RNDBinding *> *bindingArguments;
+@property (strong, null_resettable, readwrite) NSDictionary<NSString *, id> *runtimeArguments;
 
 
 

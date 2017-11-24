@@ -16,7 +16,7 @@
 typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
     RNDNoArgumentType,
     RNDSenderArgumentType,
-    RNDSenderEventArguementType
+    RNDSenderEventArgumentType
 };
 
 
@@ -31,16 +31,9 @@ typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
  */
 @interface RNDMultiValueTargetActionBinder : RNDBinder
 
-@property (strong, nonnull, readonly) NSArray<NSDictionary<RNDPredicateBinding *, RNDInvocationBinding *> *> *invocationArray;
 @property (strong, nonnull, readonly) RNDInvocationBinding *bindingInvocation;
 @property (strong, nonnull, readonly) RNDInvocationBinding *unbindingInvocation;
 @property (strong, nonnull, readonly) RNDInvocationBinding *actionInvocation;
-@property (readonly) BOOL mutuallyExclusive;
 
 @end
 
-//@property (strong, nullable, readonly) NSPredicate *evaluator; // Predicate string with arguments replaced at rt
-//@property (strong, nullable, readonly) id<RNDBindableObject> evaluatedObject; // An argument string is replaced at runtime
-//
-//@property (strong, nonnull, readonly) NSString *evaluatedObjectBindingIdentifier;
-//

@@ -9,13 +9,14 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSUInteger, RNDBinderMode) {
-    readOnlyMode,
-    writeOnlyMode,
-    readWriteMode
+    valueOnlyMode,
+    keyedValueMode,
+    orderedKeyedValueMode
 };
 
 @class RNDBinding;
-@class NSAttributeDescription;
+@class RNDPatternedBinding;
+@class RNDPredicateBinding;
 
 @protocol RNDBindableObject;
 
@@ -32,7 +33,7 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 
 @property (strong, nonnull, readonly) NSString *binderIdentifier;
 @property (nonnull, strong, readonly) NSArray<RNDBinding *> *bindings;
-@property (strong, nonnull, readonly) NSArray<RNDBinding *> *binderValue;
+@property (strong, nonnull, readonly) NSArray<RNDBinding *> *binderValues;
 @property (weak, readwrite, nullable) NSObject<RNDBindableObject> *observer;
 @property (strong, nonnull, readonly) NSString *observerKey;
 @property (readonly) RNDBinderMode binderMode;
@@ -47,6 +48,12 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 @property (strong, nullable, readonly) RNDBinding *noSelectionPlaceholder;
 @property (strong, nullable, readonly) RNDBinding *notApplicablePlaceholder;
 @property (strong, nullable, readonly) RNDBinding *nilPlaceholder;
+
+@property (readonly) BOOL filtersNilValues;
+@property (readonly) BOOL filtersMarkerValues;
+@property (readonly) BOOL unwrapSingleValue;
+@property (readonly) BOOL mutuallyExclusive;
+
 
 - (instancetype _Nullable)init;
 - (instancetype _Nullable)initWithCoder:(NSCoder * _Nullable)aDecoder NS_DESIGNATED_INITIALIZER;

@@ -8,6 +8,7 @@
 
 #import "RNDInvocationBinding.h"
 #import "RNDBinder.h"
+#import "RNDPredicateBinding.h"
 #import "NSObject+RNDObjectBinding.h"
 #import <objc/runtime.h>
 #import <CoreGraphics/CoreGraphics.h>
@@ -30,9 +31,15 @@
     dispatch_sync(self.serializerQueue, ^{
         
         if (self.isBound == NO) {
+            objectValue = nil;
             return;
         }
         
+        if (((NSNumber *)self.evaluator.bindingObjectValue).boolValue == NO ) {
+            objectValue = nil;
+            return;
+        }
+
         NSMutableDictionary *argumentsDictionary = [NSMutableDictionary dictionary];
         for (RNDBinding *binding in self.bindingArguments) {
             id objectValue = binding.bindingObjectValue;
@@ -41,6 +48,8 @@
         }
         NSDictionary *contextDictionary = (dispatch_get_context(self.serializerQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(self.serializerQueue)) : nil);
         [argumentsDictionary addEntriesFromDictionary:contextDictionary];
+        
+        [argumentsDictionary addEntriesFromDictionary:self.runtimeArguments];
         
         NSInvocation * __block invocation = [NSInvocation invocationWithMethodSignature: [NSObject methodSignatureForSelector:_bindingSelector]];
         if (invocation != nil && self.evaluatedObject != nil) {

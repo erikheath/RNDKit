@@ -8,6 +8,7 @@
 
 #import "RNDBinder.h"
 #import "RNDBinding.h"
+#import "RNDPatternedBinding.h"
 #import <objc/runtime.h>
 
 @interface RNDBinder()
@@ -28,7 +29,6 @@
 @synthesize observer = _observer;
 @synthesize observerKey = _observerKey;
 @synthesize binderMode = _binderMode;
-@synthesize monitorsObservable = _monitorsObservable;
 @synthesize monitorsObserver = _monitorsObserver;
 @synthesize syncQueue = _syncQueue;
 @synthesize syncQueueIdentifier = _syncQueueIdentifier;
@@ -40,42 +40,95 @@
 @synthesize nilPlaceholder = _nilPlaceholder;
 @synthesize serializerQueue = _serializerQueue;
 @synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
+@synthesize filtersNilValues = _filtersNilValues;
+@synthesize filtersMarkerValues = _filtersMarkerValues;
+@synthesize mutuallyExclusive = _mutuallyExclusive;
+@synthesize unwrapSingleValue = _unwrapSingleValue;
+
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
     
     dispatch_sync(self.syncQueue, ^{
-        
         if (self.isBound == NO) {
             objectValue = nil;
         }
         
-        id rawObjectValue = self.bindings.firstObject.bindingObjectValue;
+        NSMutableArray *valuesArray = [NSMutableArray arrayWithCapacity:_binderValues.count];
         
-        if (rawObjectValue == nil || [rawObjectValue isEqual:[NSNull null]]) { return; }
+        [_binderValues enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
+            NSDictionary *contextDictionary = (dispatch_get_context(self.syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(self.syncQueue)) : nil);
+            if (contextDictionary != nil) {
+                [arguments addEntriesFromDictionary:contextDictionary];
+            }
+            [arguments setObject:@(idx) forKey:RNDIterationArgument];
+            ((RNDBinding *)obj).runtimeArguments = [NSDictionary dictionaryWithDictionary:arguments];
+            
+            id rawObjectValue = ((RNDBinding *)obj).bindingObjectValue;
+            if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
+                if (_filtersMarkerValues == YES) { return; }
+                rawObjectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : rawObjectValue;
+            }
+            
+            if ([rawObjectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
+                if (_filtersMarkerValues == YES) { return; }
+                rawObjectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : rawObjectValue;
+            }
+            
+            if ([rawObjectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
+                if (_filtersMarkerValues == YES) { return; }
+                rawObjectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : rawObjectValue;
+            }
+            
+            if ([rawObjectValue isEqual: RNDBindingNullValueMarker] == YES) {
+                if (_filtersMarkerValues == YES) { return; }
+                rawObjectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : rawObjectValue;
+            }
+            
+            if (rawObjectValue == nil) {
+                if (_filtersMarkerValues == YES || _filtersNilValues == YES) { return; }
+                rawObjectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : [NSNull null];
+            }
+
+            NSString *entryString = ((RNDBinding *)obj).userString.bindingObjectValue;
+            [valuesArray addObject:@{entryString: rawObjectValue}];
+            if (_mutuallyExclusive == YES) { *stop = YES; }
+            
+        }];
+
         
-        if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-            objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder : rawObjectValue;
-            return;
+        switch (_binderMode) {
+            case valueOnlyMode:
+            {
+                NSMutableArray *valueOnlyArray = [NSMutableArray arrayWithCapacity:valuesArray.count];
+                for (NSDictionary *dictionary in valuesArray) {
+                    [valueOnlyArray addObjectsFromArray:[dictionary allValues]];
+                }
+                objectValue = _unwrapSingleValue == YES ? (valueOnlyArray.count == 1 ? valueOnlyArray.firstObject : valueOnlyArray) : valueOnlyArray;
+                break;
+            }
+            case keyedValueMode:
+            {
+                NSMutableDictionary *keyedValueDictionary = [NSMutableDictionary dictionaryWithCapacity:valuesArray.count];
+                for (NSDictionary *dictionary in valuesArray) {
+                    [keyedValueDictionary addEntriesFromDictionary:dictionary];
+                }
+                objectValue = keyedValueDictionary;
+                break;
+            }
+            case orderedKeyedValueMode:
+            {
+                objectValue = valuesArray;
+                break;
+            }
+            default:
+            {
+                objectValue = valuesArray;
+                break;
+            }
         }
         
-        if ([rawObjectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-            objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder : rawObjectValue;
-            return;
-        }
-        
-        if ([rawObjectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-            objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder : rawObjectValue;
-            return;
-        }
-        
-        if (rawObjectValue == nil && self.nullPlaceholder != nil) {
-            objectValue = self.nullPlaceholder;
-            return;
-        } else {
-            objectValue = rawObjectValue;
-            return;
-        }
     });
     
     return objectValue;

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RNDPatternedBinding.h"
+#import "RNDPredicateBinding.h"
 
 @implementation RNDPatternedBinding
 
@@ -20,9 +21,15 @@
     dispatch_sync(self.serializerQueue, ^{
         
         if (self.isBound == NO) {
+            objectValue = nil;
             return;
         }
         
+        if (((NSNumber *)self.evaluator.bindingObjectValue).boolValue == NO ) {
+            objectValue = nil;
+            return;
+        }
+
         NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_patternTemplate];
         
         for (RNDBinding *binding in self.bindingArguments) {
@@ -31,6 +38,14 @@
                                                       options:0
                                                         range:NSMakeRange(0, replacableObjectValue.length)];
         }
+
+        for (NSString *runtimeKey in self.runtimeArguments) {
+            [replacableObjectValue replaceOccurrencesOfString:runtimeKey
+                                                   withString:self.runtimeArguments[runtimeKey]
+                                                      options:0
+                                                        range:NSMakeRange(0, replacableObjectValue.length)];
+        }
+
         
         if ([replacableObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
             objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : replacableObjectValue;

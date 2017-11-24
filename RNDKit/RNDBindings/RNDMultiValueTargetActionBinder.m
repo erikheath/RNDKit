@@ -25,49 +25,11 @@
 @implementation RNDMultiValueTargetActionBinder
 
 #pragma mark - Properties
-@synthesize invocationArray = _invocationArray;
 @synthesize serializerQueue = _serializerQueue;
 @synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
 @synthesize bindingInvocation = _bindingInvocation;
 @synthesize unbindingInvocation = _unbindingInvocation;
 @synthesize actionInvocation = _actionInvocation;
-@synthesize mutuallyExclusive = _mutuallyExclusive;
-
-- (id _Nullable)bindingObjectValue {
-    NSMutableArray * __block objectValue = [NSMutableArray array];
-    
-    dispatch_sync(self.syncQueue, ^{
-        
-        if (self.isBound == NO) {
-            objectValue = nil;
-        }
-        
-        for (NSDictionary<RNDPredicateBinding *, RNDInvocationBinding *> *invocationDictionary in _invocationArray) {
-            NSInvocation *invocation = nil;
-            RNDPredicateBinding *predicateBinding = invocationDictionary.allKeys.firstObject;
-            if ([predicateBinding.bindingObjectValue evaluateWithObject:predicateBinding.evaluatedObject] == NO) {
-                continue;
-            }
-            RNDInvocationBinding *binding = invocationDictionary.allValues.firstObject;
-            NSDictionary *contextDictionary = (dispatch_get_context(self.syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(self.syncQueue)) : nil);
-            
-            if (contextDictionary != nil) {
-                dispatch_set_context(binding.serializerQueue, (__bridge void * _Nullable)(contextDictionary));
-            }
-            
-            if ((invocation = binding.bindingObjectValue) != nil) {
-                [objectValue addObject:invocation];
-                dispatch_set_context(binding.serializerQueue, NULL);
-                if (_mutuallyExclusive == YES) { break; }
-                continue;
-            }
-            
-            dispatch_set_context(binding.serializerQueue, NULL);
-        }
-    });
-    
-    return objectValue;
-}
 
 #pragma mark - Object Lifecycle
 

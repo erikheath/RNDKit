@@ -19,9 +19,15 @@
     dispatch_sync(self.serializerQueue, ^{
         
         if (self.isBound == NO) {
+            objectValue = nil;
             return;
         }
         
+        if (((NSNumber *)self.evaluator.bindingObjectValue).boolValue == NO ) {
+            objectValue = nil;
+            return;
+        }
+
         NSMutableDictionary * __block argumentsDictionary = [NSMutableDictionary dictionary];
 
         [self.bindingArguments enumerateObjectsUsingBlock:^(RNDBinding * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -29,7 +35,9 @@
             id argumentValue = binding.bindingObjectValue;
             [argumentsDictionary setObject:argumentValue forKey:binding.argumentName];
         }];
-        
+
+        [argumentsDictionary addEntriesFromDictionary:self.runtimeArguments];
+
         NSPredicate *predicate = [[NSPredicate predicateWithFormat:_predicateFormatString]  predicateWithSubstitutionVariables: argumentsDictionary];
         
         if (_evaluates == NO) {
@@ -38,31 +46,6 @@
             // TODO: Error Handling
         } else {
             objectValue = @([predicate evaluateWithObject:self.evaluatedObject]);
-            
-            if ([objectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-                objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : objectValue;
-                return;
-            }
-            
-            if ([objectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-                objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : objectValue;
-                return;
-            }
-            
-            if ([objectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-                objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : objectValue;
-                return;
-            }
-            
-            if ([objectValue isEqual: RNDBindingNullValueMarker] == YES) {
-                objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : objectValue;
-                return;
-            }
-            
-            if (objectValue == nil) {
-                objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : objectValue;
-                return;
-            }
             
             objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:objectValue] : objectValue;
         }

@@ -7,6 +7,7 @@
 //
 
 #import "RNDExpressionBinding.h"
+#import "RNDPredicateBinding.h"
 
 
 @implementation RNDExpressionBinding
@@ -24,9 +25,15 @@
     dispatch_sync(self.syncQueue, ^{
         
         if (self.isBound == NO) {
+            objectValue = nil;
             return;
         }
         
+        if (((NSNumber *)self.evaluator.bindingObjectValue).boolValue == NO ) {
+            objectValue = nil;
+            return;
+        }
+
         id rawObjectValue;
         if (_expressionTemplate != nil) {
             NSMutableArray *argumentArray = [NSMutableArray array];

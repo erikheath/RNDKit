@@ -22,6 +22,8 @@ RNDArgument RNDUnbindingSelectorArgument = @"RNDUnbindingSelectorArgument";
 RNDArgument RNDActionSelectorArgument = @"RNDActionSelectorArgument";
 RNDArgument RNDBinderArgument = @"RNDBinderArgument";
 RNDArgument RNDObserverArgument = @"RNDObserverArgument";
+RNDArgument RNDIterationArgument = @"RNDIterationArgument";
+RNDArgument RNDPositionArgument = @"RNDIterationArgument";
 
 #pragma mark - RNDNotifications
 RNDBindingNotifications RNDValueOfObserverObjectDidChange = @"RNDValueOfObserverObjectDidChange";

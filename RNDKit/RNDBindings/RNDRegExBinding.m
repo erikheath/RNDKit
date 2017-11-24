@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RNDRegExBinding.h"
+#import "RNDPredicateBinding.h"
 
 @implementation RNDRegExBinding
 
@@ -22,9 +23,15 @@
     dispatch_sync(self.serializerQueue, ^{
         
         if (self.isBound == NO) {
+            objectValue = nil;
             return;
         }
         
+        if (((NSNumber *)self.evaluator.bindingObjectValue).boolValue == NO ) {
+            objectValue = nil;
+            return;
+        }
+
         NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_regExTemplate];
         
         for (RNDBinding *binding in self.bindingArguments) {
@@ -33,6 +40,14 @@
                                                       options:0
                                                         range:NSMakeRange(0, replacableObjectValue.length)];
         }
+        
+        for (NSString *runtimeKey in self.runtimeArguments) {
+            [replacableObjectValue replaceOccurrencesOfString:runtimeKey
+                                                   withString:self.runtimeArguments[runtimeKey]
+                                                      options:0
+                                                        range:NSMakeRange(0, replacableObjectValue.length)];
+        }
+
         
         NSMutableString *replacementTemplateValue = _replacementTemplate != nil ? [NSMutableString stringWithString:_replacementTemplate] : nil;
         if (replacementTemplateValue != nil) {
