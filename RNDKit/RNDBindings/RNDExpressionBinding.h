@@ -11,10 +11,7 @@
 
 @interface RNDExpressionBinding: RNDBinding
 
-@property NSExpressionType expressionType;
-@property (strong, readonly, nullable) NSString *expressionFunctionName;
-@property (strong, readonly, nullable) NSString *expressionTemplate;
-@property (readonly) BOOL evaluates;
+@property (strong, readwrite, nullable) NSString *expressionTemplate;
 
 @end
 

@@ -15,12 +15,41 @@
 #pragma mark - Properties
 @synthesize regExTemplate = _regExTemplate;
 @synthesize replacementTemplate = _replacementTemplate;
-@synthesize evaluates = _evaluates;
+
+- (void)setRegExTemplate:(NSString * _Nullable)regExTemplate {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _regExTemplate = regExTemplate;
+    });
+}
+
+- (NSString * _Nullable)regExTemplate {
+    id __block localObject = nil;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _regExTemplate;
+    });
+    return localObject;
+}
+
+- (void)setReplacementTemplate:(NSString * _Nullable)replacementTemplate {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _replacementTemplate = replacementTemplate;
+    });
+}
+
+- (NSString * _Nullable)replacementTemplate {
+    id __block localObject = nil;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _regExTemplate;
+    });
+    return localObject;
+}
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.serializerQueue, ^{
+    dispatch_sync(self.syncQueue, ^{
         
         if (self.isBound == NO) {
             objectValue = nil;
@@ -61,7 +90,7 @@
         }
         
         NSRegularExpression *expression = [NSRegularExpression regularExpressionWithPattern:replacableObjectValue options:0 error:nil];
-        if (_evaluates == NO) {
+        if (self.evaluates == NO) {
             objectValue = @[expression, replacementTemplateValue];
             return;
             // TODO: Error Handling
@@ -107,14 +136,13 @@
 
 #pragma mark - Object Lifecycle
 - (instancetype)init {
-    return [self initWithCoder:nil];
+    return [super init];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder]) != nil) {
         _regExTemplate = [aDecoder decodeObjectForKey:@"expressionTemplate"];
         _replacementTemplate = [aDecoder decodeObjectForKey:@"replacementTemplate"];
-        _evaluates = [aDecoder decodeBoolForKey:@"evaluates"];
     }
     
     return self;
@@ -123,9 +151,14 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     [aCoder encodeObject:_regExTemplate forKey:@"expressionTemplate"];
     [aCoder encodeObject:_replacementTemplate forKey:@"replacementTemplate"];
-    [aCoder encodeBool:_evaluates forKey:@"evaluates"];
 }
 
 #pragma mark - Binding Management
+-(BOOL)bindObjects:(NSError * _Nullable __autoreleasing *)error {
+    if (_regExTemplate == nil) {
+        return NO;
+    }
+    return [super bindObjects:error];
+}
 
 @end

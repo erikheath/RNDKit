@@ -15,10 +15,25 @@
 #pragma mark - Properties
 @synthesize patternTemplate = _patternTemplate;
 
+- (void)setPatternTemplate:(NSString * _Nullable)patternTemplate {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _patternTemplate = patternTemplate;
+    });
+}
+
+- (NSString * _Nullable)patternTemplate {
+    id __block localObject = nil;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _patternTemplate;
+    });
+    return localObject;
+}
+
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.serializerQueue, ^{
+    dispatch_sync(self.syncQueue, ^{
         
         if (self.isBound == NO) {
             objectValue = nil;
@@ -86,7 +101,7 @@
 
 #pragma mark - Object Lifecycle
 - (instancetype)init {
-    return [self initWithCoder:nil];
+    return [super init];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
@@ -102,5 +117,11 @@
 }
 
 #pragma mark - Binding Management
+-(BOOL)bindObjects:(NSError * _Nullable __autoreleasing *)error {
+    if (_patternTemplate == nil) {
+        return NO;
+    }
+    return [super bindObjects:error];
+}
 
 @end

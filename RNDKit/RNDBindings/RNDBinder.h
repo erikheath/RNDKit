@@ -33,12 +33,12 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 
 @property (strong, nonnull, readonly) NSString *binderIdentifier;
 @property (nonnull, strong, readonly) NSArray<RNDBinding *> *bindings;
-@property (strong, nonnull, readonly) NSArray<RNDBinding *> *binderValues;
 @property (weak, readwrite, nullable) NSObject<RNDBindableObject> *observer;
 @property (strong, nonnull, readonly) NSString *observerKey;
 @property (readonly) RNDBinderMode binderMode;
 @property (readonly) BOOL monitorsObserver;
 @property (strong, nullable, readonly) dispatch_queue_t syncQueue;
+@property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
 
 @property (strong, readwrite, nullable) id bindingObjectValue;
 @property (readonly, getter=isBound) BOOL bound;
@@ -55,12 +55,19 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 @property (readonly) BOOL mutuallyExclusive;
 
 
-- (instancetype _Nullable)init;
+- (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;
 - (instancetype _Nullable)initWithCoder:(NSCoder * _Nullable)aDecoder NS_DESIGNATED_INITIALIZER;
 - (void)encodeWithCoder:(NSCoder * _Nullable)aCoder;
 
+- (void)bind;
+- (void)unbind;
+
 - (BOOL)bind:(NSError * _Nullable __autoreleasing * _Nullable)error;
 - (BOOL)unbind:(NSError * _Nullable __autoreleasing * _Nullable)error;
+
+- (BOOL)bindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
+- (BOOL)unbindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
+
 
 // These methods must be overrideen to do anything
 - (void)updateValueOfObserverObject;

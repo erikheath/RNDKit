@@ -11,6 +11,6 @@
 
 @interface RNDPatternedBinding : RNDBinding
 
-@property (strong, readonly, nonnull) NSString *patternTemplate;
+@property (strong, readwrite, nullable) NSString *patternTemplate;
 
 @end

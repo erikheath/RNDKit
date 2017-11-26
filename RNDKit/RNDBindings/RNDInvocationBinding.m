@@ -22,13 +22,27 @@
 @implementation RNDInvocationBinding
 
 #pragma mark - Properties
-@synthesize bindingSelector = _bindingSelector;
-@synthesize evaluates = _evaluates;
+@synthesize bindingSelectorString = _bindingSelectorString;
+
+- (void)setBindingSelectorString:(NSString * _Nullable)bindingSelectorString {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _bindingSelectorString = bindingSelectorString;
+    });
+}
+
+- (NSString * _Nullable)bindingSelectorString {
+    NSString __block *localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _bindingSelectorString;
+    });
+    return localObject;
+}
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.serializerQueue, ^{
+    dispatch_sync(self.syncQueue, ^{
         
         if (self.isBound == NO) {
             objectValue = nil;
@@ -39,29 +53,17 @@
             objectValue = nil;
             return;
         }
-
-        NSMutableDictionary *argumentsDictionary = [NSMutableDictionary dictionary];
-        for (RNDBinding *binding in self.bindingArguments) {
-            id objectValue = binding.bindingObjectValue;
-            if (objectValue == nil) { objectValue = [NSNull null];}
-            [argumentsDictionary setObject:objectValue forKey:binding.argumentName];
-        }
-        NSDictionary *contextDictionary = (dispatch_get_context(self.serializerQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(self.serializerQueue)) : nil);
-        [argumentsDictionary addEntriesFromDictionary:contextDictionary];
         
-        [argumentsDictionary addEntriesFromDictionary:self.runtimeArguments];
-        
-        NSInvocation * __block invocation = [NSInvocation invocationWithMethodSignature: [NSObject methodSignatureForSelector:_bindingSelector]];
+        NSInvocation * __block invocation = [NSInvocation invocationWithMethodSignature: [NSObject methodSignatureForSelector:NSSelectorFromString(_bindingSelectorString)]];
         if (invocation != nil && self.evaluatedObject != nil) {
             [invocation retainArguments];
-            [invocation setSelector:_bindingSelector];
+            [invocation setSelector:NSSelectorFromString(_bindingSelectorString)];
             [invocation setTarget:self.evaluatedObject];
 
             [self.bindingArguments enumerateObjectsUsingBlock:^(RNDBinding * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
                 RNDBinding *binding = obj;
-                id argumentValue = [argumentsDictionary objectForKey:binding.argumentName];
-                BOOL result = [self addBindingArgumentValue:argumentValue toInvocation:invocation atPosition:idx + 2];
+                BOOL result = [self addBindingArgumentValue:binding.bindingObjectValue toInvocation:invocation atPosition:idx + 2];
                 if (result == NO) {
                     // There was an error. The invocation will be nil'd and the process will end.
                     invocation = nil;
@@ -71,7 +73,7 @@
             }];
         }
         
-        if (_evaluates == YES) {
+        if (self.evaluates == YES) {
             [invocation invoke];
             id result = [self objectValueForInvocation:invocation];
             if ([result isEqual: RNDBindingMultipleValuesMarker] == YES) {
@@ -117,19 +119,19 @@
 
 #pragma mark - Object Lifecycle
 - (instancetype)init {
-    return [self initWithCoder:nil];
+    return [super init];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder]) != nil) {
-        _bindingSelector = NSSelectorFromString([aDecoder decodeObjectForKey:@"bindingSelector"]);
+        _bindingSelectorString = [aDecoder decodeObjectForKey:@"bindingSelectorString"];
     }
     
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
-    [aCoder encodeObject:NSStringFromSelector(_bindingSelector) forKey:@"bindingSelector"];
+    [aCoder encodeObject:_bindingSelectorString forKey:@"bindingSelectorString"];
 }
 
 #pragma mark - Binding Management
@@ -504,5 +506,14 @@
     }
     return nil;
 }
+
+#pragma mark - Binding Management
+-(BOOL)bindObjects:(NSError * _Nullable __autoreleasing *)error {
+    if (_bindingSelectorString == nil) {
+        return NO;
+    }
+    return [super bindObjects:error];
+}
+
 @end
 

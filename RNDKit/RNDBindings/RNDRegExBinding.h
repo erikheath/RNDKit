@@ -11,8 +11,7 @@
 
 @interface RNDRegExBinding : RNDBinding
 
-@property (strong, readonly, nonnull) NSString *regExTemplate;
-@property (strong, readonly, nullable) NSString *replacementTemplate;
-@property (readonly) BOOL evaluates;
+@property (strong, readwrite, nullable) NSString *regExTemplate;
+@property (strong, readwrite, nullable) NSString *replacementTemplate;
 
 @end

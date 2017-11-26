@@ -16,48 +16,52 @@
 
 @interface RNDBinding : NSObject <NSCoding>
 
-@property (strong, nullable, readonly) NSObject *observedObject;
-@property (strong, nullable, readonly) NSString * observedObjectKeyPath;
-@property (strong, nonnull, readonly) NSString *observedObjectBindingIdentifier;
-@property (readonly) BOOL monitorsObservedObject;
-@property (strong, nullable, readonly) RNDPredicateBinding *evaluator;
+@property (strong, nullable, readwrite) NSObject *observedObject;
+@property (strong, nullable, readwrite) NSString * observedObjectKeyPath;
+@property (strong, nullable, readwrite) NSString *observedObjectBindingIdentifier;
+@property (readwrite) BOOL monitorsObservedObject;
+@property (strong, nullable, readwrite) RNDPredicateBinding *evaluator;
 @property (strong, nullable, readonly) id evaluatedObject;
 
 
-@property (strong, nonnull, readonly) NSString *controllerKey;
-@property (weak, nullable, readonly) RNDBinder * binder;
-@property (strong, nullable, readonly) NSString *bindingName;
-@property (strong, nullable, readonly) RNDPatternedBinding *userString;
+@property (strong, nonnull, readwrite) NSString *controllerKey;
+@property (weak, nullable, readwrite) RNDBinder * binder;
+@property (strong, nullable, readwrite) NSString *bindingName;
+@property (strong, nullable, readwrite) RNDPatternedBinding *userString;
 @property (readwrite, nullable) id bindingObjectValue; // TODO: If the value is a placeholder, you can't write to it.
 
 @property (nonnull, strong, readonly) dispatch_queue_t syncQueue;
-@property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
 
 @property (readonly) BOOL isBound;
 
-@property (strong, nullable, readonly) RNDBinding *nullPlaceholder;
-@property (strong, nullable, readonly) RNDBinding *multipleSelectionPlaceholder;
-@property (strong, nullable, readonly) RNDBinding *noSelectionPlaceholder;
-@property (strong, nullable, readonly) RNDBinding *notApplicablePlaceholder;
-@property (strong, nullable, readonly) RNDBinding *nilPlaceholder;
+@property (strong, nullable, readwrite) RNDBinding *nullPlaceholder;
+@property (strong, nullable, readwrite) RNDBinding *multipleSelectionPlaceholder;
+@property (strong, nullable, readwrite) RNDBinding *noSelectionPlaceholder;
+@property (strong, nullable, readwrite) RNDBinding *notApplicablePlaceholder;
+@property (strong, nullable, readwrite) RNDBinding *nilPlaceholder;
 
-@property (strong, nullable, readonly) NSString *argumentName;
-@property (strong, nullable, readonly) NSString *valueTransformerName;
+@property (strong, nullable, readwrite) NSString *argumentName;
+@property (strong, nullable, readwrite) NSString *valueTransformerName;
 @property (strong, nullable, readonly) NSValueTransformer *valueTransformer;
-@property (strong, readonly, nullable) NSArray<RNDBinding *> *bindingArguments;
-@property (strong, null_resettable, readwrite) NSDictionary<NSString *, id> *runtimeArguments;
+@property (strong, readwrite, nullable) NSMutableArray<RNDBinding *> *bindingArguments;
+@property (strong, nullable, readwrite) NSDictionary<NSString *, id> *runtimeArguments;
+@property (strong, nonnull, readonly) NSArray<RNDBinding *> *allBindings;
+@property (readwrite) BOOL evaluates;
 
 
+- (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype _Nullable)initWithCoder:(NSCoder * _Nullable)aDecoder NS_DESIGNATED_INITIALIZER;
 
 -(void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
 
 - (void)bind;
-- (BOOL)bind:(NSError * __autoreleasing _Nonnull * _Nonnull)error;
+- (BOOL)bind:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
 - (void)unbind;
-- (BOOL)unbind:(NSError * __autoreleasing _Nonnull * _Nonnull)error;
+- (BOOL)unbind:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
+- (BOOL)bindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
+- (BOOL)unbindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
 @end
 

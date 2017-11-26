@@ -11,7 +11,6 @@
 
 @interface RNDPredicateBinding: RNDBinding
 
-@property (strong, readonly, nonnull) NSString *predicateFormatString;
-@property (readonly) BOOL evaluates;
+@property (strong, readwrite, nullable) NSString *predicateFormatString;
 
 @end

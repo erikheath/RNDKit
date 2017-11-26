@@ -90,7 +90,7 @@
     dispatch_sync(_serializerQueue, ^{
         if ((result = [super bind:error]) == NO) { return; }
         
-        if ([self.observer respondsToSelector:_bindingInvocation.bindingSelector] && [self.observer respondsToSelector:_unbindingInvocation.bindingSelector]) {
+        if ([self.observer respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.observer respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
             NSInvocation *invocation = _bindingInvocation.bindingObjectValue;
             if (invocation == nil) { return; }
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -109,7 +109,7 @@
     dispatch_sync(_serializerQueue, ^{
         if ((result = [super unbind:error]) == NO) { return; }
 
-        if ([self.observer respondsToSelector:_bindingInvocation.bindingSelector] && [self.observer respondsToSelector:_unbindingInvocation.bindingSelector]) {
+        if ([self.observer respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.observer respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
             NSInvocation *invocation = _unbindingInvocation.bindingObjectValue;
             if (invocation == nil) { return; }
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -124,10 +124,12 @@
 }
 
 - (void)performBindingObjectAction {
-    dispatch_sync(_serializerQueue, ^{
+    dispatch_async(_serializerQueue, ^{
         dispatch_set_context(self.syncQueue, NULL);
         for (NSInvocation *invocation in self.bindingObjectValue) {
-            [invocation invoke];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [invocation invoke];
+            });
         }
         dispatch_set_context(self.syncQueue, NULL);
     });
@@ -139,7 +141,9 @@
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
         for (NSInvocation *invocation in self.bindingObjectValue) {
-            [invocation invoke];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [invocation invoke];
+            });
         }
         dispatch_set_context(self.syncQueue, NULL);
     });
@@ -152,7 +156,9 @@
         if (event != nil) { [contextDictionary setObject:event forKey:RNDEventArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
         for (NSInvocation *invocation in self.bindingObjectValue) {
-            [invocation invoke];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [invocation invoke];
+            });
         }
         dispatch_set_context(self.syncQueue, NULL);
 
@@ -167,7 +173,9 @@
         if (context != nil) { [contextDictionary setObject:context forKey:RNDContextArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
         for (NSInvocation *invocation in self.bindingObjectValue) {
-            [invocation invoke];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [invocation invoke];
+            });
         }
         dispatch_set_context(self.syncQueue, NULL);
 

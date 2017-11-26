@@ -11,12 +11,26 @@
 @implementation RNDPredicateBinding
 #pragma mark - Properties
 @synthesize predicateFormatString = _predicateFormatString;
-@synthesize evaluates = _evaluates;
+
+- (void)setPredicateFormatString:(NSString * _Nullable)predicateFormatString {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _predicateFormatString = predicateFormatString;
+    });
+}
+
+- (NSString * _Nullable)predicateFormatString {
+    NSString __block *localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _predicateFormatString;
+    });
+    return localObject;
+}
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.serializerQueue, ^{
+    dispatch_sync(self.syncQueue, ^{
         
         if (self.isBound == NO) {
             objectValue = nil;
@@ -40,7 +54,7 @@
 
         NSPredicate *predicate = [[NSPredicate predicateWithFormat:_predicateFormatString]  predicateWithSubstitutionVariables: argumentsDictionary];
         
-        if (_evaluates == NO) {
+        if (self.evaluates == NO) {
             objectValue = predicate;
             return;
             // TODO: Error Handling
@@ -62,13 +76,12 @@
 
 #pragma mark - Object Lifecycle
 - (instancetype)init {
-    return [self initWithCoder:nil];
+    return [super init];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if ((self = [super initWithCoder:aDecoder]) != nil) {
         _predicateFormatString = [aDecoder decodeObjectForKey:@"predicateFormatString"];
-        _evaluates = [aDecoder decodeBoolForKey:@"evaluates"];
 
     }
     
@@ -78,10 +91,15 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     if (aCoder == nil) { return; }
     [aCoder encodeObject:_predicateFormatString forKey:@"predicateFormatString"];
-    [aCoder encodeBool:_evaluates forKey:@"evaluates"];
 
 }
 
 #pragma mark - Binding Management
+-(BOOL)bindObjects:(NSError * _Nullable __autoreleasing *)error {
+    if (_predicateFormatString == nil) {
+        return NO;
+    }
+    return [super bindObjects:error];
+}
 
 @end

@@ -15,7 +15,6 @@
 
 @property (strong, nullable, readonly) NSUUID *syncQueueIdentifier;
 @property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
-@property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
 @property (readwrite, getter=isBound) BOOL bound;
 
 @end
@@ -25,26 +24,281 @@
 #pragma mark - Properties
 
 @synthesize bindings = _bindings;
+
+- (void)setBindings:(NSArray<RNDBinding *> * _Nonnull)bindings {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _bindings = bindings;
+    });
+}
+
+- (NSString *)bindings {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _bindings;
+    });
+    return localObject;
+}
+
+
 @synthesize binderIdentifier = _binderIdentifier;
+
+- (void)setBinderIdentifier:(NSString * _Nonnull)binderIdentifier {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _binderIdentifier = binderIdentifier;
+    });
+}
+
+- (NSString *)binderIdentifier {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _binderIdentifier;
+    });
+    return localObject;
+}
+
+
 @synthesize observer = _observer;
+
+- (void)setObserver:(NSObject<RNDBindableObject> *)observer {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _observer = observer;
+    });
+}
+
+- (NSObject<RNDBindableObject> *)observer {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _observer;
+    });
+    return localObject;
+}
+
+
 @synthesize observerKey = _observerKey;
+
+- (void)setObserverKey:(NSString * _Nonnull)observerKey {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _observerKey = observerKey;
+    });
+}
+
+- (NSString *)observerKey {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _observerKey;
+    });
+    return localObject;
+}
+
+
 @synthesize binderMode = _binderMode;
+
+- (void)setBinderMode:(RNDBinderMode)binderMode {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _binderMode = binderMode;
+    });
+}
+
+- (RNDBinderMode)binderMode {
+    BOOL __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _binderMode;
+    });
+    return localObject;
+}
+
+
 @synthesize monitorsObserver = _monitorsObserver;
+
+- (void)setMonitorsObserver:(BOOL)monitorsObserver {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _monitorsObserver = monitorsObserver;
+    });
+}
+
+- (BOOL)monitorsObserver {
+    BOOL __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _monitorsObserver;
+    });
+    return localObject;
+}
+
+
+@synthesize filtersNilValues = _filtersNilValues;
+
+- (void)setFiltersNilValues:(BOOL)filtersNilValues {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _filtersNilValues = filtersNilValues;
+    });
+}
+
+- (BOOL)filtersNilValues {
+    BOOL __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _filtersNilValues;
+    });
+    return localObject;
+}
+
+
+@synthesize filtersMarkerValues = _filtersMarkerValues;
+
+- (void)setFiltersMarkerValues:(BOOL)filtersMarkerValues {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _filtersMarkerValues = filtersMarkerValues;
+    });
+}
+
+- (BOOL)filtersMarkerValues {
+    BOOL __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _filtersMarkerValues;
+    });
+    return localObject;
+}
+
+
+@synthesize mutuallyExclusive = _mutuallyExclusive;
+
+- (void)setMutuallyExclusive:(BOOL)mutuallyExclusive {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _mutuallyExclusive = mutuallyExclusive;
+    });
+}
+
+- (BOOL)mutuallyExclusive {
+    BOOL __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _mutuallyExclusive;
+    });
+    return localObject;
+}
+
+
+@synthesize unwrapSingleValue = _unwrapSingleValue;
+
+- (void)setUnwrapSingleValue:(BOOL)unwrapSingleValue {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _unwrapSingleValue = unwrapSingleValue;
+    });
+}
+
+- (BOOL)unwrapSingleValue {
+    BOOL __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _unwrapSingleValue;
+    });
+    return localObject;
+}
+
+
+@synthesize nullPlaceholder = _nullPlaceholder;
+
+- (void)setNullPlaceholder:(RNDBinding *)nullPlaceholder {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _nullPlaceholder = nullPlaceholder;
+    });
+}
+
+- (RNDBinding *)nullPlaceholder {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _nullPlaceholder;
+    });
+    return localObject;
+}
+
+
+@synthesize multipleSelectionPlaceholder = _multipleSelectionPlaceholder;
+
+- (void)setMultipleSelectionPlaceholder:(RNDBinding *)multipleSelectionPlaceholder {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _multipleSelectionPlaceholder = multipleSelectionPlaceholder;
+    });
+}
+
+- (RNDBinding *)multipleSelectionPlaceholder {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _multipleSelectionPlaceholder;
+    });
+    return localObject;
+}
+
+
+@synthesize notApplicablePlaceholder = _notApplicablePlaceholder;
+
+- (void)setNotApplicablePlaceholder:(RNDBinding *)notApplicablePlaceholder {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _notApplicablePlaceholder = notApplicablePlaceholder;
+    });
+}
+
+- (RNDBinding *)notApplicablePlaceholder {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _notApplicablePlaceholder;
+    });
+    return localObject;
+}
+
+
+@synthesize nilPlaceholder = _nilPlaceholder;
+
+- (void)setNilPlaceholder:(RNDBinding *)nilPlaceholder {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _nilPlaceholder = nilPlaceholder;
+    });
+}
+
+- (RNDBinding *)nilPlaceholder {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _nilPlaceholder;
+    });
+    return localObject;
+}
+
+
+@synthesize noSelectionPlaceholder = _noSelectionPlaceholder;
+
+- (void)setNoSelectionPlaceholder:(RNDBinding *)noSelectionPlaceholder {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _noSelectionPlaceholder = noSelectionPlaceholder;
+    });
+}
+
+- (RNDBinding *)noSelectionPlaceholder {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _noSelectionPlaceholder;
+    });
+    return localObject;
+}
+
+
+#pragma mark - Transient (Calculated) Properties
 @synthesize syncQueue = _syncQueue;
 @synthesize syncQueueIdentifier = _syncQueueIdentifier;
 @synthesize bound = _bound;
-@synthesize nullPlaceholder = _nullPlaceholder;
-@synthesize multipleSelectionPlaceholder = _multipleSelectionPlaceholder;
-@synthesize noSelectionPlaceholder = _noSelectionPlaceholder;
-@synthesize notApplicablePlaceholder = _notApplicablePlaceholder;
-@synthesize nilPlaceholder = _nilPlaceholder;
 @synthesize serializerQueue = _serializerQueue;
 @synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
-@synthesize filtersNilValues = _filtersNilValues;
-@synthesize filtersMarkerValues = _filtersMarkerValues;
-@synthesize mutuallyExclusive = _mutuallyExclusive;
-@synthesize unwrapSingleValue = _unwrapSingleValue;
-
 
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
@@ -54,9 +308,9 @@
             objectValue = nil;
         }
         
-        NSMutableArray *valuesArray = [NSMutableArray arrayWithCapacity:_binderValues.count];
+        NSMutableArray *valuesArray = [NSMutableArray arrayWithCapacity:_bindings.count];
         
-        [_binderValues enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [_bindings enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
             NSDictionary *contextDictionary = (dispatch_get_context(self.syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(self.syncQueue)) : nil);
             if (contextDictionary != nil) {
@@ -146,7 +400,7 @@
 #pragma mark - Object Lifecycle
 
 - (instancetype _Nullable)init {
-    return [self initWithCoder:nil];
+    return [super init];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
@@ -196,53 +450,79 @@
 
 #pragma mark - Binding Management
 
-- (BOOL)bind:(NSError *__autoreleasing  _Nullable *)error {
-    __block NSError * internalError = nil;
-    __block BOOL success = NO;
+- (BOOL)bindObjects:(NSError *__autoreleasing  _Nullable *)error {
     
-    dispatch_barrier_sync(_syncQueue, ^{
-        if (_observer == nil) {
-            // TODO: Set the internal error.
-            success = NO;
-            return;
-        }
-        if (_monitorsObserver == YES) {
-            [_observer addObserver:self
-                        forKeyPath:_observerKey
-                           options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionPrior | NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionOld)
-                           context:(__bridge void * _Nullable)(_binderIdentifier)];
-        }
-        for (RNDBinding *binding in _bindings) {
-            [binding bind];
-        }
-        success = YES;
+    dispatch_assert_queue_barrier(self.syncQueue);
+
+    if (_observer == nil) {
+        // TODO: Set the internal error.
+        _bound = NO;
+        return _bound;
+    }
+    if (_monitorsObserver == YES) {
+        [_observer addObserver:self
+                    forKeyPath:_observerKey
+                       options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionPrior |  NSKeyValueObservingOptionOld)
+                       context:(__bridge void * _Nullable)(_binderIdentifier)];
+    }
+    for (RNDBinding *binding in _bindings) {
+        if ([binding bindObjects:error] == YES) { continue; }
+        [self unbindObjects:error];
+        return NO;
+    }
+    
+    _bound = YES;
+    return _bound;
+}
+
+- (void)bind {
+    dispatch_barrier_async(_syncQueue, ^{
+        [self bindObjects:nil];
     });
-    self.bound = success;
-    return success;
+}
+
+- (BOOL)bind:(NSError * _Nullable __autoreleasing * _Nullable)error {
+    __block BOOL result = NO;
+    dispatch_barrier_sync(_syncQueue, ^{
+        result = [self bindObjects:error];
+    });
+    return result;
+}
+
+- (BOOL)unbindObjects:(NSError * _Nullable __autoreleasing * _Nullable)error {
+
+    dispatch_assert_queue_barrier(self.syncQueue);
+
+    if (_observer == nil) {
+        // TODO: Set the internal error.
+        _bound = NO;
+        return _bound;
+    }
+    for (RNDBinding *binding in _bindings) {
+        [binding unbindObjects:error];
+    }
+    if (_monitorsObserver == YES) {
+        [_observer removeObserver:self
+                       forKeyPath:_observerKey
+                          context:(__bridge void * _Nullable)(_binderIdentifier)];
+    }
+    
+    _bound = NO;
+    return _bound;
+}
+
+- (void)unbind {
+    dispatch_barrier_async(_syncQueue, ^{
+        [self unbindObjects:nil];
+    });
 }
 
 - (BOOL)unbind:(NSError * _Nullable __autoreleasing * _Nullable)error {
-    __block NSError * internalError = nil;
-    __block BOOL success = NO;
-    
+    __block BOOL result = NO;
     dispatch_barrier_sync(_syncQueue, ^{
-        if (_observer == nil) {
-            // TODO: Set the internal error.
-            success = NO;
-            return;
-        }
-        for (RNDBinding *binding in _bindings) {
-            [binding unbind];
-        }
-        if (_bound == YES) {
-            [_observer removeObserver:self
-                           forKeyPath:_observerKey
-                              context:(__bridge void * _Nullable)(_binderIdentifier)];
-        }
-        success = YES;
+        result = [self unbindObjects:error];
     });
-    self.bound = NO;
-    return success;
+    return result;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath

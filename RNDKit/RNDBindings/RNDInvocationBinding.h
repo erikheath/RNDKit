@@ -14,7 +14,6 @@
 
 @interface RNDInvocationBinding : RNDBinding 
 
-@property (readonly, nonnull) SEL bindingSelector;
-@property (readonly) BOOL evaluates;
+@property (strong, readwrite, nullable) NSString *bindingSelectorString;
 
 @end
