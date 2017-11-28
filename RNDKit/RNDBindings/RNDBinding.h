@@ -23,8 +23,8 @@
 @property (strong, nullable, readwrite) RNDPredicateBinding *evaluator;
 @property (strong, nullable, readonly) id evaluatedObject;
 
-
-@property (strong, nonnull, readwrite) NSString *controllerKey;
+@property (strong, nullable, readwrite) RNDBindingType bindingType;
+@property (strong, nullable, readwrite) NSString *controllerKey;
 @property (weak, nullable, readwrite) RNDBinder * binder;
 @property (strong, nullable, readwrite) NSString *bindingName;
 @property (strong, nullable, readwrite) RNDPatternedBinding *userString;

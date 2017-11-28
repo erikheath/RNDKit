@@ -10,6 +10,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - RNDBindingType
+typedef NSString * RNDBindingType;
+extern RNDBindingType RNDEntityType;
+extern RNDBindingType RNDClassType;
+extern RNDBindingType RNDResourceType;
+
 #pragma mark - RNDArgumentNames
 typedef NSString * RNDArgument NS_STRING_ENUM;
 extern RNDArgument RNDEventArgument;

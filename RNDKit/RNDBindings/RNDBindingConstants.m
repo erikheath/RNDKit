@@ -7,6 +7,11 @@
 //
 #import "RNDBindingConstants.h"
 
+#pragma mark - RNDBindingType
+RNDBindingType RNDEntityType = @"RNDEntityType";
+RNDBindingType RNDClassType = @"RNDClassType";
+RNDBindingType RNDResourceType = @"RNDResourceType";
+
 #pragma mark - RNDMarkers
 RNDBindingMarker RNDBindingMultipleValuesMarker = @"RNDBindingMultipleValuesMarker";
 RNDBindingMarker RNDBindingNoSelectionMarker = @"RNDBindingNoSelectionMarker";
