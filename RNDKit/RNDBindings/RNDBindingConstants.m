@@ -24,6 +24,7 @@ RNDArgument RNDBinderArgument = @"RNDBinderArgument";
 RNDArgument RNDObserverArgument = @"RNDObserverArgument";
 RNDArgument RNDIterationArgument = @"RNDIterationArgument";
 RNDArgument RNDPositionArgument = @"RNDIterationArgument";
+RNDArgument RNDBinderObjectValue = @"RNDBinderObjectValue";
 
 #pragma mark - RNDNotifications
 RNDBindingNotifications RNDValueOfObserverObjectDidChange = @"RNDValueOfObserverObjectDidChange";

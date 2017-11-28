@@ -22,6 +22,7 @@ extern RNDArgument RNDBinderArgument;
 extern RNDArgument RNDObserverArgument;
 extern RNDArgument RNDIterationArgument;
 extern RNDArgument RNDPositionArgument;
+extern RNDArgument RNDBinderObjectValue;
 
 #pragma mark - RNDNotifications
 typedef NSString * RNDBindingNotifications NS_STRING_ENUM;

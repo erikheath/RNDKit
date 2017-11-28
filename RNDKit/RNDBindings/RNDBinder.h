@@ -32,7 +32,8 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 @interface RNDBinder : NSObject <NSCoding>
 
 @property (strong, nonnull, readonly) NSString *binderIdentifier;
-@property (nonnull, strong, readonly) NSArray<RNDBinding *> *bindings;
+@property (nonnull, strong, readonly) NSArray<RNDBinding *> *inflowBindings;
+@property (nonnull, strong, readonly) NSArray<RNDBinding *> *outflowBindings;
 @property (weak, readwrite, nullable) NSObject<RNDBindableObject> *observer;
 @property (strong, nonnull, readonly) NSString *observerKey;
 @property (readonly) RNDBinderMode binderMode;

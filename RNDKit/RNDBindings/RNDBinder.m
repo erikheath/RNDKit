@@ -23,19 +23,19 @@
 
 #pragma mark - Properties
 
-@synthesize bindings = _bindings;
+@synthesize inflowBindings = _inflowBindings;
 
 - (void)setBindings:(NSArray<RNDBinding *> * _Nonnull)bindings {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _bindings = bindings;
+        _inflowBindings = bindings;
     });
 }
 
-- (NSString *)bindings {
+- (NSString *)inflowBindings {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _bindings;
+        localObject = _inflowBindings;
     });
     return localObject;
 }
@@ -308,9 +308,9 @@
             objectValue = nil;
         }
         
-        NSMutableArray *valuesArray = [NSMutableArray arrayWithCapacity:_bindings.count];
+        NSMutableArray *valuesArray = [NSMutableArray arrayWithCapacity:_inflowBindings.count];
         
-        [_bindings enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [_inflowBindings enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
             NSDictionary *contextDictionary = (dispatch_get_context(self.syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(self.syncQueue)) : nil);
             if (contextDictionary != nil) {
@@ -393,7 +393,9 @@
         // There may be no actual change, in which case nothing needs to happen.
         id objectValue = bindingObjectValue;
         if ([self.bindingObjectValue isEqual:objectValue]) { return; }
-        [self.bindings.firstObject setBindingObjectValue:objectValue];
+        for (RNDBinding *binding in self.outflowBindings) {
+            [binding setBindingObjectValue:objectValue];
+        }
     });
 }
 
@@ -465,7 +467,7 @@
                        options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionPrior |  NSKeyValueObservingOptionOld)
                        context:(__bridge void * _Nullable)(_binderIdentifier)];
     }
-    for (RNDBinding *binding in _bindings) {
+    for (RNDBinding *binding in _inflowBindings) {
         if ([binding bindObjects:error] == YES) { continue; }
         [self unbindObjects:error];
         return NO;
@@ -498,7 +500,7 @@
         _bound = NO;
         return _bound;
     }
-    for (RNDBinding *binding in _bindings) {
+    for (RNDBinding *binding in _inflowBindings) {
         [binding unbindObjects:error];
     }
     if (_monitorsObserver == YES) {
@@ -583,9 +585,9 @@
             });
         }
         
-        if ([self.bindings.firstObject.bindingObjectValue isEqual:observerObjectValue] == YES) { return; }
+        if ([self.inflowBindings.firstObject.bindingObjectValue isEqual:observerObjectValue] == YES) { return; }
         
-        [self.bindings.firstObject setBindingObjectValue:observerObjectValue];
+        [self.inflowBindings.firstObject setBindingObjectValue:observerObjectValue];
     });
 }
 

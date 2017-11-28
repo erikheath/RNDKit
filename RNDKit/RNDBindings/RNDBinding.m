@@ -406,24 +406,20 @@
 
 - (void)setBindingObjectValue:(id)bindingObjectValue {
     dispatch_barrier_async(_syncQueue, ^{
-        // There may be no actual change, in which case nothing needs to happen.
-        if ([self.bindingObjectValue isEqual:bindingObjectValue]) {
-            return;
-        }
-        id transformedValue = nil;
-        if(_valueTransformer != nil && [[_valueTransformer class] allowsReverseTransformation] == YES) {
-            transformedValue = [_valueTransformer reverseTransformedValue:bindingObjectValue];
-        } else {
-            transformedValue = bindingObjectValue;
-        }
-        
         // In some cases, a different value on screen may not actually be a different value in the model.
         // This happens when part of the model record is split up into multiple parts.
-        if ([[_observedObject valueForKeyPath:_observedObjectKeyPath] isEqual:transformedValue]) {
+        
+        // Set the context of the binding so that the runtime arguments can be used.
+        NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithDictionary:@{RNDBinderObjectValue: bindingObjectValue}];
+        dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
+        
+        // There may be no actual change, in which case nothing needs to happen.
+        id objectValue = self.bindingObjectValue;
+        if ([objectValue isEqual:[_observedObject valueForKeyPath:_observedObjectKeyPath]]) {
             return;
         }
         
-        [_observedObject setValue:transformedValue forKeyPath:_observedObjectKeyPath];
+        [_observedObject setValue:self.bindingObjectValue forKeyPath:_observedObjectKeyPath];
     });
 }
 
