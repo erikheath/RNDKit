@@ -42,9 +42,19 @@ extern RNDBindingMarker RNDBindingMultipleValuesMarker;
 extern RNDBindingMarker RNDBindingNoSelectionMarker;
 extern RNDBindingMarker RNDBindingNotApplicableMarker;
 extern RNDBindingMarker RNDBindingNullValueMarker;
+extern RNDBindingMarker RNDBindingLoadingMarker;
+extern RNDBindingMarker RNDBindingLoadingErrorMarker;
 
 extern BOOL RNDIsControllerMarker(__nullable id object);
 
+#pragma mark - RNDResouceInfoKeys
+typedef NSString * RNDResourceInfoKey NS_STRING_ENUM;
+extern RNDResourceInfoKey RNDResourceInfoLoadingTypeKey;
+
+#pragma mark - RNDResourceInfoOptions
+typedef NSString * RNDResourceInfoOption NS_STRING_ENUM;
+extern RNDResourceInfoOption RNDResourceInfoSynchronousOption;
+extern RNDResourceInfoOption RNDResourceInfoAsynchronousOption;
 
 #pragma mark - RNDBindingType
 // Identifies the binding behavior.

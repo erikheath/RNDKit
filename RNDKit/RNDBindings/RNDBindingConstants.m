@@ -17,6 +17,16 @@ RNDBindingMarker RNDBindingMultipleValuesMarker = @"RNDBindingMultipleValuesMark
 RNDBindingMarker RNDBindingNoSelectionMarker = @"RNDBindingNoSelectionMarker";
 RNDBindingMarker RNDBindingNotApplicableMarker = @"RNDBindingNotApplicableMarker";
 RNDBindingMarker RNDBindingNullValueMarker = @"RNDBindingNullValueMarker";
+RNDBindingMarker RNDBindingLoadingMarker = @"RNDBindingLoadingMarker";
+RNDBindingMarker RNDBindingLoadingErrorMarker = @"RNDBindingLoadingErrorMarker";
+
+#pragma mark - RNDResouceInfoKeys
+RNDResourceInfoKey RNDResourceInfoLoadingTypeKey = @"RNDResourceInfoLoadingTypeKey";
+
+#pragma mark - RNDResourceInfoOptions
+RNDResourceInfoOption RNDResourceInfoSynchronousOption = @"RNDResourceInfoSynchronousOption";
+RNDResourceInfoOption RNDResourceInfoAsynchronousOption = @"RNDResourceInfoAsynchronousOption";
+
 
 #pragma mark - RNDArgumentNames
 RNDArgument RNDEventArgument = @"RNDEventArgument";

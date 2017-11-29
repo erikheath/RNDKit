@@ -404,7 +404,7 @@
     return objectValue;
 }
 
-- (void)setBindingObjectValue:(id)bindingObjectValue {
+- (void)setBindingObjectValue:(id)bindingObjectValue {    
     dispatch_barrier_async(_syncQueue, ^{
         // In some cases, a different value on screen may not actually be a different value in the model.
         // This happens when part of the model record is split up into multiple parts.

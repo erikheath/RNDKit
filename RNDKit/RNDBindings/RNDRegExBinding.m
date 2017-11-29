@@ -130,10 +130,6 @@
     return objectValue;
 }
 
-- (void)setBindingObjectValue:(id)bindingObjectValue {
-    return;
-}
-
 #pragma mark - Object Lifecycle
 - (instancetype)init {
     return [super init];

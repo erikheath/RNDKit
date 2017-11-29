@@ -20,6 +20,8 @@
 		E4295BD21FA010440040BAC4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BD11FA010440040BAC4 /* main.m */; };
 		E4295BDD1FA010440040BAC4 /* RND_WorkbenchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BDC1FA010440040BAC4 /* RND_WorkbenchTests.m */; };
 		E4295BE81FA010450040BAC4 /* RND_WorkbenchUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BE71FA010450040BAC4 /* RND_WorkbenchUITests.m */; };
+		E43497261FCDEFC100E1FD2B /* RNDResource.m in Sources */ = {isa = PBXBuildFile; fileRef = E43497251FCDEFC100E1FD2B /* RNDResource.m */; };
+		E43497291FCDF05C00E1FD2B /* RNDResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E43497281FCDF05C00E1FD2B /* RNDResourceManager.m */; };
 		E438AF3C1FA25F7C00C856A5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF3B1FA25F7C00C856A5 /* AppDelegate.m */; };
 		E438AF3F1FA25F7C00C856A5 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF3E1FA25F7C00C856A5 /* ViewController.m */; };
 		E438AF421FA25F7C00C856A5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E438AF401FA25F7C00C856A5 /* Main.storyboard */; };
@@ -111,6 +113,14 @@
 		E4295BE71FA010450040BAC4 /* RND_WorkbenchUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RND_WorkbenchUITests.m; sourceTree = "<group>"; };
 		E4295BE91FA010450040BAC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E42E87401F9A8AF70099D1B1 /* RNDControllers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDControllers.h; sourceTree = "<group>"; };
+		E43497201FCDEF7D00E1FD2B /* RNDResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDResource.h; sourceTree = "<group>"; };
+		E43497211FCDEF8B00E1FD2B /* RNDStaticResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDStaticResource.h; sourceTree = "<group>"; };
+		E43497221FCDEF9400E1FD2B /* RNDDynamicResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDDynamicResource.h; sourceTree = "<group>"; };
+		E43497231FCDEF9F00E1FD2B /* RNDSecuredStaticResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDSecuredStaticResource.h; sourceTree = "<group>"; };
+		E43497241FCDEFAA00E1FD2B /* RNDSecuredDynamicResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDSecuredDynamicResource.h; sourceTree = "<group>"; };
+		E43497251FCDEFC100E1FD2B /* RNDResource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDResource.m; sourceTree = "<group>"; };
+		E43497271FCDF04C00E1FD2B /* RNDResourceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDResourceManager.h; sourceTree = "<group>"; };
+		E43497281FCDF05C00E1FD2B /* RNDResourceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDResourceManager.m; sourceTree = "<group>"; };
 		E438AF381FA25F7C00C856A5 /* RNDKitTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNDKitTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E438AF3A1FA25F7C00C856A5 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		E438AF3B1FA25F7C00C856A5 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -291,6 +301,21 @@
 			path = "RND WorkbenchUITests";
 			sourceTree = "<group>";
 		};
+		E434971F1FCDEDF400E1FD2B /* RNDResourceManager */ = {
+			isa = PBXGroup;
+			children = (
+				E43497271FCDF04C00E1FD2B /* RNDResourceManager.h */,
+				E43497281FCDF05C00E1FD2B /* RNDResourceManager.m */,
+				E43497201FCDEF7D00E1FD2B /* RNDResource.h */,
+				E43497251FCDEFC100E1FD2B /* RNDResource.m */,
+				E43497211FCDEF8B00E1FD2B /* RNDStaticResource.h */,
+				E43497221FCDEF9400E1FD2B /* RNDDynamicResource.h */,
+				E43497231FCDEF9F00E1FD2B /* RNDSecuredStaticResource.h */,
+				E43497241FCDEFAA00E1FD2B /* RNDSecuredDynamicResource.h */,
+			);
+			path = RNDResourceManager;
+			sourceTree = "<group>";
+		};
 		E438AF391FA25F7C00C856A5 /* RNDKitTestApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -462,6 +487,7 @@
 				E43C3F541F9A854900F4D1B5 /* RNDBindingProtocols */,
 				E4159F471F8D868B00820F24 /* UIControls */,
 				E43C3F531F9A850E00F4D1B5 /* RNDControllers */,
+				E434971F1FCDEDF400E1FD2B /* RNDResourceManager */,
 				E49CFBAD1F7EC17900CDFF29 /* Info.plist */,
 			);
 			path = RNDKit;
@@ -776,9 +802,11 @@
 				E446D4EB1FB676D70078346D /* RNDBindingManifest.m in Sources */,
 				E446D4E71FB511570078346D /* RNDExpressionBinding.m in Sources */,
 				E49D5F731FB39D6A00604372 /* RNDRegExBinding.m in Sources */,
+				E43497291FCDF05C00E1FD2B /* RNDResourceManager.m in Sources */,
 				E43C3F101F8F0CDB00F4D1B5 /* RNDBindingConstants.m in Sources */,
 				E4A7ED4A1F8348B20083E742 /* RNDObjectController.m in Sources */,
 				E446D4EA1FB6763B0078346D /* RNDBinderSet.m in Sources */,
+				E43497261FCDEFC100E1FD2B /* RNDResource.m in Sources */,
 				E43C3F2D1F9A78B000F4D1B5 /* RNDBinding.m in Sources */,
 				E4295BB81F9C4FAE0040BAC4 /* NSObject+RNDObjectBinding.m in Sources */,
 				E41AF83F1FAE4BE9008F90AC /* RNDInvocationBinding.m in Sources */,

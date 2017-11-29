@@ -69,9 +69,6 @@
     return objectValue;
 }
 
-- (void)setBindingObjectValue:(id)bindingObjectValue {
-    return;
-}
 
 
 #pragma mark - Object Lifecycle
