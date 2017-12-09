@@ -11,6 +11,7 @@
 
 @interface RNDExpressionBinding: RNDBinding
 
+
 @property (strong, readwrite, nullable) NSString *expressionTemplate;
 
 @end

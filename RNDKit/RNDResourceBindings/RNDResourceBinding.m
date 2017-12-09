@@ -6,11 +6,11 @@
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "RNDResource.h"
+#import "RNDResourceBinding.h"
 
-@implementation RNDResource
+@implementation RNDResourceBinding
 
-+ (RNDResource * _Nonnull)resourceForInfo:(NSDictionary *)resourceInfo error:(NSError * __autoreleasing _Nullable * _Nullable)error {
++ (RNDResourceBinding * _Nonnull)resourceForInfo:(NSDictionary *)resourceInfo error:(NSError * __autoreleasing _Nullable * _Nullable)error {
     // JSON
     // Plist
     // Image

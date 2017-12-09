@@ -1,5 +1,5 @@
 //
-//  RNDMultiValueTargetActionBinder.h
+//  RNDTargetActionBinder.h
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 10/20/17.
@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
  
  This binder is a read only binder which means it can not write to its model objects, but it does update the values of its observer when requested.
  */
-@interface RNDMultiValueTargetActionBinder : RNDBinder
+@interface RNDTargetActionBinder: RNDBinder
 
 @property (strong, nonnull, readonly) RNDInvocationBinding *bindingInvocation;
 @property (strong, nonnull, readonly) RNDInvocationBinding *unbindingInvocation;

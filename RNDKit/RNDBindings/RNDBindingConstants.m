@@ -7,6 +7,11 @@
 //
 #import "RNDBindingConstants.h"
 
+#pragma mark - RNDBinderManifestKeys
+RNDBinderManifestKey RNDBinderManifestNamespaceKey = @"RNDBinderManifestNamespaceKey";
+RNDBinderManifestKey RNDBinderManifestLocationKey = @"RNDBinderManifestLocationKey";
+RNDBinderManifestKey RNDBinderManifestBinderSetURLKey = @"RNDBinderManifestBinderSetURLKey";
+
 #pragma mark - RNDBindingType
 RNDBindingType RNDEntityType = @"RNDEntityType";
 RNDBindingType RNDClassType = @"RNDClassType";
@@ -19,6 +24,14 @@ RNDBindingMarker RNDBindingNotApplicableMarker = @"RNDBindingNotApplicableMarker
 RNDBindingMarker RNDBindingNullValueMarker = @"RNDBindingNullValueMarker";
 RNDBindingMarker RNDBindingLoadingMarker = @"RNDBindingLoadingMarker";
 RNDBindingMarker RNDBindingLoadingErrorMarker = @"RNDBindingLoadingErrorMarker";
+RNDBindingMarker RNDBindingResourceNotFoundMarker = @"RNDBindingResourceNotFoundMarker";
+RNDBindingMarker RNDBindingManifestNotFoundErrorMarker = @"RNDBindingManifestNotFoundErrorMarker";
+RNDBindingMarker RNDBindingBinderSetNotFoundMarker = @"RNDBindingBinderSetNotFoundMarker";
+RNDBindingMarker RNDBindingUnboundErrorMarker = @"RNDBindingUnboundErrorMarker";
+RNDBindingMarker RNDBindingInvalidKeyPathMarker = @"RNDBindingInvalidKeyPathMarker";
+RNDBindingMarker RNDBindingBinderNotFoundMarker = @"RNDBindingBinderNotFoundMarker";
+RNDBindingMarker RNDBindingInvalidArgumentMarker = @"RNDBindingInvalidArgumentMarker";
+
 
 #pragma mark - RNDResouceInfoKeys
 RNDResourceInfoKey RNDResourceInfoLoadingTypeKey = @"RNDResourceInfoLoadingTypeKey";

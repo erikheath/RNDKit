@@ -10,6 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - RNDBinderManifestKeys
+typedef NSString * RNDBinderManifestKey;
+typedef NSString * RNDBinderSetKey;
+extern RNDBinderManifestKey RNDBinderManifestNamespaceKey;
+extern RNDBinderManifestKey RNDBinderManifestLocationKey;
+extern RNDBinderManifestKey RNDBinderManifestBinderSetURLKey;
+
 #pragma mark - RNDBindingType
 typedef NSString * RNDBindingType;
 extern RNDBindingType RNDEntityType;
@@ -44,12 +51,20 @@ extern RNDBindingMarker RNDBindingNotApplicableMarker;
 extern RNDBindingMarker RNDBindingNullValueMarker;
 extern RNDBindingMarker RNDBindingLoadingMarker;
 extern RNDBindingMarker RNDBindingLoadingErrorMarker;
+extern RNDBindingMarker RNDBindingResourceNotFoundMarker;
+extern RNDBindingMarker RNDBindingManifestNotFoundErrorMarker;
+extern RNDBindingMarker RNDBindingBinderSetNotFoundMarker;
+extern RNDBindingMarker RNDBindingUnboundErrorMarker;
+extern RNDBindingMarker RNDBindingInvalidKeyPathMarker;
+extern RNDBindingMarker RNDBindingBinderNotFoundMarker;
+extern RNDBindingMarker RNDBindingInvalidArgumentMarker;
 
 extern BOOL RNDIsControllerMarker(__nullable id object);
 
 #pragma mark - RNDResouceInfoKeys
 typedef NSString * RNDResourceInfoKey NS_STRING_ENUM;
 extern RNDResourceInfoKey RNDResourceInfoLoadingTypeKey;
+extern RNDResourceInfoKey RNDResourceInfoResourceTypeKey;
 
 #pragma mark - RNDResourceInfoOptions
 typedef NSString * RNDResourceInfoOption NS_STRING_ENUM;

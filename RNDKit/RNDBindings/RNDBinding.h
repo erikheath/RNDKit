@@ -32,6 +32,12 @@
 
 @property (nonnull, strong, readonly) dispatch_queue_t syncQueue;
 
+// TODO: Read off of main queue?
+// TODO: Write to main queue?
+// TODO: Mutual Exclusion ID?
+// TODO: Exit/Skip on Failure/Success?
+// TODO: Display Attributes?
+
 @property (readonly) BOOL isBound;
 
 @property (strong, nullable, readwrite) RNDBinding *nullPlaceholder;

@@ -1,19 +1,19 @@
 //
-//  RNDMultiValueTargetActionBinder.m
+//  RNDTargetActionBinder.m
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 10/20/17.
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "RNDMultiValueTargetActionBinder.h"
+#import "RNDTargetActionBinder.h"
 #import "RNDBinding.h"
 #import "RNDInvocationBinding.h"
 #import "RNDPredicateBinding.h"
 #import "NSObject+RNDObjectBinding.h"
 #import <objc/runtime.h>
 
-@interface RNDMultiValueTargetActionBinder ()
+@interface RNDTargetActionBinder ()
 
 @property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
 @property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
@@ -22,7 +22,7 @@
 
 @end
 
-@implementation RNDMultiValueTargetActionBinder
+@implementation RNDTargetActionBinder
 
 #pragma mark - Properties
 @synthesize serializerQueue = _serializerQueue;

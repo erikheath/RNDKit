@@ -11,8 +11,9 @@
 #import "RNDBindingManifest.h"
 #import "RNDBinderSet.h"
 #import "RNDBinder.h"
-#import "RNDMultiValueTargetActionBinder.h"
 #import "RNDBinding.h"
+
+#import "RNDTargetActionBinder.h"
 #import "RNDInvocationBinding.h"
 #import "RNDRegExBinding.h"
 #import "RNDPredicateBinding.h"
