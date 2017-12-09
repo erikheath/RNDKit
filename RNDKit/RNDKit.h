@@ -6,7 +6,7 @@
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for RNDKit.
 FOUNDATION_EXPORT double RNDKitVersionNumber;
@@ -15,5 +15,6 @@ FOUNDATION_EXPORT double RNDKitVersionNumber;
 FOUNDATION_EXPORT const unsigned char RNDKitVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <RNDKit/PublicHeader.h>
-#import <RNDKit/RNDBindings/RNDBindings.h>
-#import <RNDKit/RNDControllers/RNDControllers.h>
+#import "RNDBindingConstants.h"
+#import "RNDBindings/RNDBindings.h"
+

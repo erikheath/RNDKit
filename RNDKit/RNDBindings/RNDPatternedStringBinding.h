@@ -1,5 +1,5 @@
 //
-//  RNDPatternedBinding.h
+//  RNDPatternedStringBinding.h
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/8/17.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "RNDBinding.h"
 
-@interface RNDPatternedBinding : RNDBinding
+@interface RNDPatternedStringBinding : RNDBinding
 
 @property (strong, readwrite, nullable) NSString *patternTemplate;
 

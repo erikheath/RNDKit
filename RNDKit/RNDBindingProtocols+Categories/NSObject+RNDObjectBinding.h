@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RNDBindingConstants.h"
-#import "../RNDBindingProtocols/RNDEditor.h"
+#import "../RNDBindingProtocols+Categories/RNDEditor.h"
 
 @class RNDBinder;
 

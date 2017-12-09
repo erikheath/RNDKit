@@ -1,5 +1,5 @@
 //
-//  RNDPatternedBinding.m
+//  RNDPatternedStringBinding.m
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/8/17.
@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RNDPatternedBinding.h"
+#import "RNDPatternedStringBinding.h"
 #import "RNDPredicateBinding.h"
 
-@implementation RNDPatternedBinding
+@implementation RNDPatternedStringBinding
 
 #pragma mark - Properties
 @synthesize patternTemplate = _patternTemplate;

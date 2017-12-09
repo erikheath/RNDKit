@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RNDBindingConstants.h"
-#import "NSObject+RNDObjectBinding.h"
+#import "../RNDBindingConstants.h"
+#import "../RNDBindingProtocols+Categories/NSObject+RNDObjectBinding.h"
 
 @class RNDBinder;
 @class RNDPatternedBinding;

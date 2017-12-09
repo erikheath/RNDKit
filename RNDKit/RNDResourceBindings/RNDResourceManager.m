@@ -10,7 +10,7 @@
 #import "RNDBinderSet.h"
 #import "RNDResourceBinder.h"
 #import "RNDResourceBinding.h"
-#import "../RNDBindings/RNDBindingConstants.h"
+#import "../RNDBindingConstants.h"
 #import "RNDResourceManager.h"
 
 @interface RNDResourceManager()
