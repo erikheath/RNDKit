@@ -1,5 +1,5 @@
 //
-//  RNDRegExBinding.h
+//  RNDRegExProcessor.h
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/8/17.
@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RNDBinding.h"
+#import "RNDBindingProcessor.h"
 
-@interface RNDRegExBinding : RNDBinding
+@interface RNDRegExProcessor : RNDBindingProcessor
 
 @property (strong, readwrite, nullable) NSString *regExTemplate;
 @property (strong, readwrite, nullable) NSString *replacementTemplate;

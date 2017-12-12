@@ -14,9 +14,9 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
     orderedKeyedValueMode
 };
 
-@class RNDBinding;
-@class RNDPatternedBinding;
-@class RNDPredicateBinding;
+@class RNDBindingProcessor;
+@class RNDPatternedStringProcessor;
+@class RNDPredicateProcessor;
 
 @protocol RNDBindableObject;
 
@@ -32,8 +32,8 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 @interface RNDBinder : NSObject <NSCoding>
 
 @property (strong, nonnull, readonly) NSString *binderIdentifier;
-@property (nonnull, strong, readonly) NSArray<RNDBinding *> *inflowBindings;
-@property (nonnull, strong, readonly) NSArray<RNDBinding *> *outflowBindings;
+@property (nonnull, strong, readonly) NSArray<RNDBindingProcessor *> *inflowBindings;
+@property (nonnull, strong, readonly) NSArray<RNDBindingProcessor *> *outflowBindings;
 @property (weak, readwrite, nullable) NSObject<RNDBindableObject> *observer;
 @property (strong, nonnull, readonly) NSString *observerKey;
 @property (readonly) RNDBinderMode binderMode;
@@ -44,11 +44,11 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 @property (strong, readwrite, nullable) id bindingObjectValue;
 @property (readonly, getter=isBound) BOOL bound;
 
-@property (strong, nullable, readonly) RNDBinding *nullPlaceholder;
-@property (strong, nullable, readonly) RNDBinding *multipleSelectionPlaceholder;
-@property (strong, nullable, readonly) RNDBinding *noSelectionPlaceholder;
-@property (strong, nullable, readonly) RNDBinding *notApplicablePlaceholder;
-@property (strong, nullable, readonly) RNDBinding *nilPlaceholder;
+@property (strong, nullable, readonly) RNDBindingProcessor *nullPlaceholder;
+@property (strong, nullable, readonly) RNDBindingProcessor *multipleSelectionPlaceholder;
+@property (strong, nullable, readonly) RNDBindingProcessor *noSelectionPlaceholder;
+@property (strong, nullable, readonly) RNDBindingProcessor *notApplicablePlaceholder;
+@property (strong, nullable, readonly) RNDBindingProcessor *nilPlaceholder;
 
 @property (readonly) BOOL filtersNilValues;
 @property (readonly) BOOL filtersMarkerValues;

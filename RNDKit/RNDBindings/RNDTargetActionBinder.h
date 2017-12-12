@@ -10,8 +10,8 @@
 #import "RNDBinder.h"
 
 @class RNDBinding;
-@class RNDInvocationBinding;
-@class RNDPredicateBinding;
+@class RNDInvocationProcessor;
+@class RNDPredicateProcessor;
 
 typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
     RNDNoArgumentType,
@@ -31,9 +31,9 @@ typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
  */
 @interface RNDTargetActionBinder: RNDBinder
 
-@property (strong, nonnull, readonly) RNDInvocationBinding *bindingInvocation;
-@property (strong, nonnull, readonly) RNDInvocationBinding *unbindingInvocation;
-@property (strong, nonnull, readonly) RNDInvocationBinding *actionInvocation;
+@property (strong, nonnull, readonly) RNDInvocationProcessor *bindingInvocation;
+@property (strong, nonnull, readonly) RNDInvocationProcessor *unbindingInvocation;
+@property (strong, nonnull, readonly) RNDInvocationProcessor *actionInvocation;
 
 @end
 

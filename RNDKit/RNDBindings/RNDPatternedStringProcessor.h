@@ -1,5 +1,5 @@
 //
-//  RNDPatternedStringBinding.h
+//  RNDPatternedStringProcessor.h
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/8/17.
@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RNDBinding.h"
+#import "RNDBindingProcessor.h"
 
-@interface RNDPatternedStringBinding : RNDBinding
+@interface RNDPatternedStringProcessor : RNDBindingProcessor
 
 @property (strong, readwrite, nullable) NSString *patternTemplate;
 

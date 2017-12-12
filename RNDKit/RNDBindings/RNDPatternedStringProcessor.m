@@ -1,5 +1,5 @@
 //
-//  RNDPatternedStringBinding.m
+//  RNDPatternedStringProcessor.m
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/8/17.
@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RNDPatternedStringBinding.h"
-#import "RNDPredicateBinding.h"
+#import "RNDPatternedStringProcessor.h"
+#import "RNDPredicateProcessor.h"
 
-@implementation RNDPatternedStringBinding
+@implementation RNDPatternedStringProcessor
 
 #pragma mark - Properties
 @synthesize patternTemplate = _patternTemplate;
@@ -40,14 +40,14 @@
             return;
         }
         
-        if (((NSNumber *)self.evaluator.bindingObjectValue).boolValue == NO ) {
+        if (((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
 
         NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_patternTemplate];
         
-        for (RNDBinding *binding in self.bindingArguments) {
+        for (RNDBindingProcessor *binding in self.processorArguments) {
             [replacableObjectValue replaceOccurrencesOfString:binding.argumentName
                                                    withString:binding.bindingObjectValue
                                                       options:0

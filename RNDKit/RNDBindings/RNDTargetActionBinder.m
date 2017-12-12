@@ -7,9 +7,9 @@
 //
 
 #import "RNDTargetActionBinder.h"
-#import "RNDBinding.h"
-#import "RNDInvocationBinding.h"
-#import "RNDPredicateBinding.h"
+#import "RNDBindingProcessor.h"
+#import "RNDInvocationProcessor.h"
+#import "RNDPredicateProcessor.h"
 #import "NSObject+RNDObjectBinding.h"
 #import <objc/runtime.h>
 

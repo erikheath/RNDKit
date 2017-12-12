@@ -1,14 +1,14 @@
 //
-//  RNDPredicateBinding.m
+//  RNDPredicateProcessor.m
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/9/17.
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "RNDPredicateBinding.h"
+#import "RNDPredicateProcessor.h"
 
-@implementation RNDPredicateBinding
+@implementation RNDPredicateProcessor
 #pragma mark - Properties
 @synthesize predicateFormatString = _predicateFormatString;
 
@@ -37,15 +37,15 @@
             return;
         }
         
-        if (((NSNumber *)self.evaluator.bindingObjectValue).boolValue == NO ) {
+        if (((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
 
         NSMutableDictionary * __block argumentsDictionary = [NSMutableDictionary dictionary];
 
-        [self.bindingArguments enumerateObjectsUsingBlock:^(RNDBinding * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            RNDBinding *binding = obj;
+        [self.processorArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            RNDBindingProcessor *binding = obj;
             id argumentValue = binding.bindingObjectValue;
             [argumentsDictionary setObject:argumentValue forKey:binding.argumentName];
         }];
@@ -54,12 +54,12 @@
 
         NSPredicate *predicate = [[NSPredicate predicateWithFormat:_predicateFormatString]  predicateWithSubstitutionVariables: argumentsDictionary];
         
-        if (self.evaluates == NO) {
+        if (self.processorOutputType == RNDRawValueOutputType) {
             objectValue = predicate;
             return;
             // TODO: Error Handling
         } else {
-            objectValue = @([predicate evaluateWithObject:self.evaluatedObject]);
+            objectValue = @([predicate evaluateWithObject:self.observedObjectBindingValue]);
             
             objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:objectValue] : objectValue;
         }

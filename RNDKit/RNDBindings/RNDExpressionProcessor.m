@@ -1,16 +1,16 @@
 //
-//  RNDExpressionBinding.m
+//  RNDExpressionProcessor.m
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/9/17.
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "RNDExpressionBinding.h"
-#import "RNDPredicateBinding.h"
+#import "RNDExpressionProcessor.h"
+#import "RNDPredicateProcessor.h"
 
 
-@implementation RNDExpressionBinding
+@implementation RNDExpressionProcessor
 
 #pragma mark - Properties
 
@@ -41,25 +41,25 @@
             return;
         }
         
-        if (((NSNumber *)self.evaluator.bindingObjectValue).boolValue == NO ) {
+        if (((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
 
         id rawObjectValue;
         NSMutableArray *argumentArray = [NSMutableArray array];
-        for (RNDBinding *binding in self.bindingArguments) {
+        for (RNDBindingProcessor *binding in self.processorArguments) {
             id argumentValue = binding.bindingObjectValue;
             if (argumentValue == nil) { argumentValue = [NSNull null]; }
             [argumentArray addObject:argumentValue];
         }
         rawObjectValue = [NSExpression expressionWithFormat:_expressionTemplate argumentArray:argumentArray];
         
-        if (self.evaluates == NO) {
+        if (self.processorOutputType == RNDRawValueOutputType) {
             objectValue = rawObjectValue;
         } else {
             NSMutableDictionary *workingDictionary = [NSMutableDictionary dictionary];
-            objectValue = [rawObjectValue expressionValueWithObject:self.evaluatedObject context:workingDictionary];
+            objectValue = [rawObjectValue expressionValueWithObject:self.observedObjectBindingValue context:workingDictionary];
             
             if ([objectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
                 objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : objectValue;

@@ -1,25 +1,27 @@
 //
-//  RNDBinding.m
+//  RNDBindingProcessor.m
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 10/20/17.
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "RNDBinding.h"
 #import "RNDBinder.h"
-#import "RNDPredicateBinding.h"
-#import "RNDPatternedBinding.h"
+#import "RNDBindingProcessor.h"
+#import "RNDPredicateProcessor.h"
+#import "RNDPatternedStringProcessor.h"
 #import <objc/runtime.h>
 
+// TODO: Mutual Exclusion ID? Add the ids of the executed bindings
+// TODO: If the value is a placeholder, you can't write to it.
 
-@interface RNDBinding ()
+@interface RNDBindingProcessor ()
 
 @property (strong, nullable, readonly) NSUUID *syncQueueIdentifier;
 
 @end
 
-@implementation RNDBinding
+@implementation RNDBindingProcessor
 
 #pragma mark - Properties
 @synthesize observedObject = _observedObject;
@@ -150,14 +152,14 @@
 
 @synthesize nullPlaceholder = _nullPlaceholder;
 
-- (void)setNullPlaceholder:(RNDBinding *)nullPlaceholder {
+- (void)setNullPlaceholder:(RNDBindingProcessor *)nullPlaceholder {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
         _nullPlaceholder = nullPlaceholder;
     });
 }
 
-- (RNDBinding *)nullPlaceholder {
+- (RNDBindingProcessor *)nullPlaceholder {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
         localObject = _nullPlaceholder;
@@ -168,14 +170,14 @@
 
 @synthesize multipleSelectionPlaceholder = _multipleSelectionPlaceholder;
 
-- (void)setMultipleSelectionPlaceholder:(RNDBinding *)multipleSelectionPlaceholder {
+- (void)setMultipleSelectionPlaceholder:(RNDBindingProcessor *)multipleSelectionPlaceholder {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
         _multipleSelectionPlaceholder = multipleSelectionPlaceholder;
     });
 }
 
-- (RNDBinding *)multipleSelectionPlaceholder {
+- (RNDBindingProcessor *)multipleSelectionPlaceholder {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
         localObject = _multipleSelectionPlaceholder;
@@ -186,14 +188,14 @@
 
 @synthesize notApplicablePlaceholder = _notApplicablePlaceholder;
 
-- (void)setNotApplicablePlaceholder:(RNDBinding *)notApplicablePlaceholder {
+- (void)setNotApplicablePlaceholder:(RNDBindingProcessor *)notApplicablePlaceholder {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
         _notApplicablePlaceholder = notApplicablePlaceholder;
     });
 }
 
-- (RNDBinding *)notApplicablePlaceholder {
+- (RNDBindingProcessor *)notApplicablePlaceholder {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
         localObject = _notApplicablePlaceholder;
@@ -204,14 +206,14 @@
 
 @synthesize nilPlaceholder = _nilPlaceholder;
 
-- (void)setNilPlaceholder:(RNDBinding *)nilPlaceholder {
+- (void)setNilPlaceholder:(RNDBindingProcessor *)nilPlaceholder {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
         _nilPlaceholder = nilPlaceholder;
     });
 }
 
-- (RNDBinding *)nilPlaceholder {
+- (RNDBindingProcessor *)nilPlaceholder {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
         localObject = _nilPlaceholder;
@@ -222,14 +224,14 @@
 
 @synthesize noSelectionPlaceholder = _noSelectionPlaceholder;
 
-- (void)setNoSelectionPlaceholder:(RNDBinding *)noSelectionPlaceholder {
+- (void)setNoSelectionPlaceholder:(RNDBindingProcessor *)noSelectionPlaceholder {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
         _noSelectionPlaceholder = noSelectionPlaceholder;
     });
 }
 
-- (RNDBinding *)noSelectionPlaceholder {
+- (RNDBindingProcessor *)noSelectionPlaceholder {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
         localObject = _noSelectionPlaceholder;
@@ -274,57 +276,61 @@
 }
 
 
-@synthesize bindingArguments = _bindingArguments;
+@synthesize processorArguments = _processorArguments;
 
-- (void)setBindingArguments:(NSMutableArray<RNDBinding *> *)bindingArguments {
+- (void)setBindingArguments:(NSMutableArray<RNDBindingProcessor *> *)bindingArguments {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _bindingArguments = bindingArguments;
+        _processorArguments = bindingArguments;
     });
 }
 
-- (NSMutableArray<RNDBinding *> *)bindingArguments {
+- (NSMutableArray<RNDBindingProcessor *> *)bindingArguments {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _bindingArguments;
+        localObject = _processorArguments;
     });
     return localObject;
 }
 
 
-@synthesize evaluator = _evaluator;
+@synthesize observedObjectEvaluator = _observedObjectEvaluator;
 
-- (void)setEvaluator:(RNDPredicateBinding *)evaluator {
+- (void)setObservedObjectEvaluator:(RNDPredicateProcessor *)observedObjectEvaluator {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _evaluator = evaluator;
+        if (observedObjectEvaluator == nil) {
+            _observedObjectEvaluator = [[RNDPredicateProcessor alloc] init];
+        } else {
+            _observedObjectEvaluator = observedObjectEvaluator;
+        }
     });
 }
 
-- (RNDPredicateBinding *)evaluator {
-    RNDPredicateBinding __block *localObject;
+- (RNDPredicateProcessor *)observedObjectEvaluator {
+    RNDPredicateProcessor __block *localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _evaluator;
+        localObject = _observedObjectEvaluator;
     });
     return localObject;
 }
 
 
-@synthesize evaluates = _evaluates;
+@synthesize processorOutputType = _processorOutputType;
 
-- (void)setEvaluates:(BOOL)evaluates {
+- (void)setProcessorOutputType:(RNDProcessorValueType)processorOutputType {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _evaluates = evaluates;
+        _processorOutputType = processorOutputType;
     });
 }
 
-- (BOOL)evaluates {
-    BOOL __block localBool;
+- (RNDProcessorValueType)processorOutputType {
+    RNDProcessorValueType __block localValue;
     dispatch_sync(self.syncQueue, ^{
-        localBool = _evaluates;
+        localValue = _processorOutputType;
     });
-    return localBool;
+    return localValue;
 }
 
 
@@ -333,7 +339,7 @@
 - (void)setRuntimeArguments:(NSDictionary *)runtimeArguments {
     dispatch_barrier_sync(_syncQueue, ^{
         _runtimeArguments = runtimeArguments;
-        for (RNDBinding *binding in self.allBindings) {
+        for (RNDBindingProcessor *binding in self.allBindings) {
             binding.runtimeArguments = _runtimeArguments;
         }
     });
@@ -363,13 +369,13 @@
             return;
         }
         
-        if (((NSNumber *)_evaluator.bindingObjectValue).boolValue == NO ) {
-            objectValue = nil;
-            return;
+        id rawObjectValue;
+        
+        if (((NSNumber *)_observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+            rawObjectValue = nil;
+        } else {
+            rawObjectValue = [_observedObject valueForKeyPath:_observedObjectKeyPath];
         }
-        
-        id rawObjectValue = [_observedObject valueForKeyPath:_observedObjectKeyPath];
-        
         
         if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
             objectValue = _multipleSelectionPlaceholder != nil ? _multipleSelectionPlaceholder.bindingObjectValue : rawObjectValue;
@@ -435,16 +441,16 @@
     return localObject;
 }
 
-- (NSArray<RNDBinding *> *)allBindings {
+- (NSArray<RNDBindingProcessor *> *)allBindings {
     NSMutableArray * __block bindings = [NSMutableArray array];
-    if (_bindingArguments != nil) {
-        [bindings addObjectsFromArray:_bindingArguments];
+    if (_processorArguments != nil) {
+        [bindings addObjectsFromArray:_processorArguments];
     }
     if (_userString != nil) {
         [bindings addObject:_userString];
     }
-    if (_evaluator != nil) {
-        [bindings addObject:_evaluator];
+    if (_observedObjectEvaluator != nil) {
+        [bindings addObject:_observedObjectEvaluator];
     }
     if (_nilPlaceholder != nil) {
         [bindings addObject:_nilPlaceholder];
@@ -547,7 +553,7 @@
         
     }
     
-    for (RNDBinding *binding in self.allBindings) {
+    for (RNDBindingProcessor *binding in self.allBindings) {
         binding.binder = _binder;
         if ([binding bindObjects:error] == YES) { continue; }
         [self unbindObjects:error];
@@ -586,7 +592,7 @@
         
     }
     
-    for (RNDBinding *binding in self.allBindings) {
+    for (RNDBindingProcessor *binding in self.allBindings) {
         [binding unbindObjects:error];
     }
     

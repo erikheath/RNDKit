@@ -6,9 +6,9 @@
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "RNDInvocationBinding.h"
+#import "RNDInvocationProcessor.h"
 #import "RNDBinder.h"
-#import "RNDPredicateBinding.h"
+#import "RNDPredicateProcessor.h"
 #import "NSObject+RNDObjectBinding.h"
 #import <objc/runtime.h>
 #import <CoreGraphics/CoreGraphics.h>
@@ -19,7 +19,7 @@
 #import <SceneKit/SceneKit.h>
 
 
-@implementation RNDInvocationBinding
+@implementation RNDInvocationProcessor
 
 #pragma mark - Properties
 @synthesize bindingSelectorString = _bindingSelectorString;
@@ -49,20 +49,20 @@
             return;
         }
         
-        if (((NSNumber *)self.evaluator.bindingObjectValue).boolValue == NO ) {
+        if (((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
         
         NSInvocation * __block invocation = [NSInvocation invocationWithMethodSignature: [NSObject methodSignatureForSelector:NSSelectorFromString(_bindingSelectorString)]];
-        if (invocation != nil && self.evaluatedObject != nil) {
+        if (invocation != nil && self.observedObjectBindingValue != nil) {
             [invocation retainArguments];
             [invocation setSelector:NSSelectorFromString(_bindingSelectorString)];
-            [invocation setTarget:self.evaluatedObject];
+            [invocation setTarget:self.observedObjectBindingValue];
 
-            [self.bindingArguments enumerateObjectsUsingBlock:^(RNDBinding * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [self.processorArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 
-                RNDBinding *binding = obj;
+                RNDBindingProcessor *binding = obj;
                 BOOL result = [self addBindingArgumentValue:binding.bindingObjectValue toInvocation:invocation atPosition:idx + 2];
                 if (result == NO) {
                     // There was an error. The invocation will be nil'd and the process will end.
@@ -73,7 +73,7 @@
             }];
         }
         
-        if (self.evaluates == YES) {
+        if (self.processorOutputType == RNDCalculatedValueOutputType) {
             [invocation invoke];
             id result = [self objectValueForInvocation:invocation];
             if ([result isEqual: RNDBindingMultipleValuesMarker] == YES) {

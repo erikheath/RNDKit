@@ -1,5 +1,5 @@
 //
-//  RNDRegExBinding.m
+//  RNDRegExProcessor.m
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/8/17.
@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RNDRegExBinding.h"
-#import "RNDPredicateBinding.h"
+#import "RNDRegExProcessor.h"
+#import "RNDPredicateProcessor.h"
 
-@implementation RNDRegExBinding
+@implementation RNDRegExProcessor
 
 #pragma mark - Properties
 @synthesize regExTemplate = _regExTemplate;
@@ -56,14 +56,14 @@
             return;
         }
         
-        if (((NSNumber *)self.evaluator.bindingObjectValue).boolValue == NO ) {
+        if (((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
 
         NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_regExTemplate];
         
-        for (RNDBinding *binding in self.bindingArguments) {
+        for (RNDBindingProcessor *binding in self.processorArguments) {
             [replacableObjectValue replaceOccurrencesOfString:binding.argumentName
                                                    withString:binding.bindingObjectValue
                                                       options:0
@@ -80,7 +80,7 @@
         
         NSMutableString *replacementTemplateValue = _replacementTemplate != nil ? [NSMutableString stringWithString:_replacementTemplate] : nil;
         if (replacementTemplateValue != nil) {
-            for (RNDBinding *binding in self.bindingArguments) {
+            for (RNDBindingProcessor *binding in self.processorArguments) {
                 [replacementTemplateValue replaceOccurrencesOfString:binding.argumentName
                                                           withString:binding.bindingObjectValue
                                                              options:0
@@ -90,12 +90,12 @@
         }
         
         NSRegularExpression *expression = [NSRegularExpression regularExpressionWithPattern:replacableObjectValue options:0 error:nil];
-        if (self.evaluates == NO) {
+        if (self.processorOutputType == RNDRawValueOutputType) {
             objectValue = @[expression, replacementTemplateValue];
             return;
             // TODO: Error Handling
         } else {
-            objectValue = [expression stringByReplacingMatchesInString:self.evaluatedObject options:0 range:NSMakeRange(0, ((NSString *)self.evaluatedObject).length) withTemplate:replacementTemplateValue];
+            objectValue = [expression stringByReplacingMatchesInString:self.observedObjectBindingValue options:0 range:NSMakeRange(0, ((NSString *)self.observedObjectBindingValue).length) withTemplate:replacementTemplateValue];
             
             if ([objectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
                 objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : objectValue;

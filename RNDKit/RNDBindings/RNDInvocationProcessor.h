@@ -1,5 +1,5 @@
 //
-//  RNDInvocationBinding.h
+//  RNDInvocationProcessor.h
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/4/17.
@@ -8,11 +8,11 @@
 
 
 #import <Foundation/Foundation.h>
-#import "RNDBinding.h"
+#import "RNDBindingProcessor.h"
 
 @protocol RNDBindableObject;
 
-@interface RNDInvocationBinding : RNDBinding 
+@interface RNDInvocationProcessor : RNDBindingProcessor
 
 @property (strong, readwrite, nullable) NSString *bindingSelectorString;
 

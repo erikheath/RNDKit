@@ -1,5 +1,5 @@
 //
-//  RNDExpressionBinding.h
+//  RRNDExpressionProcessor.h
 //  RNDKit
 //
 //  Created by Erikheath Thomas on 11/9/17.
@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RNDBinding.h"
+#import "RNDBindingProcessor.h"
 
-@interface RNDExpressionBinding: RNDBinding
+@interface RNDExpressionProcessor: RNDBindingProcessor
 
 
 @property (strong, readwrite, nullable) NSString *expressionTemplate;
