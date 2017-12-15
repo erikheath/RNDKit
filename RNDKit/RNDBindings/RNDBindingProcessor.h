@@ -315,7 +315,7 @@ typedef NS_ENUM(NSUInteger, RNDProcessorValueType) {
 /**
  @abstract All binding processors used as nodes by a binding processor.
  
- @discussion A binding processor uses other binding processors for a number of functions including construction of arguments for templates, evaluation predicates, placeholders, etc. These are collectively referred to as the binding processor's processor-nodes, which this property returns.
+ @discussion A binding processor uses other binding processors for a number of functions including construction of arguments for templates, evaluation predicates, placeholders, etc. These are collectively referred to as the binding processor's processorNodes, which this property returns.
  */
 @property (strong, nonnull, readonly) NSArray<RNDBindingProcessor *> *processorNodes;
 

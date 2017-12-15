@@ -79,7 +79,16 @@
             }
             
             if (invocation != nil && self.processorOutputType == RNDCalculatedValueOutputType) {
-                [invocation invoke];
+                @try {
+                    [invocation invoke];
+                }
+                
+                @catch (id exception) {
+                    // TODO: Error Handling
+                    invocation = nil;
+                    objectValue = nil;
+                    return;
+                }
                 id result = [self objectValueForInvocation:invocation];
                 invocation = nil;
                 
@@ -296,7 +305,6 @@
     }
     return YES;
 }
-
 
 - (id)objectValueForInvocation:(NSInvocation *)invocation {
     const char *argumentType = invocation.methodSignature.methodReturnType;
