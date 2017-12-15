@@ -141,6 +141,13 @@
     return profile;
 }
 
+- (RNDInvocationProcessor *)profileJ {
+    RNDInvocationProcessor *profile = [[RNDInvocationProcessor alloc] init];
+    profile.bindingName = @"RNDTestBinding";
+    profile.bindingSelectorString = @"stringByAppendingString:";
+    return profile;
+}
+
 - (void)runBindingTests:(RNDBindingProcessor *)processor {
     NSError *error;
 
@@ -324,6 +331,7 @@
     XCTAssertNil(error);
 
 }
+
 
 - (void)testProfileB {
     RNDBindingProcessor *processor = [self processorWithProfile:@"B"];
@@ -695,6 +703,58 @@
 }
 
 - (void)testProfileJ {
+    RNDInvocationProcessor *processor = (RNDInvocationProcessor *)[self processorWithProfile:@"J"];
+    
+    XCTAssertNotNil(processor);
+    XCTAssertFalse(processor.isBound);
+    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNil(processor.observedObject);
+    XCTAssertNil(processor.observedObjectKeyPath);
+    XCTAssertNil(processor.observedObjectBindingIdentifier);
+    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertFalse(processor.monitorsObservedObject);
+    XCTAssertNil(processor.controllerKey);
+    XCTAssertNil(processor.binder);
+    XCTAssertNotNil(processor.bindingName);
+    XCTAssertNil(processor.nullPlaceholder);
+    XCTAssertNil(processor.multipleSelectionPlaceholder);
+    XCTAssertNil(processor.notApplicablePlaceholder);
+    XCTAssertNil(processor.nilPlaceholder);
+    XCTAssertNil(processor.noSelectionPlaceholder);
+    XCTAssertNil(processor.argumentName);
+    XCTAssertNil(processor.valueTransformerName);
+    XCTAssertNil(processor.valueTransformer);
+    XCTAssertNotNil(processor.processorArguments);
+    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
+    XCTAssertNotNil(processor.runtimeArguments);
+    XCTAssertNotNil(processor.processorNodes);
+    XCTAssertNil(processor.observedObjectEvaluationValue);
+    XCTAssertNotNil(processor.bindingSelectorString);
+    
+    [self runBindingTests:processor];
+    
+    NSError *error;
+    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertTrue([processor bind:&error]);
+    XCTAssertNil(error);
+    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertTrue([processor unbind:&error]);
+    processor.processorOutputType = RNDCalculatedValueOutputType;
+    
+    RNDPatternedStringProcessor *processorArg1 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"D"];
+    RNDPatternedStringProcessor *processorArg2 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"E"];
+
+    [processor.processorArguments addObjectsFromArray:@[processorArg2]];
+    processor.observedObject = processorArg1;
+    processor.observedObjectKeyPath = @"bindingObjectValue";
+    
+    
+    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertTrue([processor bind:&error]);
+    XCTAssertNil(error);
+    XCTAssertNotNil(processor.bindingObjectValue);
+
     
 }
 

@@ -49,64 +49,71 @@
             return;
         }
         
-        if (((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        if (self.observedObjectEvaluator != nil && ((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             objectValue = nil;
-            return;
-        }
-        
-        NSInvocation * __block invocation = [NSInvocation invocationWithMethodSignature: [NSObject methodSignatureForSelector:NSSelectorFromString(_bindingSelectorString)]];
-        if (invocation != nil && self.observedObjectEvaluationValue != nil) {
-            [invocation retainArguments];
-            [invocation setSelector:NSSelectorFromString(_bindingSelectorString)];
-            [invocation setTarget:self.observedObjectEvaluationValue];
-
-            [self.processorArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        } else {
+            NSInvocation * __block invocation;
+            SEL bindingSelector = NSSelectorFromString(_bindingSelectorString);
+            id evaluationValue = self.observedObjectEvaluationValue;
+            NSMethodSignature *signature = [evaluationValue methodSignatureForSelector: bindingSelector];
+            if (signature != nil) {
+                invocation = [NSInvocation invocationWithMethodSignature: signature];
+            }
+            
+            if (invocation != nil) {
+                [invocation retainArguments];
+                [invocation setSelector:bindingSelector];
+                [invocation setTarget:evaluationValue];
                 
-                RNDBindingProcessor *binding = obj;
-                BOOL result = [self addBindingArgumentValue:binding.bindingObjectValue toInvocation:invocation atPosition:idx + 2];
-                if (result == NO) {
-                    // There was an error. The invocation will be nil'd and the process will end.
-                    invocation = nil;
-                    *stop = YES;
+                [self.processorArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    
+                    RNDBindingProcessor *binding = obj;
+                    BOOL result = [self addBindingArgumentValue:binding.bindingObjectValue toInvocation:invocation atPosition:idx + 2];
+                    if (result == NO) {
+                        // There was an error. The invocation will be nil'd and the process will end.
+                        invocation = nil;
+                        *stop = YES;
+                        return;
+                    }
+                }];
+            }
+            
+            if (invocation != nil && self.processorOutputType == RNDCalculatedValueOutputType) {
+                [invocation invoke];
+                id result = [self objectValueForInvocation:invocation];
+                invocation = nil;
+                
+                if ([result isEqual: RNDBindingMultipleValuesMarker] == YES) {
+                    objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : RNDBindingMultipleValuesMarker;
                     return;
                 }
-            }];
+                
+                if ([result isEqual: RNDBindingNoSelectionMarker] == YES) {
+                    objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : RNDBindingNoSelectionMarker;
+                    return;
+                }
+                
+                if ([result isEqual: RNDBindingNotApplicableMarker] == YES) {
+                    objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : RNDBindingNotApplicableMarker;
+                    return;
+                }
+                
+                if ([result isEqual: RNDBindingNullValueMarker] == YES) {
+                    objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : RNDBindingNullValueMarker;
+                    return;
+                }
+                
+                objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:result] : result;
+                
+            } else {
+                objectValue = invocation;
+            }
         }
         
-        if (self.processorOutputType == RNDCalculatedValueOutputType) {
-            [invocation invoke];
-            id result = [self objectValueForInvocation:invocation];
-            if ([result isEqual: RNDBindingMultipleValuesMarker] == YES) {
-                objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : RNDBindingMultipleValuesMarker;
-                return;
-            }
-            
-            if ([result isEqual: RNDBindingNoSelectionMarker] == YES) {
-                objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : RNDBindingNoSelectionMarker;
-                return;
-            }
-            
-            if ([result isEqual: RNDBindingNotApplicableMarker] == YES) {
-                objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : RNDBindingNotApplicableMarker;
-                return;
-            }
-            
-            if ([result isEqual: RNDBindingNullValueMarker] == YES) {
-                objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : RNDBindingNullValueMarker;
-                return;
-            }
-            
-            if (result == nil) {
-                objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : result;
-                return;
-            }
-
-            objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:result] : result;
-
-        } else {
-            objectValue = invocation;
+        if (objectValue == nil) {
+            objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : objectValue;
         }
-
+        
     });
     
     return objectValue;
@@ -297,76 +304,108 @@
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         char *buffer = (char *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithChar:*buffer];
+        NSNumber *result = [NSNumber numberWithChar:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "i") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         int *buffer = (int *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithInt:*buffer];
+        NSNumber *result = [NSNumber numberWithInt:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "s") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         short *buffer = (short *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithShort:*buffer];
+        NSNumber *result = [NSNumber numberWithShort:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "l") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         long *buffer = (long *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithLong:*buffer];
+        NSNumber *result = [NSNumber numberWithLong:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "q") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         long long *buffer = (long long *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithLongLong:*buffer];
+        NSNumber *result = [NSNumber numberWithLongLong:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "C") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         unsigned char *buffer = (unsigned char *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithUnsignedChar:*buffer];
+        NSNumber *result = [NSNumber numberWithUnsignedChar:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "I") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         unsigned int *buffer = (unsigned int *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithUnsignedInt:*buffer];
+        NSNumber *result = [NSNumber numberWithUnsignedInt:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "S") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         unsigned short *buffer = (unsigned short *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithUnsignedShort:*buffer];
+        NSNumber *result = [NSNumber numberWithUnsignedShort:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "L") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         unsigned long *buffer = (unsigned long *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithUnsignedLong:*buffer];
+        NSNumber *result = [NSNumber numberWithUnsignedLong:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "Q") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         unsigned long long *buffer = (unsigned long long *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithUnsignedLongLong:*buffer];
+        NSNumber *result = [NSNumber numberWithUnsignedLongLong:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "f") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         float *buffer = (float *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithFloat:*buffer];
+        NSNumber *result = [NSNumber numberWithFloat:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "d") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         double *buffer = (double *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithDouble:*buffer];
+        NSNumber *result = [NSNumber numberWithDouble:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "B") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         BOOL *buffer = (BOOL *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSNumber numberWithBool:*buffer];
+        NSNumber *result = [NSNumber numberWithBool:*buffer];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "*") == 0) {
         NSUInteger length = invocation.methodSignature.methodReturnLength;
         char *buffer = (char *)malloc(length);
         [invocation getReturnValue:buffer];
-        return [NSString stringWithCString:buffer encoding:[NSString defaultCStringEncoding]];
+        NSString *result = [NSString stringWithCString:buffer encoding:[NSString defaultCStringEncoding]];
+        free(buffer);
+        return result;
     } else if (strcmp(argumentType, "@") == 0) {
-        id buffer;
+//        void *pointer;
+//        [invocation getReturnValue:&pointer];
+//        id buffer = (__bridge id)pointer;
+        __unsafe_unretained id buffer;
         [invocation getReturnValue:&buffer];
-        return buffer;
+        id retainedBuffer = buffer;
+        return retainedBuffer;
     } else if (strcmp(argumentType, "#") == 0) {
         Class buffer;
         [invocation getReturnValue:&buffer];
