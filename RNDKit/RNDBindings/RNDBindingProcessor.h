@@ -127,16 +127,16 @@ typedef NS_ENUM(NSUInteger, RNDProcessorValueType) {
 /**
  @abstract The result of sending the valueForKeyPath: message to the observed object.
  
- @discussion The observedObjectBindingValue is the result of requesting the value specified by the observedObjectKeyPath from the observedObject. This value is used when the processor is configured to use the CalculatedValueOutputType, and it is also passed as an argument to the observedObjectEvaluator using the key $OO_BINDING_VALUE.
+ @discussion The observedObjectEvaluationValue is the result of requesting the value specified by the observedObjectKeyPath from the observedObject. This value is used when the processor is configured to use the CalculatedValueOutputType, and it is also passed as an argument to the observedObjectEvaluator using the key $OO_BINDING_VALUE.
  */
-@property (strong, nullable, readonly) id observedObjectBindingValue;
+@property (strong, nullable, readonly) id observedObjectEvaluationValue;
 
 /**
  @abstract A predicate processor that is evaluated against the observed object binding value. A NO result causes the processor to abort processing and to return nil or, if a nil placeholder is set, to return the placeholder.
  
  @discussion The observed object evaluator is used to determine if a processor should attempt to resolve its binding object value. While the predicate is evaluated against the observed object binding value, it does not need to use it in the construction of the predicate. However, if use of the observed object binding value is required, it can be included in the predicate via the SELF format specifier.
  */
-@property (strong, null_resettable, readwrite) RNDPredicateProcessor *observedObjectEvaluator;
+@property (strong, nullable, readwrite) RNDPredicateProcessor *observedObjectEvaluator;
 
 /**
  @abstract Determines if the observed object's property will be monitored using Key-Value Observing.

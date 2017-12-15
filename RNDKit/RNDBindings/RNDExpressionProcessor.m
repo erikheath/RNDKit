@@ -41,7 +41,7 @@
             return;
         }
         
-        if (((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        if (self.observedObjectEvaluator != nil && ((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
@@ -59,7 +59,7 @@
             objectValue = rawObjectValue;
         } else {
             NSMutableDictionary *workingDictionary = [NSMutableDictionary dictionary];
-            objectValue = [rawObjectValue expressionValueWithObject:self.observedObjectBindingValue context:workingDictionary];
+            objectValue = [rawObjectValue expressionValueWithObject:self.observedObjectEvaluationValue context:workingDictionary];
             
             if ([objectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
                 objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : objectValue;

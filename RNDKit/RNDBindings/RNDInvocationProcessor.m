@@ -55,10 +55,10 @@
         }
         
         NSInvocation * __block invocation = [NSInvocation invocationWithMethodSignature: [NSObject methodSignatureForSelector:NSSelectorFromString(_bindingSelectorString)]];
-        if (invocation != nil && self.observedObjectBindingValue != nil) {
+        if (invocation != nil && self.observedObjectEvaluationValue != nil) {
             [invocation retainArguments];
             [invocation setSelector:NSSelectorFromString(_bindingSelectorString)];
-            [invocation setTarget:self.observedObjectBindingValue];
+            [invocation setTarget:self.observedObjectEvaluationValue];
 
             [self.processorArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 

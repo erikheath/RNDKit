@@ -56,7 +56,7 @@
             return;
         }
         
-        if (((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        if (self.observedObjectEvaluator != nil && ((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
@@ -95,7 +95,7 @@
             return;
             // TODO: Error Handling
         } else {
-            objectValue = [expression stringByReplacingMatchesInString:self.observedObjectBindingValue options:0 range:NSMakeRange(0, ((NSString *)self.observedObjectBindingValue).length) withTemplate:replacementTemplateValue];
+            objectValue = [expression stringByReplacingMatchesInString:self.observedObjectEvaluationValue options:0 range:NSMakeRange(0, ((NSString *)self.observedObjectEvaluationValue).length) withTemplate:replacementTemplateValue];
             
             if ([objectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
                 objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : objectValue;

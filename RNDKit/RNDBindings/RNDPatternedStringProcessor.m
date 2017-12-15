@@ -40,7 +40,7 @@
             return;
         }
         
-        if (((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        if (self.observedObjectEvaluator != nil && ((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
@@ -97,7 +97,10 @@
 
 #pragma mark - Object Lifecycle
 - (instancetype)init {
-    return [super init];
+    if ((self = [super init]) != nil) {
+        
+    }
+    return self;
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {

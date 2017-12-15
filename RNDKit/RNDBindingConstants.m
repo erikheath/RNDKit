@@ -7,6 +7,20 @@
 //
 #import "RNDBindingConstants.h"
 
+NSString * const RNDKitErrorDomain = @"RNDKitErrorDomain";
+RNDKitErrorKey RNDBindingFailedErrorKey = @"RNDBindingFailedErrorKey";
+RNDKitErrorKey RNDObservedObjectNotFoundErrorKey = @"RNDObservedObjectNotFoundErrorKey";
+RNDKitErrorKey RNDBindingIdentifierRecoverySuggestionErrorKey = @"RNDBindingIdentifierRecoverySuggestionErrorKey";
+RNDKitErrorKey RNDMonitorObservedObjectErrorKey = @"RNDMonitorObservedObjectErrorKey";
+RNDKitErrorKey RNDObservedObjectIsNilErrorKey = @"RNDObservedObjectIsNilErrorKey";
+RNDKitErrorKey RNDMonitorObservedObjectRecoverySuggestionErrorKey = @"RNDMonitorObservedObjectRecoverySuggestionErrorKey";
+RNDKitErrorKey RNDUnbindingErrorKey = @"RNDUnbindingErrorKey";
+RNDKitErrorKey RNDUnbindingUnregistrationErrorKey = @"RNDUnbindingUnregistrationErrorKey";
+RNDKitErrorKey RNDUnbindingExceptionRecoverySuggestionErrorKey = @"RNDUnbindingExceptionRecoverySuggestionErrorKey";
+RNDKitErrorKey RNDUnderlyingErrorsArrayKey = @"RNDUnderlyingErrorsArrayKey";
+RNDKitErrorKey RNDObjectIsBoundErrorKey = @"RNDObjectIsBoundErrorKey";
+RNDKitErrorKey RNDObjectIsBoundRecoverySuggestionErrorKey = @"RNDObjectIsBoundRecoverySuggestionErrorKey";
+
 #pragma mark - RNDBinderManifestKeys
 RNDBinderManifestKey RNDBinderManifestNamespaceKey = @"RNDBinderManifestNamespaceKey";
 RNDBinderManifestKey RNDBinderManifestLocationKey = @"RNDBinderManifestLocationKey";

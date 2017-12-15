@@ -278,14 +278,14 @@
 
 @synthesize processorArguments = _processorArguments;
 
-- (void)setBindingArguments:(NSMutableArray<RNDBindingProcessor *> *)bindingArguments {
+- (void)setProcessorArguments:(NSMutableArray<RNDBindingProcessor *> *)processorArguments {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _processorArguments = bindingArguments;
+        _processorArguments = processorArguments;
     });
 }
 
-- (NSMutableArray<RNDBindingProcessor *> *)bindingArguments {
+- (NSMutableArray<RNDBindingProcessor *> *)processorArguments {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
         localObject = _processorArguments;
@@ -304,6 +304,7 @@
         } else {
             _observedObjectEvaluator = observedObjectEvaluator;
         }
+        _observedObjectEvaluator.processorOutputType = RNDCalculatedValueOutputType;
     });
 }
 
@@ -338,8 +339,8 @@
 
 - (void)setRuntimeArguments:(NSDictionary *)runtimeArguments {
     dispatch_barrier_sync(_syncQueue, ^{
-        _runtimeArguments = runtimeArguments;
-        for (RNDBindingProcessor *binding in self.allBindings) {
+        _runtimeArguments = runtimeArguments != nil ? runtimeArguments : @{};
+        for (RNDBindingProcessor *binding in self.processorNodes) {
             binding.runtimeArguments = _runtimeArguments;
         }
     });
@@ -371,10 +372,15 @@
         
         id rawObjectValue;
         
-        if (((NSNumber *)_observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        NSMutableArray *keyPathArray = [NSMutableArray array];
+        if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
+        if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
+        NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
+
+        if (_observedObjectEvaluator != nil && ((NSNumber *)_observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             rawObjectValue = nil;
         } else {
-            rawObjectValue = [_observedObject valueForKeyPath:_observedObjectKeyPath];
+            rawObjectValue = [_observedObject valueForKeyPath:keyPath];
         }
         
         if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
@@ -392,7 +398,7 @@
             return;
         }
         
-        if ([rawObjectValue isEqual: RNDBindingNullValueMarker] == YES) {
+        if ([rawObjectValue isEqual: RNDBindingNullValueMarker] == YES || rawObjectValue == [NSNull null]) {
             objectValue = _nullPlaceholder != nil ? _nullPlaceholder.bindingObjectValue : rawObjectValue;
             return;
         }
@@ -429,11 +435,15 @@
     });
 }
 
-- (id)evaluatedObject {
+- (id)observedObjectEvaluationValue {
     id __block localObject = nil;
     dispatch_sync(_syncQueue, ^{
-        if (_observedObjectKeyPath != nil) {
-            localObject = [_observedObject valueForKeyPath:_observedObjectKeyPath];
+        NSMutableArray *keyPathArray = [NSMutableArray array];
+        if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
+        if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
+        NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
+        if ([keyPath isEqualToString:@""] == NO) {
+            localObject = [_observedObject valueForKeyPath:keyPath];
         } else {
             localObject = _observedObject;
         }
@@ -441,7 +451,7 @@
     return localObject;
 }
 
-- (NSArray<RNDBindingProcessor *> *)allBindings {
+- (NSArray<RNDBindingProcessor *> *)processorNodes {
     NSMutableArray * __block bindings = [NSMutableArray array];
     if (_processorArguments != nil) {
         [bindings addObjectsFromArray:_processorArguments];
@@ -472,7 +482,13 @@
 
 #pragma mark - Object Lifecycle
 - (instancetype)init {
-    return [super init];
+    if ((self = [super init]) != nil) {
+        _runtimeArguments = @{};
+        _syncQueueIdentifier = [[NSUUID alloc] init];
+        _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
+        _processorArguments = [NSMutableArray array];
+    }
+    return self;
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
@@ -501,6 +517,7 @@
             _valueTransformer = [NSValueTransformer valueTransformerForName:_valueTransformerName];
         }
         
+        _runtimeArguments = @{};
     }
     
     return self;
@@ -527,47 +544,120 @@
 #pragma mark - Binding Management
 
 - (BOOL)bindObjects:(NSError * _Nonnull __autoreleasing *)error {
+    BOOL result = YES;
+    NSError *internalError = nil;
     
-    dispatch_assert_queue_barrier(_syncQueue);
+    dispatch_assert_queue_barrier_debug(_syncQueue);
     
-    NSUInteger index = [_binder.observer.bindingDestinations indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([((id<RNDBindableObject>)obj).bindingIdentifier isEqualToString:_observedObjectBindingIdentifier]) {
-            _observedObject = obj;
-            *stop = YES;
-            return YES;
+    if (_isBound == YES) {
+        result = NO;
+        if (error != NULL) {
+            NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
+            internalError = [NSError errorWithDomain:RNDKitErrorDomain
+                                                code:RNDObjectIsBoundError
+                                            userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBindingFailedErrorKey, nil, errorBundle, @"Binding Failed", @"Binding Failed"),
+                                                       NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundErrorKey, nil, errorBundle, @"The processor is already bound.", @"The processor is already bound."),
+                                                       NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundRecoverySuggestionErrorKey, nil, errorBundle, @"The processor is already bound. To rebind the processor, call unbind on the processor first.", @"Attempted to rebind the processor.")
+                                                       }];
+            *error = internalError;
         }
-        return NO;
-    }];
-    if (index == NSNotFound) {
-        _isBound = NO;
-        return _isBound;
+        return result;
+    }
+    
+    if (_observedObject == nil && _observedObjectBindingIdentifier != nil) {
+        NSUInteger index = [_binder.observer.bindingDestinations indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([((id<RNDBindableObject>)obj).bindingIdentifier isEqualToString:_observedObjectBindingIdentifier]) {
+                _observedObject = obj;
+                *stop = YES;
+                return YES;
+            }
+            return NO;
+        }];
+        
+        if (index == NSNotFound) {
+            result = NO;
+            if (error != NULL) {
+                NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
+                internalError = [NSError errorWithDomain:RNDKitErrorDomain
+                                                code:RNDObservedObjectNotFound
+                                    userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBindingFailedErrorKey, nil, errorBundle, @"Binding Failed", @"Binding Failed"),
+                                                       NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDObservedObjectNotFoundErrorKey, nil, errorBundle, @"Unable to locate the observed object.", @"Unable to locate the observed object."),
+                                                       NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDBindingIdentifierRecoverySuggestionErrorKey, nil, errorBundle, @"Confirm that the binding identifier exists in the Interface Builder file and points to the desired observed object. Alternatively, reconnect the binding processor to the correct destination in the RNDWorkbench application.", @"The binder identifier could not be located in the binding destinations provided by the binder.")
+                                                       }];
+                *error = internalError;
+            }
+            return result;
+        }
     }
     
     if (_monitorsObservedObject == YES) {
+        if (_observedObject == nil) {
+            result = NO;
+            if (error != NULL) {
+                NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
+                internalError = [NSError errorWithDomain:RNDKitErrorDomain
+                                                    code:RNDObservedObjectIsNil
+                                                userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBindingFailedErrorKey, nil, errorBundle, @"Binding Failed", @"Binding Failed"),
+                                                           NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDObservedObjectIsNilErrorKey, nil, errorBundle, @"The observed object is nil.", @"The observed object is nil."),
+                                                           NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDMonitorObservedObjectRecoverySuggestionErrorKey, nil, errorBundle, @"If loading from an archive, confirm that the binding identifier exists in the Interface Builder file and points to the desired observed object. Alternatively, reconnect the binding processor to the correct destination in the RNDWorkbench application and regenerate the archive.\n\nIf not loading from an archive, confirm that the observed object is set prior to attempting to bind the processor.", @"The observed object is nil and can not be KVO'd.")
+                                                           }];
+                *error = internalError;
+            }
+            return result;
+        } else if ([_observedObject isKindOfClass:[RNDBindingProcessor class]] == YES) {
+            result = NO;
+            if (error != NULL) {
+                NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
+                internalError = [NSError errorWithDomain:RNDKitErrorDomain
+                                                    code:RNDAttemptToObserveProcessorError
+                                                userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBindingFailedErrorKey, nil, errorBundle, @"Binding Failed", @"Binding Failed"),
+                                                           NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDMonitorObservedObjectErrorKey, nil, errorBundle, @"The observed object is a processor.", @"The observed object is a processor."),
+                                                           NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDMonitorObservedObjectRecoverySuggestionErrorKey, nil, errorBundle, @"The processor has been set to monitor another processor. Processors can not be monitored. Change the monitors observer setting of this processor to false to correct this error./n/n If you are using the RNDWorkbench, uncheck the monitors observer checkbox for this processor.", @"The observed object is a processor and can not be KVO'd.")
+                                                           }];
+                *error = internalError;
+            }
+            return result;
+
+        }
         
+        NSMutableArray *keyPathArray = [NSMutableArray array];
+        if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
+        if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
+        NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
+
         // Observe the model object.
         [_observedObject addObserver:self
-                          forKeyPath:_observedObjectKeyPath
+                          forKeyPath:keyPath
                              options:NSKeyValueObservingOptionNew
                              context:(__bridge void * _Nullable)(_bindingName)];
-        
     }
     
-    for (RNDBindingProcessor *binding in self.allBindings) {
-        binding.binder = _binder;
-        if ([binding bindObjects:error] == YES) { continue; }
-        [self unbindObjects:error];
-        _isBound = NO;
-        return _isBound;
+    // The observed object must recieve a bind message.
+    if ([_observedObject isKindOfClass:[RNDBindingProcessor class]] == YES) {
+        ((RNDBindingProcessor *)_observedObject).binder = _binder;
+        result = [(RNDBindingProcessor *)_observedObject bind:&internalError];
+        if (result == NO) {
+            [self unbind:NULL];
+            if (error != NULL) { *error = internalError; }
+            return result;
+        }
     }
-
-    _isBound = YES;
-    return _isBound;
+    
+    for (RNDBindingProcessor *binding in self.processorNodes) {
+        binding.binder = _binder;
+        if ((result = [binding bind:&internalError]) == YES) { continue; }
+        [self unbind:NULL];
+        if (error != NULL) { *error = internalError; }
+        break;
+    }
+    
+    _isBound = result;
+    return result;
 }
 
 - (void)bind {
-    dispatch_barrier_async(_syncQueue, ^{
-        [self bindObjects:nil];
+    dispatch_barrier_sync(_syncQueue, ^{
+        [self bindObjects:NULL];
     });
 }
 
@@ -580,29 +670,83 @@
 }
 
 - (BOOL)unbindObjects:(NSError * _Nullable __autoreleasing *)error {
+    BOOL result = YES;
+    id underlyingError;
+    NSError * internalError;
     
-    dispatch_assert_queue_barrier(_syncQueue);
+    dispatch_assert_queue_barrier_debug(_syncQueue);
+    
+    @try {
+        if (_isBound == YES && _monitorsObservedObject == YES) {
+            NSMutableArray *keyPathArray = [NSMutableArray array];
+            if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
+            if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
+            NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
+            
+            // Remove the observer.
+            [_observedObject removeObserver:self
+                                 forKeyPath:keyPath
+                                    context:(__bridge void * _Nullable)(_bindingName)];
+        }
+    }
+    
+    @catch (id exception) {
+        result = NO;
+        if (error != NULL) {
+            if ([exception isKindOfClass:[NSException class]] == YES) {
+                NSException * exceptionObj = (NSException *)exception;
+                NSMutableDictionary *exceptionDictionary = [NSMutableDictionary dictionaryWithDictionary:exceptionObj.userInfo != nil ? exceptionObj.userInfo : @{}];
+                [exceptionDictionary addEntriesFromDictionary:@{NSLocalizedDescriptionKey: exceptionObj.name, NSLocalizedFailureReasonErrorKey: exceptionObj.reason != nil ? exceptionObj.reason : [NSNull null]}];
+                underlyingError = [NSError errorWithDomain:RNDKitErrorDomain
+                                                            code:RNDExceptionAsError
+                                                        userInfo:[NSDictionary dictionaryWithDictionary:exceptionDictionary]];
+            } else {
+                underlyingError = exception;
+            }
+        }
+    }
+    
+    NSMutableArray *underlyingErrorsArray = [NSMutableArray array];
+    for (RNDBindingProcessor *binding in self.processorNodes) {
+        NSError *passedInError;
+        BOOL unbindingResult = [binding unbind:&passedInError];
+        if (unbindingResult == NO) {
+            result = NO;
+            [underlyingErrorsArray addObject:passedInError];
+        }
+    }
+    
+    // The observed object must be unbound.
+    if ([_observedObject isKindOfClass:[RNDBindingProcessor class]] == YES) {
+        NSError *observedUnbindingError;
+        BOOL unbindingResult = [(RNDBindingProcessor *)_observedObject unbind:&observedUnbindingError];
+        if (unbindingResult == NO) {
+            result = NO;
+            [underlyingErrorsArray addObject:observedUnbindingError];
+        }
+    }
 
-    if (_monitorsObservedObject == YES) {
-        
-        // Remove the observer.
-        [_observedObject removeObserver:self
-                             forKeyPath:_observedObjectKeyPath
-                                context:(__bridge void * _Nullable)(_bindingName)];
-        
-    }
     
-    for (RNDBindingProcessor *binding in self.allBindings) {
-        [binding unbindObjects:error];
+    if (error != NULL && (underlyingErrorsArray.count > 0 || underlyingError != nil)) {
+        NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
+        internalError = [NSError errorWithDomain:RNDKitErrorDomain
+                                            code:RNDProcessorIsNotRegisteredAsObserver
+                                        userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDUnbindingErrorKey, nil, errorBundle, @"Unbinding Error", @"Unbinding Error"),
+                                                   NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDUnbindingUnregistrationErrorKey, nil, errorBundle, @"An error occurred during unbinding.", @"An error occurred during unbinding."),
+                                                   NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDUnbindingExceptionRecoverySuggestionErrorKey, nil, errorBundle, @"An exception was thrown during unbinding. The most likely cause is that the processor was not registered as an observer of the observed object. See the underlying error for more information and to trace the cause of the exception.", @"The processor was not registered as an observer."),
+                                                   NSUnderlyingErrorKey:underlyingError,
+                                                   RNDUnderlyingErrorsArrayKey: underlyingErrorsArray
+                                                   }];
+        *error = internalError;
     }
-    
+
     _isBound = NO;
-    return _isBound;
+    return result;
 }
 
 - (void)unbind {
-    dispatch_barrier_async(_syncQueue, ^{
-        [self unbindObjects:nil];
+    dispatch_barrier_sync(_syncQueue, ^{
+        [self unbindObjects:NULL];
     });
 }
 

@@ -37,7 +37,7 @@
             return;
         }
         
-        if (((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        if (self.observedObjectEvaluator != nil && ((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
@@ -59,7 +59,7 @@
             return;
             // TODO: Error Handling
         } else {
-            objectValue = @([predicate evaluateWithObject:self.observedObjectBindingValue]);
+            objectValue = @([predicate evaluateWithObject:self.observedObjectEvaluationValue]);
             
             objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:objectValue] : objectValue;
         }
@@ -73,6 +73,9 @@
 
 #pragma mark - Object Lifecycle
 - (instancetype)init {
+    if ((self = [super init]) != nil) {
+        _predicateFormatString = @"TRUEPREDICATE";
+    }
     return [super init];
 }
 

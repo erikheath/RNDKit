@@ -7,15 +7,14 @@
 //
 
 #import "RNDBindingConstants.h"
-#import "NSObject+RNDObjectBinding.h"
-#import "RNDBindingManifest.h"
-#import "RNDBinderSet.h"
+//#import "NSObject+RNDObjectBinding.h"
+//#import "RNDBindingManifest.h"
+//#import "RNDBinderSet.h"
 #import "RNDBinder.h"
 #import "RNDBindingProcessor.h"
-
 #import "RNDTargetActionBinder.h"
-#import "RNDInvocationBinding.h"
-#import "RNDRegExBinding.h"
-#import "RNDPredicateBinding.h"
-#import "RNDExpressionBinding.h"
-#import "RNDPatternedBinding.h"
+#import "RNDInvocationProcessor.h"
+#import "RNDRegExProcessor.h"
+#import "RNDPredicateProcessor.h"
+#import "RNDExpressionProcessor.h"
+#import "RNDPatternedStringProcessor.h"
