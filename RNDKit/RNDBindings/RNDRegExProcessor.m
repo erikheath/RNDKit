@@ -63,7 +63,7 @@
 
         NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_regExTemplate];
         
-        for (RNDBindingProcessor *binding in self.processorArguments) {
+        for (RNDBindingProcessor *binding in self.boundArguments) {
             [replacableObjectValue replaceOccurrencesOfString:binding.argumentName
                                                    withString:binding.bindingObjectValue
                                                       options:0
@@ -80,7 +80,7 @@
         
         NSMutableString *replacementTemplateValue = _replacementTemplate != nil ? [NSMutableString stringWithString:_replacementTemplate] : nil;
         if (replacementTemplateValue != nil) {
-            for (RNDBindingProcessor *binding in self.processorArguments) {
+            for (RNDBindingProcessor *binding in self.boundArguments) {
                 [replacementTemplateValue replaceOccurrencesOfString:binding.argumentName
                                                           withString:binding.bindingObjectValue
                                                              options:0

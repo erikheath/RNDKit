@@ -11,7 +11,6 @@
 
 @interface RNDExpressionProcessor: RNDBindingProcessor
 
-
 @property (strong, readwrite, nullable) NSString *expressionTemplate;
 
 @end

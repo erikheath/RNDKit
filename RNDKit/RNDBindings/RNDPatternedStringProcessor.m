@@ -47,7 +47,7 @@
 
         NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_patternTemplate];
         
-        for (RNDBindingProcessor *binding in self.processorArguments) {
+        for (RNDBindingProcessor *binding in self.boundArguments) {
             [replacableObjectValue replaceOccurrencesOfString:binding.argumentName
                                                    withString:binding.bindingObjectValue
                                                       options:0

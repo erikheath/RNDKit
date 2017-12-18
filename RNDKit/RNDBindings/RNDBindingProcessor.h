@@ -306,11 +306,18 @@ typedef NS_ENUM(NSUInteger, RNDProcessorValueType) {
 @property (strong, nullable, readonly) NSValueTransformer *valueTransformer;
 
 /**
- @abstract Processor processors that are used as arguments during the processing of a processors binding object value.
+ @abstract Processors that are used as arguments during the processing of a binding object value.
  
- @discussion A processor processor may have one or more processor processors whose binding object values can be used as substitutions in templates or other processes.
+ @discussion A processor may have one or more processors whose binding object values can be used as substitutions in templates or other processes. Use the boundArguments array when the processor is bound to determine what arguments, if any are being used by the processor.
  */
-@property (strong, readwrite, nullable) NSMutableArray<RNDBindingProcessor *> *processorArguments;
+@property (strong, nullable, readonly) NSMutableArray<RNDBindingProcessor *> *processorArguments;
+
+/**
+ @abstract The processors used as arguments when bound.
+ 
+ @discussion When a processor is bound, it creates a read only copy of its processor arguments array that is used for the duration of the binding. When the processor is not bound, this property is nil.
+ */
+@property (strong, nullable, readonly) NSArray<RNDBindingProcessor *> *boundArguments;
 
 /**
  @abstract All binding processors used as nodes by a binding processor.

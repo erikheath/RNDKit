@@ -48,7 +48,7 @@
 
         id rawObjectValue;
         NSMutableArray *argumentArray = [NSMutableArray array];
-        for (RNDBindingProcessor *binding in self.processorArguments) {
+        for (RNDBindingProcessor *binding in self.boundArguments) {
             id argumentValue = binding.bindingObjectValue;
             if (argumentValue == nil) { argumentValue = [NSNull null]; }
             [argumentArray addObject:argumentValue];

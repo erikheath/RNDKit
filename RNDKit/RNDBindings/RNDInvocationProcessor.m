@@ -65,7 +65,7 @@
                 [invocation setSelector:bindingSelector];
                 [invocation setTarget:evaluationValue];
                 
-                [self.processorArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [self.boundArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                     
                     RNDBindingProcessor *binding = obj;
                     BOOL result = [self addBindingArgumentValue:binding.bindingObjectValue toInvocation:invocation atPosition:idx + 2];

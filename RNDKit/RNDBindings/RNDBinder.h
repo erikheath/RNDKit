@@ -9,9 +9,9 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSUInteger, RNDBinderMode) {
-    valueOnlyMode,
-    keyedValueMode,
-    orderedKeyedValueMode
+    RNDValueOnlyMode,
+    RNDKeyedValueMode,
+    RNDOrderedKeyedValueMode
 };
 
 @class RNDBindingProcessor;
@@ -31,29 +31,32 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
  */
 @interface RNDBinder : NSObject <NSCoding>
 
-@property (strong, nonnull, readonly) NSString *binderIdentifier;
-@property (nonnull, strong, readonly) NSArray<RNDBindingProcessor *> *inflowBindings;
-@property (nonnull, strong, readonly) NSArray<RNDBindingProcessor *> *outflowBindings;
+@property (strong, nonnull, readwrite) NSString *binderIdentifier;
+@property (strong, nonnull, readwrite) NSString *bindingName;
+@property (nonnull, strong, readonly) NSMutableArray<RNDBindingProcessor *> *inflowBindings;
+@property (strong, nullable, readonly) NSArray<RNDBindingProcessor *> *boundInflowBindings;
+@property (nonnull, strong, readonly) NSMutableArray<RNDBindingProcessor *> *outflowBindings;
+@property (nonnull, strong, readonly) NSArray<RNDBindingProcessor *> *boundOutflowBindings;
 @property (weak, readwrite, nullable) NSObject<RNDBindableObject> *observer;
-@property (strong, nonnull, readonly) NSString *observerKey;
-@property (readonly) RNDBinderMode binderMode;
-@property (readonly) BOOL monitorsObserver;
+@property (strong, nonnull, readwrite) NSString *observerKey;
+@property (readwrite) RNDBinderMode binderMode;
+@property (readwrite) BOOL monitorsObserver;
 @property (strong, nullable, readonly) dispatch_queue_t syncQueue;
 @property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
 
 @property (strong, readwrite, nullable) id bindingObjectValue;
 @property (readonly, getter=isBound) BOOL bound;
 
-@property (strong, nullable, readonly) RNDBindingProcessor *nullPlaceholder;
-@property (strong, nullable, readonly) RNDBindingProcessor *multipleSelectionPlaceholder;
-@property (strong, nullable, readonly) RNDBindingProcessor *noSelectionPlaceholder;
-@property (strong, nullable, readonly) RNDBindingProcessor *notApplicablePlaceholder;
-@property (strong, nullable, readonly) RNDBindingProcessor *nilPlaceholder;
+@property (strong, nullable, readwrite) RNDBindingProcessor *nullPlaceholder;
+@property (strong, nullable, readwrite) RNDBindingProcessor *multipleSelectionPlaceholder;
+@property (strong, nullable, readwrite) RNDBindingProcessor *noSelectionPlaceholder;
+@property (strong, nullable, readwrite) RNDBindingProcessor *notApplicablePlaceholder;
+@property (strong, nullable, readwrite) RNDBindingProcessor *nilPlaceholder;
 
-@property (readonly) BOOL filtersNilValues;
-@property (readonly) BOOL filtersMarkerValues;
-@property (readonly) BOOL unwrapSingleValue;
-@property (readonly) BOOL mutuallyExclusive;
+@property (readwrite) BOOL filtersNilValues;
+@property (readwrite) BOOL filtersMarkerValues;
+@property (readwrite) BOOL unwrapSingleValue;
+@property (readwrite) BOOL mutuallyExclusive;
 
 
 - (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;

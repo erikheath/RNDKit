@@ -18,7 +18,8 @@ typedef NS_ENUM(NSUInteger, RNDBindingProcessorErrorCode) {
     RNDProcessorIsNotRegisteredAsObserver = 3,
     RNDExceptionAsError = 4,
     RNDObjectIsBoundError = 5,
-    RNDAttemptToObserveProcessorError = 6
+    RNDAttemptToObserveProcessorError = 6,
+    RNDKeyValuePathError = 7
 };
 
 typedef NSString * const RNDKitErrorKey;
@@ -27,7 +28,10 @@ FOUNDATION_EXPORT RNDKitErrorKey RNDObservedObjectNotFoundErrorKey;
 FOUNDATION_EXPORT RNDKitErrorKey RNDBindingIdentifierRecoverySuggestionErrorKey;
 FOUNDATION_EXPORT RNDKitErrorKey RNDMonitorObservedObjectErrorKey;
 FOUNDATION_EXPORT RNDKitErrorKey RNDObservedObjectIsNilErrorKey;
+FOUNDATION_EXPORT RNDKitErrorKey RNDObserverObjectIsNilErrorKey;
 FOUNDATION_EXPORT RNDKitErrorKey RNDMonitorObservedObjectRecoverySuggestionErrorKey;
+FOUNDATION_EXPORT RNDKitErrorKey RNDMonitorObserverObjectRecoverySuggestionErrorKey;
+FOUNDATION_EXPORT RNDKitErrorKey RNDKeyPathIsNilErrorKey;
 FOUNDATION_EXPORT RNDKitErrorKey RNDUnbindingErrorKey;
 FOUNDATION_EXPORT RNDKitErrorKey RNDUnbindingUnregistrationErrorKey;
 FOUNDATION_EXPORT RNDKitErrorKey RNDUnbindingExceptionRecoverySuggestionErrorKey;

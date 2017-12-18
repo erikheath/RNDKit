@@ -44,7 +44,7 @@
 
         NSMutableDictionary * __block argumentsDictionary = [NSMutableDictionary dictionary];
 
-        [self.processorArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.boundArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             RNDBindingProcessor *binding = obj;
             id argumentValue = binding.bindingObjectValue;
             [argumentsDictionary setObject:argumentValue forKey:binding.argumentName];

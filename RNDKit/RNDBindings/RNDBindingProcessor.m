@@ -278,13 +278,6 @@
 
 @synthesize processorArguments = _processorArguments;
 
-- (void)setProcessorArguments:(NSMutableArray<RNDBindingProcessor *> *)processorArguments {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _processorArguments = processorArguments;
-    });
-}
-
 - (NSMutableArray<RNDBindingProcessor *> *)processorArguments {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
@@ -293,6 +286,15 @@
     return localObject;
 }
 
+@synthesize boundArguments = _boundArguments;
+
+- (NSArray<RNDBindingProcessor *> *)boundArguments {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _boundArguments;
+    });
+    return localObject;
+}
 
 @synthesize observedObjectEvaluator = _observedObjectEvaluator;
 
@@ -612,13 +614,27 @@
                                                     code:RNDAttemptToObserveProcessorError
                                                 userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBindingFailedErrorKey, nil, errorBundle, @"Binding Failed", @"Binding Failed"),
                                                            NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDMonitorObservedObjectErrorKey, nil, errorBundle, @"The observed object is a processor.", @"The observed object is a processor."),
-                                                           NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDMonitorObservedObjectRecoverySuggestionErrorKey, nil, errorBundle, @"The processor has been set to monitor another processor. Processors can not be monitored. Change the monitors observer setting of this processor to false to correct this error./n/n If you are using the RNDWorkbench, uncheck the monitors observer checkbox for this processor.", @"The observed object is a processor and can not be KVO'd.")
+                                                           NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDMonitorObservedObjectRecoverySuggestionErrorKey, nil, errorBundle, @"The processor has been set to monitor another processor. Processors can not be monitored. Change the monitors observer setting of this processor to false to correct this error./n/nIf you are using the RNDWorkbench, uncheck the monitors observer checkbox for this processor.", @"The observed object is a processor and can not be KVO'd.")
                                                            }];
                 *error = internalError;
             }
             return result;
 
-        }
+        } else if (_observedObjectKeyPath == nil) {
+            result = NO;
+            if (error != NULL) {
+                NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
+                internalError = [NSError errorWithDomain:RNDKitErrorDomain
+                                                    code:RNDKeyValuePathError
+                                                userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBindingFailedErrorKey, nil, errorBundle, @"Binding Failed", @"Binding Failed"),
+                                                           NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDKeyPathIsNilErrorKey, nil, errorBundle, @"The observed object keypath is nil.", @"The observed object keypath is nil."),
+                                                           NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDMonitorObservedObjectRecoverySuggestionErrorKey, nil, errorBundle, @"A keypath corresponding to an observable relationship of an object must be specified to enable monitoring./n/nIf you are using the RNDWorkbench, either uncheck the monitors observed checkbox for this processor or specify an observable property keypath to monitor.", @"The keypath of the observed object is nil and will prevent the observed object from being KVO'd.")
+                                                           }];
+                *error = internalError;
+            }
+            return result;
+            
+        }        
         
         NSMutableArray *keyPathArray = [NSMutableArray array];
         if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
@@ -642,8 +658,8 @@
             return result;
         }
     }
-    
-    for (RNDBindingProcessor *binding in self.processorNodes) {
+    _boundArguments = [NSArray arrayWithArray:self.processorNodes];
+    for (RNDBindingProcessor *binding in _boundArguments) {
         binding.binder = _binder;
         if ((result = [binding bind:&internalError]) == YES) { continue; }
         [self unbind:NULL];
@@ -672,6 +688,7 @@
 - (BOOL)unbindObjects:(NSError * _Nullable __autoreleasing *)error {
     BOOL result = YES;
     id underlyingError;
+    NSMutableArray *underlyingErrorsArray = [NSMutableArray array];
     NSError * internalError;
     
     dispatch_assert_queue_barrier_debug(_syncQueue);
@@ -706,8 +723,8 @@
         }
     }
     
-    NSMutableArray *underlyingErrorsArray = [NSMutableArray array];
-    for (RNDBindingProcessor *binding in self.processorNodes) {
+
+    for (RNDBindingProcessor *binding in _boundArguments) {
         NSError *passedInError;
         BOOL unbindingResult = [binding unbind:&passedInError];
         if (unbindingResult == NO) {
@@ -715,6 +732,7 @@
             [underlyingErrorsArray addObject:passedInError];
         }
     }
+    _boundArguments = nil;
     
     // The observed object must be unbound.
     if ([_observedObject isKindOfClass:[RNDBindingProcessor class]] == YES) {
