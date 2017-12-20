@@ -84,40 +84,36 @@
 
 #pragma mark - Binding Management
 
-- (BOOL)bind:(NSError * __autoreleasing _Nullable * _Nullable)error {
+- (BOOL)bindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error {
     __block BOOL result = NO;
     
-    dispatch_sync(_serializerQueue, ^{
-        if ((result = [super bind:error]) == NO) { return; }
-        
-        if ([self.observer respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.observer respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
-            NSInvocation *invocation = _bindingInvocation.bindingObjectValue;
-            if (invocation == nil) { return; }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [invocation invoke];
-            });
-        } else { return; }
-        
-    });
+    if ((result = [super bindObjects:error]) == NO) { return result; }
+    
+    if ([self.observer respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.observer respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
+        NSInvocation *invocation = _bindingInvocation.bindingObjectValue;
+        if (invocation == nil) { return result; }
+        // Should this be sync
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [invocation invoke];
+        });
+    }
     
     return result;
 }
 
-- (BOOL)unbind:(NSError *__autoreleasing  _Nullable *)error {
+- (BOOL)unbindObjects:(NSError *__autoreleasing  _Nullable *)error {
     __block BOOL result = NO;
     
-    dispatch_sync(_serializerQueue, ^{
-        if ((result = [super unbind:error]) == NO) { return; }
-
-        if ([self.observer respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.observer respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
-            NSInvocation *invocation = _unbindingInvocation.bindingObjectValue;
-            if (invocation == nil) { return; }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [invocation invoke];
-            });
-        } else { return; }
-        
-    });
+    if ((result = [super unbind:error]) == NO) { return result; }
+    
+    if ([self.observer respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.observer respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
+        NSInvocation *invocation = _unbindingInvocation.bindingObjectValue;
+        if (invocation == nil) { return result; }
+        // Should this be sync
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [invocation invoke];
+        });
+    }
     
     return result;
 

@@ -365,76 +365,95 @@
 - (id _Nullable)bindingObjectValue {
     id __block objectValue = nil;
     
-    dispatch_sync(_syncQueue, ^{
-        
-        if (_isBound == NO) {
-            objectValue = nil;
-            return;
-        }
-        
-        id rawObjectValue;
-        
-        NSMutableArray *keyPathArray = [NSMutableArray array];
-        if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
-        if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
-        NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
-
-        if (_observedObjectEvaluator != nil && ((NSNumber *)_observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
-            rawObjectValue = nil;
-        } else {
-            rawObjectValue = [_observedObject valueForKeyPath:keyPath];
-        }
-        
-        if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-            objectValue = _multipleSelectionPlaceholder != nil ? _multipleSelectionPlaceholder.bindingObjectValue : rawObjectValue;
-            return;
-        }
-        
-        if ([rawObjectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-            objectValue = _noSelectionPlaceholder != nil ? _noSelectionPlaceholder.bindingObjectValue : rawObjectValue;
-            return;
-        }
-        
-        if ([rawObjectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-            objectValue = _notApplicablePlaceholder != nil ? _notApplicablePlaceholder.bindingObjectValue : rawObjectValue;
-            return;
-        }
-        
-        if ([rawObjectValue isEqual: RNDBindingNullValueMarker] == YES || rawObjectValue == [NSNull null]) {
-            objectValue = _nullPlaceholder != nil ? _nullPlaceholder.bindingObjectValue : rawObjectValue;
-            return;
-        }
-        
-        if (rawObjectValue == nil) {
-            objectValue = _nilPlaceholder != nil ? _nilPlaceholder.bindingObjectValue : rawObjectValue;
-            return;
-        }
-        
-        
-        objectValue = _valueTransformer != nil ? [_valueTransformer transformedValue:rawObjectValue] : rawObjectValue;
-        
+    dispatch_barrier_sync(_syncQueue, ^{
+        objectValue = [self readBindingObjectValue];
     });
+    
+    return objectValue;
+}
+
+- (id _Nullable)readBindingObjectValue {
+
+    dispatch_assert_queue_barrier_debug(_syncQueue);
+
+    id __block objectValue = nil;
+    
+    if (_isBound == NO) {
+        objectValue = nil;
+        return objectValue;
+    }
+    
+    id rawObjectValue;
+    
+    NSMutableArray *keyPathArray = [NSMutableArray array];
+    if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
+    if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
+    NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
+    
+    if (_observedObjectEvaluator != nil && ((NSNumber *)_observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        rawObjectValue = nil;
+    } else {
+        rawObjectValue = [_observedObject valueForKeyPath:keyPath];
+    }
+    
+    if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
+        objectValue = _multipleSelectionPlaceholder != nil ? _multipleSelectionPlaceholder.bindingObjectValue : rawObjectValue;
+        return objectValue;
+    }
+    
+    if ([rawObjectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
+        objectValue = _noSelectionPlaceholder != nil ? _noSelectionPlaceholder.bindingObjectValue : rawObjectValue;
+        return objectValue;
+    }
+    
+    if ([rawObjectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
+        objectValue = _notApplicablePlaceholder != nil ? _notApplicablePlaceholder.bindingObjectValue : rawObjectValue;
+        return objectValue;
+    }
+    
+    if ([rawObjectValue isEqual: RNDBindingNullValueMarker] == YES || rawObjectValue == [NSNull null]) {
+        objectValue = _nullPlaceholder != nil ? _nullPlaceholder.bindingObjectValue : rawObjectValue;
+        return objectValue;
+    }
+    
+    if (rawObjectValue == nil) {
+        objectValue = _nilPlaceholder != nil ? _nilPlaceholder.bindingObjectValue : rawObjectValue;
+        return objectValue;
+    }
+    
+    
+    objectValue = _valueTransformer != nil ? [_valueTransformer transformedValue:rawObjectValue] : rawObjectValue;
+    
     
     return objectValue;
 }
 
 - (void)setBindingObjectValue:(id)bindingObjectValue {    
     dispatch_barrier_async(_syncQueue, ^{
-        // In some cases, a different value on screen may not actually be a different value in the model.
-        // This happens when part of the model record is split up into multiple parts.
-        
-        // Set the context of the binding so that the runtime arguments can be used.
-        NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithDictionary:@{RNDBinderObjectValue: bindingObjectValue}];
-        dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
-        
-        // There may be no actual change, in which case nothing needs to happen.
-        id objectValue = self.bindingObjectValue;
-        if ([objectValue isEqual:[_observedObject valueForKeyPath:_observedObjectKeyPath]]) {
-            return;
-        }
-        
-        [_observedObject setValue:self.bindingObjectValue forKeyPath:_observedObjectKeyPath];
+        [self writeBindingObjectValue:bindingObjectValue];
     });
+}
+
+- (void)writeBindingObjectValue:(id)bindingObjectValue {
+    
+    dispatch_assert_queue_barrier_debug(_syncQueue);
+    // In some cases, a different value on screen may not actually be a different value in the model.
+    // This happens when part of the model record is split up into multiple parts.
+    
+    // We generate the value to be written (and compared) by processing it into a form that can be compared. We use the binding object value to calculate the value that should be written to the observed object.
+    id objectValue = [self readBindingObjectValue];
+    NSMutableArray *keyPathArray = [NSMutableArray array];
+    if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
+    if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
+    NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
+
+    // There may be no actual change for this part of the write value, in which case nothing needs to happen.
+    if ([objectValue isEqual:[_observedObject valueForKeyPath:keyPath]]) {
+        return;
+    }
+    
+    [_observedObject setValue:objectValue forKeyPath:keyPath];
+
 }
 
 - (id)observedObjectEvaluationValue {

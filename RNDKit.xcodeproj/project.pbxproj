@@ -10,6 +10,7 @@
 		E4159F511F8E8C3A00820F24 /* RNDKeyValueBindingUI.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4159F501F8E8C3A00820F24 /* RNDKeyValueBindingUI.plist */; };
 		E41AF83F1FAE4BE9008F90AC /* RNDInvocationProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = E41AF83E1FAE4BE9008F90AC /* RNDInvocationProcessor.m */; };
 		E42077681FE4996B0087393B /* RNDBinderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F1D1F97BA0700F4D1B5 /* RNDBinderTests.m */; };
+		E420776B1FE845140087393B /* RNDBindingProcessorTestFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = E420776A1FE845140087393B /* RNDBindingProcessorTestFramework.m */; };
 		E4295BC11FA010440040BAC4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BC01FA010440040BAC4 /* AppDelegate.m */; };
 		E4295BC41FA010440040BAC4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BC31FA010440040BAC4 /* ViewController.m */; };
 		E4295BC71FA010440040BAC4 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BC61FA010440040BAC4 /* Document.m */; };
@@ -85,6 +86,8 @@
 		E4159F501F8E8C3A00820F24 /* RNDKeyValueBindingUI.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = RNDKeyValueBindingUI.plist; sourceTree = "<group>"; };
 		E41AF83E1FAE4BE9008F90AC /* RNDInvocationProcessor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDInvocationProcessor.m; sourceTree = "<group>"; };
 		E41AF8401FAE4BFE008F90AC /* RNDInvocationProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDInvocationProcessor.h; sourceTree = "<group>"; };
+		E42077691FE844ED0087393B /* RNDBindingProcessorTestFramework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDBindingProcessorTestFramework.h; sourceTree = "<group>"; };
+		E420776A1FE845140087393B /* RNDBindingProcessorTestFramework.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDBindingProcessorTestFramework.m; sourceTree = "<group>"; };
 		E4295BBD1FA010440040BAC4 /* RND Workbench.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RND Workbench.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4295BBF1FA010440040BAC4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		E4295BC01FA010440040BAC4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -620,10 +623,12 @@
 			children = (
 				E49CFBB71F7EC17900CDFF29 /* RNDKitTests.m */,
 				E49CFBB91F7EC17900CDFF29 /* Info.plist */,
+				E43C3F1D1F97BA0700F4D1B5 /* RNDBinderTests.m */,
 				E43C3F151F97B93500F4D1B5 /* RNDBindingProcessorTests.m */,
+				E42077691FE844ED0087393B /* RNDBindingProcessorTestFramework.h */,
+				E420776A1FE845140087393B /* RNDBindingProcessorTestFramework.m */,
 				E43C3F1B1F97B9D400F4D1B5 /* RNDControllerTests.m */,
 				E43C3F171F97B95600F4D1B5 /* RNDObjectControllerTests.m */,
-				E43C3F1D1F97BA0700F4D1B5 /* RNDBinderTests.m */,
 				E43C3F191F97B98F00F4D1B5 /* RNDUIViewTests.m */,
 			);
 			path = RNDKitTests;
@@ -939,6 +944,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E420776B1FE845140087393B /* RNDBindingProcessorTestFramework.m in Sources */,
 				E42077681FE4996B0087393B /* RNDBinderTests.m in Sources */,
 				E43C3F161F97B93500F4D1B5 /* RNDBindingProcessorTests.m in Sources */,
 			);

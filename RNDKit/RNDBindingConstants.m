@@ -16,6 +16,7 @@ RNDKitErrorKey RNDObservedObjectIsNilErrorKey = @"RNDObservedObjectIsNilErrorKey
 RNDKitErrorKey RNDObserverObjectIsNilErrorKey = @"RNDObserverObjectIsNilErrorKey";
 RNDKitErrorKey RNDMonitorObservedObjectRecoverySuggestionErrorKey = @"RNDMonitorObservedObjectRecoverySuggestionErrorKey";
 RNDKitErrorKey RNDMonitorObserverObjectRecoverySuggestionErrorKey = @"RNDMonitorObserverObjectRecoverySuggestionErrorKey";
+RNDKitErrorKey RNDBindingNameIsNilErrorKey = @"RNDBindingNameIsNilErrorKey";
 RNDKitErrorKey RNDKeyPathIsNilErrorKey = @"RNDKeyPathIsNilErrorKey";
 RNDKitErrorKey RNDUnbindingErrorKey = @"RNDUnbindingErrorKey";
 RNDKitErrorKey RNDUnbindingUnregistrationErrorKey = @"RNDUnbindingUnregistrationErrorKey";
@@ -68,7 +69,7 @@ RNDArgument RNDActionSelectorArgument = @"RNDActionSelectorArgument";
 RNDArgument RNDBinderArgument = @"RNDBinderArgument";
 RNDArgument RNDObserverArgument = @"RNDObserverArgument";
 RNDArgument RNDIterationArgument = @"RNDIterationArgument";
-RNDArgument RNDPositionArgument = @"RNDIterationArgument";
+RNDArgument RNDPositionArgument = @"RNDPositionArgument";
 RNDArgument RNDBinderObjectValue = @"RNDBinderObjectValue";
 
 #pragma mark - RNDNotifications

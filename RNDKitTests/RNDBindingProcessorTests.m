@@ -10,7 +10,7 @@
 #import <RNDKit/RNDKit.h>
 #import <objc/runtime.h>
 #import <CoreData/CoreData.h>
-
+#import "RNDBindingProcessorTestFramework.h"
 
 
 @interface RNDBindingProcessorTests : XCTestCase
@@ -18,135 +18,6 @@
 @end
 
 @implementation RNDBindingProcessorTests
-
-- (RNDBindingProcessor *)processorWithProfile:(NSString *)profileName {
-    SEL profileSelector = NSSelectorFromString([@"profile" stringByAppendingString:profileName]);
-    return [self performSelector:profileSelector];
-}
-
-- (RNDBindingProcessor *)profileA {
-    return [[RNDBindingProcessor alloc] init];
-}
-
-- (RNDBindingProcessor *)profileB {
-    NSMutableDictionary *observedObject = [NSMutableDictionary dictionary];
-    [observedObject setObject:[NSObject new] forKey:@"testProperty"];
-    RNDBindingProcessor *profile = [[RNDBindingProcessor alloc] init];
-    profile.observedObject = observedObject;
-    profile.observedObjectKeyPath = @"testProperty";
-    profile.monitorsObservedObject = YES;
-    
-    return profile;
-}
-
-- (RNDBindingProcessor *)profileC {
-    NSMutableDictionary *observedObject = [NSMutableDictionary dictionary];
-    [observedObject setObject:@"propertyValue" forKey:@"testProperty"];
-    NSMutableDictionary *observedController = [NSMutableDictionary dictionary];
-    [observedController setObject:observedObject forKey:@"testController"];
-    
-    RNDBindingProcessor *profile = [[RNDBindingProcessor alloc] init];
-    profile.observedObject = observedController;
-    profile.observedObjectKeyPath = @"testProperty";
-    profile.controllerKey = @"testController";
-    profile.monitorsObservedObject = YES;
-    profile.bindingName = @"RNDTestBinding";
-
-    return profile;
-}
-
-- (RNDPatternedStringProcessor *)profileD {
-    NSMutableDictionary *observedObject = [NSMutableDictionary dictionary];
-    [observedObject setObject:[NSObject new] forKey:@"testProperty"];
-    NSMutableDictionary *observedController = [NSMutableDictionary dictionary];
-    [observedController setObject:observedObject forKey:@"testController"];
-
-    RNDPatternedStringProcessor *profile = [[RNDPatternedStringProcessor alloc] init];
-    profile.observedObject = observedController;
-    profile.observedObjectKeyPath = @"testProperty";
-    profile.controllerKey = @"testController";
-    profile.monitorsObservedObject = YES;
-    profile.bindingName = @"RNDTestBinding";
-    profile.patternTemplate = @"Hello";
-    profile.argumentName = @"$ARG1";
-
-    return profile;
-}
-
-- (RNDPatternedStringProcessor *)profileE {
-    NSMutableDictionary *observedObject = [NSMutableDictionary dictionary];
-    [observedObject setObject:[NSObject new] forKey:@"testProperty"];
-    NSMutableDictionary *observedController = [NSMutableDictionary dictionary];
-    [observedController setObject:observedObject forKey:@"testController"];
-    
-    RNDPatternedStringProcessor *profile = [[RNDPatternedStringProcessor alloc] init];
-    profile.observedObject = observedController;
-    profile.observedObjectKeyPath = @"testProperty";
-    profile.controllerKey = @"testController";
-    profile.monitorsObservedObject = YES;
-    profile.bindingName = @"RNDTestBinding";
-    profile.patternTemplate = @"World";
-    profile.argumentName = @"$ARG2";
-    
-    return profile;
-}
-
-- (RNDPatternedStringProcessor *)profileF {
-    NSMutableDictionary *observedObject = [NSMutableDictionary dictionary];
-    [observedObject setObject:[NSObject new] forKey:@"testProperty"];
-    NSMutableDictionary *observedController = [NSMutableDictionary dictionary];
-    [observedController setObject:observedObject forKey:@"testController"];
-    
-    RNDPatternedStringProcessor *profile = [[RNDPatternedStringProcessor alloc] init];
-    profile.observedObject = observedController;
-    profile.observedObjectKeyPath = @"testProperty";
-    profile.controllerKey = @"testController";
-    profile.monitorsObservedObject = YES;
-    profile.bindingName = @"RNDTestBinding";
-    profile.patternTemplate = @"$ARG1 $ARG2!";
-    
-    return profile;
-}
-
-- (RNDPredicateProcessor *)profileG {
-    NSMutableDictionary *observedObject = [NSMutableDictionary dictionary];
-    [observedObject setObject:[NSObject new] forKey:@"testProperty"];
-    NSMutableDictionary *observedController = [NSMutableDictionary dictionary];
-    [observedController setObject:observedObject forKey:@"testController"];
-    
-    RNDPredicateProcessor *profile = [[RNDPredicateProcessor alloc] init];
-    profile.observedObject = observedController;
-    profile.observedObjectKeyPath = @"testProperty";
-    profile.controllerKey = @"testController";
-    profile.monitorsObservedObject = YES;
-    profile.bindingName = @"RNDTestBinding";
-    profile.predicateFormatString = @"'Hello World!' = $ARG3";
-
-    return profile;
-}
-
-- (RNDRegExProcessor *)profileH {
-    RNDRegExProcessor *profile = [[RNDRegExProcessor alloc] init];
-    profile.bindingName = @"RNDTestBinding";
-    profile.regExTemplate = @"(Hello)(.*)";
-    profile.replacementTemplate = @"My$2";
-    
-    return profile;
-}
-
-- (RNDExpressionProcessor *)profileI {
-    RNDExpressionProcessor *profile = [[RNDExpressionProcessor alloc] init];
-    profile.bindingName = @"RNDTestBinding";
-    profile.expressionTemplate = @"now()";
-    return profile;
-}
-
-- (RNDInvocationProcessor *)profileJ {
-    RNDInvocationProcessor *profile = [[RNDInvocationProcessor alloc] init];
-    profile.bindingName = @"RNDTestBinding";
-    profile.bindingSelectorString = @"stringByAppendingString:";
-    return profile;
-}
 
 - (void)runBindingTests:(RNDBindingProcessor *)processor {
     NSError *error;
@@ -220,7 +91,7 @@
 }
 
 - (void)testProfileA {
-    RNDBindingProcessor *processor = [self processorWithProfile:@"A"];
+    RNDBindingProcessor *processor = [RNDBindingProcessorTestFramework processorWithProfile:@"A"];
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
     XCTAssertNotNil(processor.syncQueue);
@@ -252,8 +123,8 @@
     NSError *error;
     
     // TODO: FAILED EVALUATION
-    processor.observedObjectEvaluator = (RNDPredicateProcessor *)[self processorWithProfile:@"G"];
-    [processor.observedObjectEvaluator.processorArguments addObject:[self processorWithProfile:@"F"]];
+    processor.observedObjectEvaluator = (RNDPredicateProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"G"];
+    [processor.observedObjectEvaluator.processorArguments addObject:[RNDBindingProcessorTestFramework processorWithProfile:@"F"]];
     processor.observedObjectEvaluator.processorArguments[0].argumentName = @"ARG3"
     ;
     XCTAssertNil(processor.bindingObjectValue);
@@ -267,7 +138,7 @@
     // NIL TESTING
     processor.observedObject = nil;
     processor.observedObjectKeyPath = nil;
-    processor.nilPlaceholder = [self processorWithProfile:@"B"];
+    processor.nilPlaceholder = [RNDBindingProcessorTestFramework processorWithProfile:@"B"];
     XCTAssertNil(processor.bindingObjectValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
@@ -275,7 +146,7 @@
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
 
-    processor.nilPlaceholder = [self processorWithProfile:@"C"];
+    processor.nilPlaceholder = [RNDBindingProcessorTestFramework processorWithProfile:@"C"];
     XCTAssertNil(processor.bindingObjectValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
@@ -284,7 +155,7 @@
     XCTAssertNil(error);
 
     // NULL TESTING
-    processor.nullPlaceholder = [self processorWithProfile:@"D"];
+    processor.nullPlaceholder = [RNDBindingProcessorTestFramework processorWithProfile:@"D"];
     
     processor.observedObject = [NSMutableDictionary dictionaryWithObject:[NSNull null] forKey:@"testProperty"];
     processor.observedObjectKeyPath = @"testProperty";
@@ -296,7 +167,7 @@
     XCTAssertNil(error);
 
     // NO SELECTION TESTING
-    processor.noSelectionPlaceholder = [self processorWithProfile:@"E"];
+    processor.noSelectionPlaceholder = [RNDBindingProcessorTestFramework processorWithProfile:@"E"];
     processor.observedObject = [NSMutableDictionary dictionaryWithObject:RNDBindingNoSelectionMarker
                                                                   forKey:@"testProperty"];
     XCTAssertNil(processor.bindingObjectValue);
@@ -307,7 +178,7 @@
     XCTAssertNil(error);
 
     // NOT APPLICABLE TESTING
-    processor.notApplicablePlaceholder = [self processorWithProfile:@"F"];
+    processor.notApplicablePlaceholder = [RNDBindingProcessorTestFramework processorWithProfile:@"F"];
     processor.observedObject = [NSMutableDictionary dictionaryWithObject:RNDBindingNotApplicableMarker
                                                                   forKey:@"testProperty"];
     XCTAssertNil(processor.bindingObjectValue);
@@ -318,9 +189,9 @@
     XCTAssertNil(error);
 
     // MULTIPLE SELECTION TESTING
-    processor.multipleSelectionPlaceholder = [self processorWithProfile:@"F"];
-    [processor.multipleSelectionPlaceholder.processorArguments addObject:[self processorWithProfile:@"D"]];
-    [processor.multipleSelectionPlaceholder.processorArguments addObject:[self processorWithProfile:@"E"]];
+    processor.multipleSelectionPlaceholder = [RNDBindingProcessorTestFramework processorWithProfile:@"F"];
+    [processor.multipleSelectionPlaceholder.processorArguments addObject:[RNDBindingProcessorTestFramework processorWithProfile:@"D"]];
+    [processor.multipleSelectionPlaceholder.processorArguments addObject:[RNDBindingProcessorTestFramework processorWithProfile:@"E"]];
     processor.observedObject = [NSMutableDictionary dictionaryWithObject:RNDBindingMultipleValuesMarker
                                                                   forKey:@"testProperty"];
     XCTAssertNil(processor.bindingObjectValue);
@@ -334,7 +205,7 @@
 
 
 - (void)testProfileB {
-    RNDBindingProcessor *processor = [self processorWithProfile:@"B"];
+    RNDBindingProcessor *processor = [RNDBindingProcessorTestFramework processorWithProfile:@"B"];
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
@@ -367,7 +238,7 @@
 }
 
 - (void)testProfileC {
-    RNDBindingProcessor *processor = [self processorWithProfile:@"C"];
+    RNDBindingProcessor *processor = [RNDBindingProcessorTestFramework processorWithProfile:@"C"];
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
@@ -408,7 +279,7 @@
 }
 
 - (void)testProfileD {
-    RNDPatternedStringProcessor *processor = (RNDPatternedStringProcessor *)[self processorWithProfile:@"D"];
+    RNDPatternedStringProcessor *processor = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"D"];
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
@@ -451,7 +322,7 @@
 }
 
 - (void)testProfileE {
-    RNDPatternedStringProcessor *processor = (RNDPatternedStringProcessor *)[self processorWithProfile:@"E"];
+    RNDPatternedStringProcessor *processor = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"E"];
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
@@ -494,9 +365,9 @@
 }
 
 - (void)testProfileF {
-    RNDPatternedStringProcessor *processor = (RNDPatternedStringProcessor *)[self processorWithProfile:@"F"];
-    RNDPatternedStringProcessor *processorArg1 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"D"];
-    RNDPatternedStringProcessor *processorArg2 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"E"];
+    RNDPatternedStringProcessor *processor = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"F"];
+    RNDPatternedStringProcessor *processorArg1 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"D"];
+    RNDPatternedStringProcessor *processorArg2 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"E"];
 
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
@@ -547,10 +418,10 @@
 }
 
 - (void)testProfileG {
-    RNDPredicateProcessor *processor = (RNDPredicateProcessor *)[self processorWithProfile:@"G"];
-    RNDPatternedStringProcessor *processorArg1 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"D"];
-    RNDPatternedStringProcessor *processorArg2 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"E"];
-    RNDPatternedStringProcessor *processorArg3 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"F"];
+    RNDPredicateProcessor *processor = (RNDPredicateProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"G"];
+    RNDPatternedStringProcessor *processorArg1 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"D"];
+    RNDPatternedStringProcessor *processorArg2 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"E"];
+    RNDPatternedStringProcessor *processorArg3 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"F"];
     [processorArg3.processorArguments addObjectsFromArray:@[processorArg1, processorArg2]];
     processorArg3.argumentName = @"ARG3";
     
@@ -609,7 +480,7 @@
 }
 
 - (void)testProfileH {
-    RNDRegExProcessor *processor = (RNDRegExProcessor *)[self processorWithProfile:@"H"];
+    RNDRegExProcessor *processor = (RNDRegExProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"H"];
 
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
@@ -642,9 +513,9 @@
     [self runBindingTests:processor];
 
     // Construct an observed object using processors
-    RNDPatternedStringProcessor *processorArg1 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"D"];
-    RNDPatternedStringProcessor *processorArg2 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"E"];
-    RNDPatternedStringProcessor *processorArg3 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"F"];
+    RNDPatternedStringProcessor *processorArg1 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"D"];
+    RNDPatternedStringProcessor *processorArg2 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"E"];
+    RNDPatternedStringProcessor *processorArg3 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"F"];
     [processorArg3.processorArguments addObjectsFromArray:@[processorArg1, processorArg2]];
     processorArg3.argumentName = @"ARG3";
     processorArg3.processorOutputType = RNDCalculatedValueOutputType;
@@ -663,7 +534,7 @@
 }
 
 - (void)testProfileI {
-    RNDExpressionProcessor *processor = (RNDExpressionProcessor *)[self processorWithProfile:@"I"];
+    RNDExpressionProcessor *processor = (RNDExpressionProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"I"];
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
@@ -703,7 +574,7 @@
 }
 
 - (void)testProfileJ {
-    RNDInvocationProcessor *processor = (RNDInvocationProcessor *)[self processorWithProfile:@"J"];
+    RNDInvocationProcessor *processor = (RNDInvocationProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"J"];
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
@@ -742,8 +613,8 @@
     XCTAssertTrue([processor unbind:&error]);
     processor.processorOutputType = RNDCalculatedValueOutputType;
     
-    RNDPatternedStringProcessor *processorArg1 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"D"];
-    RNDPatternedStringProcessor *processorArg2 = (RNDPatternedStringProcessor *)[self processorWithProfile:@"E"];
+    RNDPatternedStringProcessor *processorArg1 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"D"];
+    RNDPatternedStringProcessor *processorArg2 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"E"];
 
     [processor.processorArguments addObjectsFromArray:@[processorArg2]];
     processor.observedObject = processorArg1;
