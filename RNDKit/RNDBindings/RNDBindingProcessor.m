@@ -441,7 +441,10 @@
     // This happens when part of the model record is split up into multiple parts.
     
     // We generate the value to be written (and compared) by processing it into a form that can be compared. We use the binding object value to calculate the value that should be written to the observed object.
-    id objectValue = [self readBindingObjectValue];
+    id objectValue = bindingObjectValue;
+    if (_valueTransformer != nil && [[_valueTransformer class] allowsReverseTransformation] == YES) {
+        objectValue = [_valueTransformer reverseTransformedValue:objectValue];
+    }
     NSMutableArray *keyPathArray = [NSMutableArray array];
     if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
     if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }

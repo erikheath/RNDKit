@@ -119,11 +119,13 @@
     XCTAssertTrue([binder unbind:&error]);
     XCTAssertNil(error);
     
+    // Test basic synchronization - Cocoa Bindings functionality replacement
     RNDBindingProcessor *outflowProcessor = [RNDBindingProcessorTestFramework processorWithProfile:@"A"];
     outflowProcessor.observedObject = observedObject;
     outflowProcessor.observedObjectKeyPath = @"testProperty";
     outflowProcessor.controllerKey = @"testController";
     outflowProcessor.monitorsObservedObject = NO;
+    outflowProcessor.bindingName = @"outflowname";
     [binder.outflowBindings addObject:outflowProcessor];
     [binder.inflowBindings removeAllObjects];
     RNDBindingProcessor *inflowProcessor = [RNDBindingProcessorTestFramework processorWithProfile:@"A"];
@@ -131,6 +133,7 @@
     inflowProcessor.observedObjectKeyPath = @"testProperty";
     inflowProcessor.controllerKey = @"testController";
     inflowProcessor.monitorsObservedObject = YES;
+    inflowProcessor.bindingName = @"inflowname";
     [binder.inflowBindings addObject:inflowProcessor];
     binder.monitorsObserver = YES;
     binder.bindingName = @"Test Binding";
@@ -142,8 +145,71 @@
     XCTWaiterResult observedWaitResult = [XCTWaiter waitForExpectations:@[observedExpectation] timeout:3.0];
     XCTAssertEqual(observedWaitResult, XCTWaiterResultCompleted);
     XCTAssertEqualObjects([observedObject valueForKeyPath:@"testController.testProperty"], @"additionalProperty");
+    XCTAssertTrue([binder unbind:&error]);
+    XCTAssertNil(error);
 
+    // Test that you can not use a binding twice.
+    [binder.outflowBindings removeAllObjects];
+    [binder.outflowBindings addObject:inflowProcessor];
+    XCTAssertFalse([binder bind:&error]);
+    XCTAssertNotNil(error);
+    
     
 }
+
+//- (void)testExpression {
+//    // Test work with expressions
+//    NSMutableDictionary *observedObject = [NSMutableDictionary dictionary];
+//    [observedObject setObject:@"property value" forKey:@"testController"];
+//    NSExpression *expression = [NSExpression expressionForConstantValue:observedObject];
+//    id expressionObject = [expression expressionValueWithObject:nil context:nil];
+//    NSLog(@"%@", expressionObject);
+//    expression = [NSExpression expressionForVariable:@"testController"];
+//    expressionObject = [expression expressionValueWithObject:nil context:observedObject];
+//    NSLog(@"%@", expressionObject);
+//    expression = [NSExpression expressionWithFormat:@"CAST(535572163.32473397, 'NSDate')"];
+//    expressionObject = [expression expressionValueWithObject:nil context:observedObject];
+//    NSLog(@"%@", expressionObject);
+//    expression = [NSExpression expressionWithFormat:@"CAST(CAST(CAST(535572163.32473397, 'NSDate'), 'NSString'), 'NSNumber')"];
+//    expressionObject = [expression expressionValueWithObject:nil context:observedObject];
+//    NSLog(@"%@", expressionObject);
+//
+//    NSExpression *leftExpression = [NSExpression expressionWithFormat:@"CAST(535572163.32473397, 'NSDate')"];
+//    NSExpression *rightExpression = [NSExpression expressionWithFormat:@"now()"];
+//    [observedObject setObject:leftExpression forKey:@"leftExpression"];
+//    [observedObject setObject:rightExpression forKey:@"rightExpression"];
+//    expression = [NSExpression expressionWithFormat:@"{$leftExpression, $rightExpression}"];
+//    expressionObject = [expression expressionValueWithObject:nil context:observedObject];
+//    NSLog(@"%@", expressionObject);
+//
+//    expression = [NSExpression expressionWithFormat:@"{CAST(535572163.32473397, 'NSDate'), now()}"];
+//    expressionObject = [expression expressionValueWithObject:nil context:observedObject];
+//    NSLog(@"%@", expressionObject);
+//
+//    expression = [NSExpression expressionWithFormat:@"$rawDate"];
+//    NSDate *rawDate = [NSDate date];
+//    [observedObject removeAllObjects];
+//    [observedObject setObject:rawDate forKey:@"rawDate"];
+//    expressionObject = [expression expressionValueWithObject:nil context:observedObject];
+//    NSLog(@"%@", expressionObject);
+//
+//    expression = [NSExpression expressionWithFormat:@"10203040"];
+//    expressionObject = [expression expressionValueWithObject:nil context:nil];
+//    NSLog(@"%@", expressionObject);
+//
+//    NSSet *setObject = [NSSet setWithObject:@"specialSetObject"];
+//    NSDictionary *dictionaryObject = @{@"keyOne":@"otherSetObject", @"keyTwo":@"lessSpecialObject"};
+//    expression = [NSExpression expressionWithFormat:@"$setObject MINUS $dictionaryObject"];
+//    [observedObject removeAllObjects];
+//    [observedObject setObject:setObject forKey:@"setObject"];
+//    [observedObject setObject:dictionaryObject forKey:@"dictionaryObject"];
+//    expressionObject = [expression expressionValueWithObject:nil context:observedObject];
+//    NSLog(@"%@", expressionObject);
+//
+//    expression = [NSExpression expressionWithFormat:@"SELF"];
+//    expressionObject = [expression expressionValueWithObject:observedObject context:nil];
+//    NSLog(@"%@", expressionObject);
+//
+//}
 
 @end

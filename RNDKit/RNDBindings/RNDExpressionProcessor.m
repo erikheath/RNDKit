@@ -47,19 +47,22 @@
         }
 
         id rawObjectValue;
-        NSMutableArray *argumentArray = [NSMutableArray array];
+        NSMutableDictionary *argumentDictionary = [NSMutableDictionary dictionary];
         for (RNDBindingProcessor *binding in self.boundArguments) {
             id argumentValue = binding.bindingObjectValue;
             if (argumentValue == nil) { argumentValue = [NSNull null]; }
-            [argumentArray addObject:argumentValue];
+            [argumentDictionary setObject:argumentValue forKey:binding.argumentName];
         }
-        rawObjectValue = [NSExpression expressionWithFormat:_expressionTemplate argumentArray:argumentArray];
+        if (self.runtimeArguments != nil) {
+            [argumentDictionary addEntriesFromDictionary:self.runtimeArguments];
+        }
+        
+        rawObjectValue = [NSExpression expressionWithFormat:_expressionTemplate];
         
         if (self.processorOutputType == RNDRawValueOutputType) {
             objectValue = rawObjectValue;
         } else {
-            NSMutableDictionary *workingDictionary = [NSMutableDictionary dictionary];
-            objectValue = [rawObjectValue expressionValueWithObject:self.observedObjectEvaluationValue context:workingDictionary];
+            objectValue = [rawObjectValue expressionValueWithObject:self.observedObjectEvaluationValue context:argumentDictionary];
             
             if ([objectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
                 objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : objectValue;
