@@ -154,7 +154,6 @@
     XCTAssertFalse([binder bind:&error]);
     XCTAssertNotNil(error);
     
-    
 }
 
 //- (void)testExpression {

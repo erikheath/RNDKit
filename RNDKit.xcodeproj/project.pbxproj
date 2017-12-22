@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		E4159F511F8E8C3A00820F24 /* RNDKeyValueBindingUI.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4159F501F8E8C3A00820F24 /* RNDKeyValueBindingUI.plist */; };
-		E41AF83F1FAE4BE9008F90AC /* RNDInvocationProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = E41AF83E1FAE4BE9008F90AC /* RNDInvocationProcessor.m */; };
 		E42077681FE4996B0087393B /* RNDBinderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F1D1F97BA0700F4D1B5 /* RNDBinderTests.m */; };
 		E420776B1FE845140087393B /* RNDBindingProcessorTestFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = E420776A1FE845140087393B /* RNDBindingProcessorTestFramework.m */; };
 		E4295BC11FA010440040BAC4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BC01FA010440040BAC4 /* AppDelegate.m */; };
@@ -84,8 +83,6 @@
 
 /* Begin PBXFileReference section */
 		E4159F501F8E8C3A00820F24 /* RNDKeyValueBindingUI.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = RNDKeyValueBindingUI.plist; sourceTree = "<group>"; };
-		E41AF83E1FAE4BE9008F90AC /* RNDInvocationProcessor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDInvocationProcessor.m; sourceTree = "<group>"; };
-		E41AF8401FAE4BFE008F90AC /* RNDInvocationProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDInvocationProcessor.h; sourceTree = "<group>"; };
 		E42077691FE844ED0087393B /* RNDBindingProcessorTestFramework.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDBindingProcessorTestFramework.h; sourceTree = "<group>"; };
 		E420776A1FE845140087393B /* RNDBindingProcessorTestFramework.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDBindingProcessorTestFramework.m; sourceTree = "<group>"; };
 		E4295BBD1FA010440040BAC4 /* RND Workbench.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RND Workbench.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -476,8 +473,6 @@
 				E43C3F371F9A79FC00F4D1B5 /* RNDTargetActionBinder.m */,
 				E43C3F2A1F9A78B000F4D1B5 /* RNDBindingProcessor.h */,
 				E43C3F2B1F9A78B000F4D1B5 /* RNDBindingProcessor.m */,
-				E41AF8401FAE4BFE008F90AC /* RNDInvocationProcessor.h */,
-				E41AF83E1FAE4BE9008F90AC /* RNDInvocationProcessor.m */,
 				E464A5DB1FC2633C00C1972C /* RNDPatternedStringProcessor.h */,
 				E48235E41FDF5B3A0061FDCF /* RNDPatternedStringProcessor.m */,
 				E49D5F741FB4D24900604372 /* RNDPredicateProcessor.h */,
@@ -933,7 +928,6 @@
 				E454B00F1FD8A74A00C59FB3 /* NSObject+RNDObjectBinding.m in Sources */,
 				E446D4EA1FB6763B0078346D /* RNDBinderSet.m in Sources */,
 				E43C3F2D1F9A78B000F4D1B5 /* RNDBindingProcessor.m in Sources */,
-				E41AF83F1FAE4BE9008F90AC /* RNDInvocationProcessor.m in Sources */,
 				E49D5F761FB4D25B00604372 /* RNDPredicateProcessor.m in Sources */,
 				E48235E51FDF5B3A0061FDCF /* RNDPatternedStringProcessor.m in Sources */,
 				E43C3F391F9A79FC00F4D1B5 /* RNDTargetActionBinder.m in Sources */,
