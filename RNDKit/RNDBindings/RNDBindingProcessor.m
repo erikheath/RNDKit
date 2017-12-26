@@ -589,7 +589,7 @@
     }
     
     if (_observedObject == nil && _observedObjectBindingIdentifier != nil) {
-        NSUInteger index = [_binder.observer.bindingDestinations indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSUInteger index = [_binder.boundObject.bindingDestinations indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([((id<RNDBindableObject>)obj).bindingIdentifier isEqualToString:_observedObjectBindingIdentifier]) {
                 _observedObject = obj;
                 *stop = YES;
@@ -815,7 +815,7 @@
         // TODO: Delegate calls?
     } else {
         if ([change[NSKeyValueChangeOldKey] isEqual:change[NSKeyValueChangeNewKey]] == YES) { return; }
-        [self.binder updateValueOfObserverObject];
+        [self.binder updateBindingObjectValue];
     }
 }
 

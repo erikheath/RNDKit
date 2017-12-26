@@ -34,10 +34,10 @@
     XCTAssertNotNil(binder.outflowBindings);
     XCTAssertNil(binder.boundInflowBindings);
     XCTAssertNil(binder.boundInflowBindings);
-    XCTAssertNil(binder.observer);
-    XCTAssertNil(binder.observerKey);
+    XCTAssertNil(binder.boundObject);
+    XCTAssertNil(binder.boundObjectKey);
     XCTAssertEqual(binder.binderMode, RNDValueOnlyMode);
-    XCTAssertFalse(binder.monitorsObserver);
+    XCTAssertFalse(binder.monitorsBoundObject);
     XCTAssertNotNil(binder.syncQueue);
     XCTAssertNil(binder.bindingName);
     XCTAssertNil(binder.bindingObjectValue);
@@ -61,12 +61,12 @@
     XCTAssertNil(binder.bindingObjectValue);
     
     NSError *error;
-    binder.monitorsObserver = YES;
+    binder.monitorsBoundObject = YES;
     XCTAssertNil(binder.bindingObjectValue);
     XCTAssertFalse(binder.bound);
     XCTAssertFalse([binder bind:&error]);
     XCTAssertNotNil(error);
-    binder.monitorsObserver = NO;
+    binder.monitorsBoundObject = NO;
     
     error = nil;
     
@@ -100,8 +100,8 @@
     // Observer
     NSMutableDictionary *observerDictionary = [[NSMutableDictionary alloc] init];
     binder.binderMode = RNDValueOnlyMode;
-    binder.observerKey =  @"observerProperty";
-    binder.observer = observerDictionary;
+    binder.boundObjectKey =  @"observerProperty";
+    binder.boundObject = observerDictionary;
     XCTAssertEqual(0, observerDictionary.count);
     XCTAssertNil(binder.bindingObjectValue);
     XCTAssertTrue([binder bind:&error]);
@@ -135,7 +135,7 @@
     inflowProcessor.monitorsObservedObject = YES;
     inflowProcessor.bindingName = @"inflowname";
     [binder.inflowBindings addObject:inflowProcessor];
-    binder.monitorsObserver = YES;
+    binder.monitorsBoundObject = YES;
     binder.bindingName = @"Test Binding";
     
     XCTAssertTrue([binder bind:&error]);

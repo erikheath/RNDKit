@@ -89,7 +89,7 @@
     
     if ((result = [super bindObjects:error]) == NO) { return result; }
     
-    if ([self.observer respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.observer respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
+    if ([self.boundObject respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.boundObject respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
         NSInvocation *invocation = _bindingInvocation.bindingObjectValue;
         if (invocation == nil) { return result; }
         // Should this be sync
@@ -106,7 +106,7 @@
     
     if ((result = [super unbind:error]) == NO) { return result; }
     
-    if ([self.observer respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.observer respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
+    if ([self.boundObject respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.boundObject respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
         NSInvocation *invocation = _unbindingInvocation.bindingObjectValue;
         if (invocation == nil) { return result; }
         // Should this be sync

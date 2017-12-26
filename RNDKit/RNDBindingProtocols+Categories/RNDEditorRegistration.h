@@ -14,8 +14,8 @@
 
 @property (readonly, nonnull) NSSet<id<RNDEditor>> * editorSet;
 
-- (void)objectDidBeginEditing:(id<RNDEditor> _Nonnull)editor;
+- (void)objectDidBeginBoundEdit:(id<RNDEditor> _Nonnull)editor;
 
-- (void)objectDidEndEditing:(id<RNDEditor> _Nonnull)editor;
+- (void)objectDidEndBoundEdit:(id<RNDEditor> _Nonnull)editor;
 
 @end

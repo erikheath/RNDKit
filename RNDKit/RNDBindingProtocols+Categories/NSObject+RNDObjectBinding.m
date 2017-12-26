@@ -15,19 +15,6 @@
 @implementation NSObject (RNDObjectBinding)
 
 #pragma mark - Properties
-- (NSDictionary<RNDBinderName, RNDBinder *> *)binders {
-    return [NSDictionary dictionaryWithDictionary:self.bindingDictionary];
-}
-
-- (NSMutableDictionary<RNDBinderName, RNDBinder *> *)bindingDictionary {
-    if (objc_getAssociatedObject(self, @selector(binders)) == nil) {
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            objc_setAssociatedObject(self, @selector(binders), [[NSMutableDictionary alloc] init], OBJC_ASSOCIATION_RETAIN);
-        });
-    }
-    return objc_getAssociatedObject(self, @selector(bindingDictionary));
-}
 
 - (NSString *)bindingIdentifier {
     return objc_getAssociatedObject(self, @selector(bindingIdentifier));
@@ -40,20 +27,20 @@
     });
 }
 
-- (dispatch_queue_t)syncQueue {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        objc_setAssociatedObject(self, @selector(syncQueue), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), OBJC_ASSOCIATION_RETAIN);
-    });
-    return objc_getAssociatedObject(self, @selector(syncQueue));
-}
-
 - (NSArray *)bindingDestinations {
     return objc_getAssociatedObject(self, @selector(bindingDestinations));
 }
 
 - (void)setBindingDestinations:(NSArray *)bindingDestinations {
     objc_setAssociatedObject(self, @selector(bindingDestinations), bindingDestinations, OBJC_ASSOCIATION_RETAIN);
+}
+
+- (RNDBinderSet *)bindings {
+    return objc_getAssociatedObject(self, @selector(bindings));
+}
+
+- (void)setBindings:(RNDBinderSet *)bindings {
+    objc_setAssociatedObject(self, @selector(bindings), bindings, OBJC_ASSOCIATION_RETAIN);
 }
 
 #pragma mark - Object Lifecycle
@@ -64,20 +51,22 @@
     if ((self = [self init]) != nil) {
         self.bindingIdentifier = [aDecoder decodeObjectForKey:@"bindingIdentifier"];
         self.bindingDestinations = [aDecoder decodeObjectForKey:@"bindingDestinations"];
+        self.bindings = [aDecoder decodeObjectForKey:@"bindings"];
     }
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
-    [aCoder setValue:self.bindingIdentifier forKey:@"bindingIdentifier"];
-    [aCoder setValue:self.bindingDestinations forKey:@"bindingDestinations"];
+    [aCoder encodeObject:self.bindingIdentifier forKey:@"bindingIdentifier"];
+    [aCoder encodeObject:self.bindingDestinations forKey:@"bindingDestinations"];
+    [aCoder encodeObject:self.bindings forKey:@"bindings"];
 }
 
 
 // Assume that this has been swizzled in for the default no-op implementation.
 - (void)awakeFromNib {
     NSError *internalError = nil;
-    if ([self loadAllBindings:&internalError] && [self connectAllBindings:&internalError] != YES) {
+    if ([self loadAllBindings:&internalError] == NO || [self connectAllBindings:&internalError] == NO) {
         // TODO: Report the error.
     }
     return;
@@ -89,13 +78,6 @@
     __block BOOL result = YES;
     __block NSError *internalError = nil;
 
-    dispatch_barrier_sync(self.syncQueue, ^{
-        // FIX:
-//        [self.bindingDictionary addEntriesFromDictionary:[RNDBindingInfo bindersForBindingIdentifier:self.bindingIdentifier error:&internalError]];
-//        for (RNDBinder *binder in self.bindingDictionary) {
-//            binder.observer = self;
-//        }
-    });
     
     if (error != NULL) {
         *error = internalError;
@@ -107,22 +89,6 @@
     __block BOOL result = YES;
     __block NSError *internalError = nil;
     
-    dispatch_barrier_sync(self.syncQueue, ^{
-        NSDictionary *binderDictionary = self.bindingDictionary;
-        
-        if (binderDictionary.count < 1) {
-            // Set the error condition
-            result = NO;
-            return;
-        }
-        
-        for (RNDBinder *binder in binderDictionary.allValues) {
-            if ((result = [binder bind:&internalError]) == NO) {
-                // TODO: Set the error condition.
-                return;
-            }
-        }
-    });
     
     if (error != NULL) {
         *error = internalError;
@@ -135,22 +101,6 @@
     __block BOOL result = YES;
     __block NSError *internalError = nil;
     
-    dispatch_barrier_sync(self.syncQueue, ^{
-        NSDictionary *binderDictionary = self.bindingDictionary;
-        
-        if (binderDictionary.count < 1) {
-            // Set the error condition
-            result = NO;
-            return;
-        }
-        
-        for (RNDBinder *binder in binderDictionary.allValues) {
-            if ((result = [binder unbind:&internalError]) == NO) {
-                // TODO: Set the error condition.
-                return;
-            }
-        }
-    });
     
     if (error != NULL) {
         *error = internalError;
@@ -158,27 +108,5 @@
     return result;
     
 }
-
-
-#pragma mark - RNDEditor Conformance
-
-- (BOOL)commitEditing {
-    return NO;
-}
-
-- (void)discardEditing {
-    return;
-}
-
-- (BOOL)commitEditingAndReturnError:(NSError *__autoreleasing  _Nullable *)error {
-    return NO;
-}
-
-- (void)commitEditingWithDelegate:(id<RNDEditorDelegate>)delegate
-                didCommitSelector:(SEL)didCommitSelector
-                      contextInfo:(void *)contextInfo {
-    return;
-}
-
 
 @end

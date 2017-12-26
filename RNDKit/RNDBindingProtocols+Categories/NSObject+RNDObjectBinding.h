@@ -8,26 +8,16 @@
 
 #import <Foundation/Foundation.h>
 #import "RNDBindingConstants.h"
-#import "../RNDBindingProtocols+Categories/RNDEditor.h"
+#import "RNDBindableObject.h"
 
-@class RNDBinder;
+@class RNDBinderSet;
 
-@protocol RNDBindableObject <NSObject>
-
-@property (strong, readwrite, nullable) NSString *bindingIdentifier;
-@property (strong, readwrite, nullable) IBOutletCollection(id) NSArray * bindingDestinations;
-@property (strong, readwrite, nullable) id bindingObjectValue;
-
-@end
-
-@interface NSObject (RNDBindableObject) <RNDBindableObject, RNDEditor>
+@interface NSObject (RNDBindableObject) <RNDBindableObject>
 
 #pragma mark - Properties
-@property (strong, readonly, nonnull) NSDictionary<RNDBinderName, RNDBinder *> *binders;
 @property (strong, readwrite, nullable) NSString *bindingIdentifier;
-@property (strong, readonly, nonnull) dispatch_queue_t syncQueue;
-@property (strong, readwrite, nullable) IBOutletCollection(id) NSArray * bindingDestinations;
-@property (strong, readwrite, nullable) id bindingObjectValue;
+@property (strong, readwrite, nullable) NSArray * bindingDestinations;
+@property (strong, readwrite, nullable) RNDBinderSet *bindings;
 
 #pragma mark - Object Lifecycle
 - (instancetype _Nullable)initWithCoder:(NSCoder * _Nonnull)aDecoder;

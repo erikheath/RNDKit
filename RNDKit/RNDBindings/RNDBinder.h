@@ -8,12 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger, RNDBinderMode) {
-    RNDValueOnlyMode,
-    RNDKeyedValueMode,
-    RNDOrderedKeyedValueMode
-};
-
 @class RNDBindingProcessor;
 @class RNDPatternedStringProcessor;
 @class RNDPredicateProcessor;
@@ -31,32 +25,16 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
  */
 @interface RNDBinder : NSObject <NSCoding>
 
-@property (strong, nonnull, readwrite) NSString *binderIdentifier;
 @property (strong, nonnull, readwrite) NSString *bindingName;
-@property (nonnull, strong, readonly) NSMutableArray<RNDBindingProcessor *> *inflowBindings;
-@property (strong, nullable, readonly) NSArray<RNDBindingProcessor *> *boundInflowBindings;
-@property (nonnull, strong, readonly) NSMutableArray<RNDBindingProcessor *> *outflowBindings;
-@property (nonnull, strong, readonly) NSArray<RNDBindingProcessor *> *boundOutflowBindings;
-@property (weak, readwrite, nullable) NSObject<RNDBindableObject> *observer;
-@property (strong, nonnull, readwrite) NSString *observerKey;
-@property (readwrite) RNDBinderMode binderMode;
-@property (readwrite) BOOL monitorsObserver;
+@property (weak, readwrite, nullable) NSObject<RNDBindableObject> *boundObject;
+@property (strong, nonnull, readwrite) NSString *boundObjectKey;
+@property (readwrite) BOOL monitorsBoundObject;
 @property (strong, nullable, readonly) dispatch_queue_t syncQueue;
-@property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
+@property (strong, nullable, readwrite) RNDBindingProcessor *inflowProcessor;
+@property (strong, nullable, readwrite) RNDBindingProcessor *outflowProcessor;
 
-@property (strong, readwrite, nullable) id bindingObjectValue;
+@property (strong, readwrite, nullable) id bindingValue;
 @property (readonly, getter=isBound) BOOL bound;
-
-@property (strong, nullable, readwrite) RNDBindingProcessor *nullPlaceholder;
-@property (strong, nullable, readwrite) RNDBindingProcessor *multipleSelectionPlaceholder;
-@property (strong, nullable, readwrite) RNDBindingProcessor *noSelectionPlaceholder;
-@property (strong, nullable, readwrite) RNDBindingProcessor *notApplicablePlaceholder;
-@property (strong, nullable, readwrite) RNDBindingProcessor *nilPlaceholder;
-
-@property (readwrite) BOOL filtersNilValues;
-@property (readwrite) BOOL filtersMarkerValues;
-@property (readwrite) BOOL unwrapSingleValue;
-@property (readwrite) BOOL mutuallyExclusive;
 
 
 - (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;
@@ -74,7 +52,7 @@ typedef NS_ENUM(NSUInteger, RNDBinderMode) {
 
 
 // These methods must be overrideen to do anything
-- (void)updateValueOfObserverObject;
+- (void)updateBindingObjectValue;
 - (void)updateValueOfObservedObject;
 
 

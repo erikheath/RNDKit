@@ -120,7 +120,10 @@ typedef NS_ENUM(NSUInteger, RNDProcessorValueType) {
 /**
  @abstract The identifier used by the processor to request an observed object from a binder.
  
- @discussion Nodes support automatic configuration when unarchived during the Nib loading process. Part of this configuration includes requesting the observed object the processor was configured to work with from its binder. Typically, the binder will forward the request to its observer object which was configured in a Xib or Storyboard at design-time. The observer object will usually have a collection of bindable objects, keyed by their unique binding identifier. The observedObjectBindingIdentifier will match one of the keys in the observer object's bindable objects collection, enabling the processor to retrieve its observed object.
+ @discussion Nodes support automatic configuration when unarchived during the Nib loading process. Part of this configuration includes requesting the observed object the processor was configured to work with from its binder. Typically, the binder will forward the request to its observer object which was configured in a Xib or Storyboard at design-time.
+ 
+ The observer object will usually have a collection of bindable objects, keyed by their unique binding identifier. The observedObjectBindingIdentifier will match one of the keys in the observer object's bindable objects collection, enabling the processor to retrieve its observed object.
+ 
  */
 @property (strong, nullable, readwrite) NSString *observedObjectBindingIdentifier;
 

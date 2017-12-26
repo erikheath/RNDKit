@@ -23,6 +23,6 @@
 }
 
 
-- (IBAction)myAction:(id)sender forEvent:(UIEvent *)event {
+- (IBAction)myAction:(id)sender forEvent:(NSEvent *)event {
 }
 @end

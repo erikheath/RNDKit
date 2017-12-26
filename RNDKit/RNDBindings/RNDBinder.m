@@ -14,70 +14,45 @@
 @interface RNDBinder()
 
 @property (strong, nullable, readonly) NSUUID *syncQueueIdentifier;
-@property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
 
 @end
 
 @implementation RNDBinder
 
-#pragma mark - Properties
+@synthesize inflowProcessor = _inflowProcessor;
 
-@synthesize inflowBindings = _inflowBindings;
-
-- (NSMutableArray<RNDBindingProcessor *> *)inflowBindings {
-    id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _inflowBindings;
-    });
-    return localObject;
-}
-
-@synthesize boundInflowBindings = _boundInflowBindings;
-
-- (NSArray<RNDBindingProcessor *> *)boundInflowBindings {
-    id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _boundInflowBindings;
-    });
-    return localObject;
-}
-
-@synthesize outflowBindings = _outflowBindings;
-
-- (NSMutableArray<RNDBindingProcessor *> *)outflowBindings {
-    id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _outflowBindings;
-    });
-    return localObject;
-}
-
-@synthesize boundOutflowBindings = _boundOutflowBindings;
-
-- (NSArray<RNDBindingProcessor *> *)boundOutflowBindings {
-    id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _boundOutflowBindings;
-    });
-    return localObject;
-}
-
-@synthesize binderIdentifier = _binderIdentifier;
-
-- (void)setBinderIdentifier:(NSString * _Nonnull)binderIdentifier {
+- (void)setInflowProcessor:(RNDBindingProcessor *)inflowProcessor {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _binderIdentifier = binderIdentifier;
+        _inflowProcessor = inflowProcessor;
     });
 }
 
-- (NSString *)binderIdentifier {
+- (NSMutableArray<RNDBindingProcessor *> *)inflowProcessor {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _binderIdentifier;
+        localObject = _inflowProcessor;
     });
     return localObject;
 }
+
+@synthesize outflowProcessor = _outflowProcessor;
+
+- (void)setOutflowProcessor:(RNDBindingProcessor *)outflowProcessor {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _outflowProcessor = outflowProcessor;
+    });
+}
+
+- (NSMutableArray<RNDBindingProcessor *> *)outflowProcessor {
+    id __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _outflowProcessor;
+    });
+    return localObject;
+}
+
 
 @synthesize bindingName = _bindingName;
 
@@ -97,235 +72,54 @@
 }
 
 
-@synthesize observer = _observer;
+@synthesize boundObject = _boundObject;
 
-- (void)setObserver:(NSObject<RNDBindableObject> *)observer {
+- (void)setBoundObject:(NSObject<RNDBindableObject> *)observer {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _observer = observer;
+        _boundObject = observer;
     });
 }
 
-- (NSObject<RNDBindableObject> *)observer {
+- (NSObject<RNDBindableObject> *)boundObject {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _observer;
+        localObject = _boundObject;
     });
     return localObject;
 }
 
 
-@synthesize observerKey = _observerKey;
+@synthesize boundObjectKey = _boundObjectKey;
 
-- (void)setObserverKey:(NSString * _Nonnull)observerKey {
+- (void)setBoundObjectKey:(NSString * _Nonnull)observerKey {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _observerKey = observerKey;
+        _boundObjectKey = observerKey;
     });
 }
 
-- (NSString *)observerKey {
+- (NSString *)boundObjectKey {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _observerKey;
+        localObject = _boundObjectKey;
     });
     return localObject;
 }
 
+@synthesize monitorsBoundObject = _monitorsBoundObject;
 
-@synthesize binderMode = _binderMode;
-
-- (void)setBinderMode:(RNDBinderMode)binderMode {
+- (void)setMonitorsBoundObject:(BOOL)monitorsObserver {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _binderMode = binderMode;
+        _monitorsBoundObject = monitorsObserver;
     });
 }
 
-- (RNDBinderMode)binderMode {
+- (BOOL)monitorsBoundObject {
     BOOL __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _binderMode;
-    });
-    return localObject;
-}
-
-
-@synthesize monitorsObserver = _monitorsObserver;
-
-- (void)setMonitorsObserver:(BOOL)monitorsObserver {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _monitorsObserver = monitorsObserver;
-    });
-}
-
-- (BOOL)monitorsObserver {
-    BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _monitorsObserver;
-    });
-    return localObject;
-}
-
-
-@synthesize filtersNilValues = _filtersNilValues;
-
-- (void)setFiltersNilValues:(BOOL)filtersNilValues {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _filtersNilValues = filtersNilValues;
-    });
-}
-
-- (BOOL)filtersNilValues {
-    BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _filtersNilValues;
-    });
-    return localObject;
-}
-
-
-@synthesize filtersMarkerValues = _filtersMarkerValues;
-
-- (void)setFiltersMarkerValues:(BOOL)filtersMarkerValues {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _filtersMarkerValues = filtersMarkerValues;
-    });
-}
-
-- (BOOL)filtersMarkerValues {
-    BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _filtersMarkerValues;
-    });
-    return localObject;
-}
-
-
-@synthesize mutuallyExclusive = _mutuallyExclusive;
-
-- (void)setMutuallyExclusive:(BOOL)mutuallyExclusive {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _mutuallyExclusive = mutuallyExclusive;
-    });
-}
-
-- (BOOL)mutuallyExclusive {
-    BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _mutuallyExclusive;
-    });
-    return localObject;
-}
-
-
-@synthesize unwrapSingleValue = _unwrapSingleValue;
-
-- (void)setUnwrapSingleValue:(BOOL)unwrapSingleValue {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _unwrapSingleValue = unwrapSingleValue;
-    });
-}
-
-- (BOOL)unwrapSingleValue {
-    BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _unwrapSingleValue;
-    });
-    return localObject;
-}
-
-
-@synthesize nullPlaceholder = _nullPlaceholder;
-
-- (void)setNullPlaceholder:(RNDBindingProcessor *)nullPlaceholder {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _nullPlaceholder = nullPlaceholder;
-    });
-}
-
-- (RNDBindingProcessor *)nullPlaceholder {
-    id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _nullPlaceholder;
-    });
-    return localObject;
-}
-
-
-@synthesize multipleSelectionPlaceholder = _multipleSelectionPlaceholder;
-
-- (void)setMultipleSelectionPlaceholder:(RNDBindingProcessor *)multipleSelectionPlaceholder {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _multipleSelectionPlaceholder = multipleSelectionPlaceholder;
-    });
-}
-
-- (RNDBindingProcessor *)multipleSelectionPlaceholder {
-    id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _multipleSelectionPlaceholder;
-    });
-    return localObject;
-}
-
-
-@synthesize notApplicablePlaceholder = _notApplicablePlaceholder;
-
-- (void)setNotApplicablePlaceholder:(RNDBindingProcessor *)notApplicablePlaceholder {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _notApplicablePlaceholder = notApplicablePlaceholder;
-    });
-}
-
-- (RNDBindingProcessor *)notApplicablePlaceholder {
-    id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _notApplicablePlaceholder;
-    });
-    return localObject;
-}
-
-
-@synthesize nilPlaceholder = _nilPlaceholder;
-
-- (void)setNilPlaceholder:(RNDBindingProcessor *)nilPlaceholder {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _nilPlaceholder = nilPlaceholder;
-    });
-}
-
-- (RNDBindingProcessor *)nilPlaceholder {
-    id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _nilPlaceholder;
-    });
-    return localObject;
-}
-
-
-@synthesize noSelectionPlaceholder = _noSelectionPlaceholder;
-
-- (void)setNoSelectionPlaceholder:(RNDBindingProcessor *)noSelectionPlaceholder {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _noSelectionPlaceholder = noSelectionPlaceholder;
-    });
-}
-
-- (RNDBindingProcessor *)noSelectionPlaceholder {
-    id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _noSelectionPlaceholder;
+        localObject = _monitorsBoundObject;
     });
     return localObject;
 }
@@ -335,133 +129,68 @@
 @synthesize syncQueue = _syncQueue;
 @synthesize syncQueueIdentifier = _syncQueueIdentifier;
 @synthesize bound = _isBound;
-@synthesize serializerQueue = _serializerQueue;
-@synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
 
 - (id _Nullable)bindingObjectValue {
-    id __block objectValue = nil;
+    dispatch_assert_queue_barrier_debug(_syncQueue);
+
+    id objectValue = nil;
     
-    dispatch_sync(self.syncQueue, ^{
-        if (self.isBound == NO) {
-            objectValue = nil;
-            return;
-        }
-        
-        NSMutableArray *valuesArray = [NSMutableArray arrayWithCapacity:_boundInflowBindings.count];
-        
-        [_boundInflowBindings enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
-            NSDictionary *contextDictionary = (dispatch_get_context(_syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_syncQueue)) : nil);
-            if (contextDictionary != nil) {
-                [arguments addEntriesFromDictionary:contextDictionary];
-            }
-            [arguments setObject:@(idx) forKey:RNDIterationArgument];
-            ((RNDBindingProcessor *)obj).runtimeArguments = [NSDictionary dictionaryWithDictionary:arguments];
-            
-            id rawObjectValue = ((RNDBindingProcessor *)obj).bindingObjectValue;
-            if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-                if (_filtersMarkerValues == YES) { return; }
-                rawObjectValue = _multipleSelectionPlaceholder != nil ? _multipleSelectionPlaceholder.bindingObjectValue : rawObjectValue;
-            }
-            
-            if ([rawObjectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-                if (_filtersMarkerValues == YES) { return; }
-                rawObjectValue = _noSelectionPlaceholder != nil ? _noSelectionPlaceholder.bindingObjectValue : rawObjectValue;
-            }
-            
-            if ([rawObjectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-                if (_filtersMarkerValues == YES) { return; }
-                rawObjectValue = _notApplicablePlaceholder != nil ? _notApplicablePlaceholder.bindingObjectValue : rawObjectValue;
-            }
-            
-            if ([rawObjectValue isEqual: RNDBindingNullValueMarker] == YES) {
-                if (_filtersMarkerValues == YES) { return; }
-                rawObjectValue = _nullPlaceholder != nil ? _nullPlaceholder.bindingObjectValue : rawObjectValue;
-            }
-            
-            if (rawObjectValue == nil) {
-                if (_filtersMarkerValues == YES || _filtersNilValues == YES) { return; }
-                rawObjectValue = _nilPlaceholder != nil ? _nilPlaceholder.bindingObjectValue : [NSNull null];
-            }
-
-            NSString *entryString = ((RNDBindingProcessor *)obj).userString.bindingObjectValue;
-            entryString = entryString != nil ? entryString : [NSString stringWithFormat:@"%lu", (unsigned long)idx];
-            [valuesArray addObject:@{entryString: rawObjectValue}];
-            if (_mutuallyExclusive == YES) { *stop = YES; }
-            
-        }];
-
-        
-        switch (_binderMode) {
-            case RNDValueOnlyMode:
-            {
-                NSMutableArray *valueOnlyArray = [NSMutableArray arrayWithCapacity:valuesArray.count];
-                for (NSDictionary *dictionary in valuesArray) {
-                    [valueOnlyArray addObjectsFromArray:[dictionary allValues]];
-                }
-                objectValue = _unwrapSingleValue == YES ? (valueOnlyArray.count < 2 ? valueOnlyArray.firstObject : valueOnlyArray) : valueOnlyArray;
-                break;
-            }
-            case RNDKeyedValueMode:
-            {
-                NSMutableDictionary *keyedValueDictionary = [NSMutableDictionary dictionaryWithCapacity:valuesArray.count];
-                for (NSDictionary *dictionary in valuesArray) {
-                    [keyedValueDictionary addEntriesFromDictionary:dictionary];
-                }
-                objectValue = keyedValueDictionary;
-                break;
-            }
-            case RNDOrderedKeyedValueMode:
-            {
-                objectValue = valuesArray;
-                break;
-            }
-            default:
-            {
-                objectValue = valuesArray;
-                break;
-            }
-        }
-        
-    });
+    if (_isBound == NO) {
+        objectValue = nil;
+        return objectValue;
+    }
+    
+    NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
+    NSDictionary *contextDictionary = (dispatch_get_context(_syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_syncQueue)) : nil);
+    if (contextDictionary != nil) {
+        [arguments addEntriesFromDictionary:contextDictionary];
+    }
+    _inflowProcessor.runtimeArguments = [NSDictionary dictionaryWithDictionary:arguments];
+    objectValue = _inflowProcessor.bindingObjectValue;
     
     return objectValue;
 }
 
-- (void)setBindingObjectValue:(id)bindingObjectValue {
-    dispatch_async(_serializerQueue, ^{
-        // There may be no actual change, in which case nothing needs to happen.
-        id objectValue = bindingObjectValue;
-        if ([self.bindingObjectValue isEqual:objectValue]) { return; }
-        NSUInteger idx = 0;
-        for (RNDBindingProcessor *binding in self.outflowBindings) {
-            NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
-            NSDictionary *contextDictionary = (dispatch_get_context(_syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_syncQueue)) : nil);
-            if (contextDictionary != nil) {
-                [arguments addEntriesFromDictionary:contextDictionary];
-            }
-            [arguments setObject:@(idx) forKey:RNDIterationArgument];
-            [arguments setObject:bindingObjectValue forKey:RNDBinderObjectValue];
-            binding.runtimeArguments = [NSDictionary dictionaryWithDictionary:arguments];
-            [binding setBindingObjectValue:objectValue];
-            idx++;
-        }
+- (id _Nullable)bindingValue {
+    id __block objectValue = nil;
+    
+    dispatch_sync(_syncQueue, ^{
+        objectValue = self.bindingObjectValue;
     });
+    return objectValue;
+
 }
 
+- (void)setBindingObjectValue:(id)bindingObjectValue {
+    dispatch_assert_queue_debug(_syncQueue);
+
+    // There may be no actual change, in which case nothing needs to happen.
+    id objectValue = bindingObjectValue;
+    if ([self.bindingObjectValue isEqual:objectValue]) { return; }
+
+    NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
+    NSDictionary *contextDictionary = (dispatch_get_context(_syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_syncQueue)) : nil);
+    if (contextDictionary != nil) {
+        [arguments addEntriesFromDictionary:contextDictionary];
+    }
+    [arguments setObject:bindingObjectValue forKey:RNDBinderObjectValue];
+    _outflowProcessor.runtimeArguments = [NSDictionary dictionaryWithDictionary:arguments];
+    [_outflowProcessor setBindingObjectValue:objectValue];
+
+}
+
+- (void)setBindingValue:(id)bindingValue {
+    dispatch_async(_syncQueue, ^{
+        [self setBindingObjectValue:bindingValue];
+    });
+}
 #pragma mark - Object Lifecycle
 
 - (instancetype _Nullable)init {
     if ((self = [super init]) != nil) {
-        _inflowBindings = [NSMutableArray array];
-        _outflowBindings = [NSMutableArray array];
         
         _syncQueueIdentifier = [[NSUUID alloc] init];
         _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
-        
-        _serializerQueueIdentifier = [[NSUUID alloc] init];
-        _serializerQueue = dispatch_queue_create([[_serializerQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_SERIAL);
-
     }
     return self;
 }
@@ -483,9 +212,6 @@
         
         _syncQueueIdentifier = [[NSUUID alloc] init];
         _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
-
-        _serializerQueueIdentifier = [[NSUUID alloc] init];
-        _serializerQueue = dispatch_queue_create([[_serializerQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_SERIAL);
 
         if (propertyCount > 0) {
             free(properties);
@@ -534,8 +260,8 @@
         return result;
     }
     
-    if (_monitorsObserver == YES) {
-        if (_observer == nil) {
+    if (_monitorsBoundObject == YES) {
+        if (_boundObject == nil) {
             result = NO;
             if (error != NULL) {
                 NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
@@ -548,7 +274,7 @@
                 *error = internalError;
             }
             return result;
-        } else if ([_observer isKindOfClass:[RNDBindingProcessor class]] == YES) {
+        } else if ([_boundObject isKindOfClass:[RNDBindingProcessor class]] == YES) {
             result = NO;
             if (error != NULL) {
                 NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
@@ -562,7 +288,7 @@
             }
             return result;
             
-        } else if (_observerKey == nil) {
+        } else if (_boundObjectKey == nil) {
             result = NO;
             if (error != NULL) {
                 NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
@@ -590,27 +316,13 @@
             return result;
         }
         
-        [_observer addObserver:self
-                    forKeyPath:_observerKey
+        [_boundObject addObserver:self
+                    forKeyPath:_boundObjectKey
                        options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionPrior |  NSKeyValueObservingOptionOld)
                        context:(__bridge void * _Nullable)(_bindingName)];
     }
     
-    // The processors must receive a bind message.
-    _boundInflowBindings = [NSArray arrayWithArray:_inflowBindings];
-    for (RNDBindingProcessor *binding in _boundInflowBindings) {
-        binding.binder = self;
-        if ([binding bind:error] == YES) { continue; }
-        [self unbindObjects:error];
-        return NO;
-    }
-    _boundOutflowBindings = [NSArray arrayWithArray:_outflowBindings];
-    for (RNDBindingProcessor *binding in _boundOutflowBindings) {
-        binding.binder = self;
-        if ([binding bind:error] == YES) { continue; }
-        [self unbindObjects:error];
-        return NO;
-    }
+
 
     _isBound = YES;
     return _isBound;
@@ -639,9 +351,9 @@
     dispatch_assert_queue_barrier_debug(self.syncQueue);
     
     @try {
-        if (_isBound == YES && _monitorsObserver == YES) {
-            [_observer removeObserver:self
-                           forKeyPath:_observerKey
+        if (_isBound == YES && _monitorsBoundObject == YES) {
+            [_boundObject removeObserver:self
+                           forKeyPath:_boundObjectKey
                               context:(__bridge void * _Nullable)(_bindingName)];
         }
     }
@@ -662,26 +374,6 @@
         }
     }
     
-    for (RNDBindingProcessor *binding in _boundInflowBindings) {
-        NSError *passedInError;
-        BOOL unbindingResult = [binding unbind:error];
-        if (unbindingResult == NO) {
-            result = NO;
-            [underlyingErrorsArray addObject:passedInError];
-        }
-    }
-    _boundInflowBindings = nil;
-
-    for (RNDBindingProcessor *binding in _boundOutflowBindings) {
-        NSError *passedInError;
-        BOOL unbindingResult = [binding unbind:error];
-        if (unbindingResult == NO) {
-            result = NO;
-            [underlyingErrorsArray addObject:passedInError];
-        }
-    }
-    _boundOutflowBindings = nil;
-
         
     if (error != NULL && (underlyingErrorsArray.count > 0 || underlyingError != nil)) {
         NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
@@ -737,14 +429,14 @@
     
 }
 
-- (void)updateValueOfObserverObject {
+- (void)updateBindingObjectValue {
     // Because this may be a UI object, this last unit of work must be performed on the main queue.
     // This will serialize the work which removes the need for a barrier
-    dispatch_async(_serializerQueue, ^{
+    dispatch_async(_syncQueue, ^{
         id observedObjectValue = self.bindingObjectValue;
-        if (_observerKey != nil && [observedObjectValue isEqual:[_observer valueForKey:_observerKey]] == NO) {
+        if (_boundObjectKey != nil && [observedObjectValue isEqual:[_boundObject valueForKey:_boundObjectKey]] == NO) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [_observer setValue:observedObjectValue forKeyPath:_observerKey];
+                [_boundObject setValue:observedObjectValue forKeyPath:_boundObjectKey];
             });
             return;
         }
@@ -752,15 +444,12 @@
 }
 
 - (void)updateValueOfObservedObject {
-    dispatch_async(_serializerQueue, ^{
+    dispatch_async(_syncQueue, ^{
         __block id observerObjectValue = nil;
         dispatch_sync(dispatch_get_main_queue(), ^{
-            observerObjectValue = [_observer valueForKeyPath:_observerKey];
+            observerObjectValue = [_boundObject valueForKeyPath:_boundObjectKey];
         });
-        for (RNDBindingProcessor *processor in _boundOutflowBindings) {
-            // Set the runtime values and call setBindingObject value.
-            [processor setBindingObjectValue:observerObjectValue];
-        }
+        [_outflowProcessor setBindingObjectValue:observerObjectValue];
     });
 }
 

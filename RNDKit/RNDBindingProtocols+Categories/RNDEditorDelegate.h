@@ -10,7 +10,7 @@
 
 @protocol RNDEditorDelegate <NSObject>
 
-- (void)editor:(id<RNDEditor>)editor didCommit:(BOOL)didCommit contextInfo:(void *)contextInfo;
+- (void)boundEditor:(id<RNDEditor>)editor didCommit:(BOOL)didCommit contextInfo:(void *)contextInfo;
 
 @end
 
