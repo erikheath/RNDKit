@@ -159,12 +159,6 @@
 		E438AF701FA511CC00C856A5 /* RNDMutableSimpleValueBinderTemplate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDMutableSimpleValueBinderTemplate.h; sourceTree = "<group>"; };
 		E438AF711FA511CC00C856A5 /* RNDMutableBindingTemplate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDMutableBindingTemplate.h; sourceTree = "<group>"; };
 		E438AF721FA511CC00C856A5 /* RNDMutableMultiValueArgumentBinderTemplate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDMutableMultiValueArgumentBinderTemplate.m; sourceTree = "<group>"; };
-		E43B014D1F7ED6A400A09C87 /* SwiftKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftKit.h; sourceTree = "<group>"; };
-		E43B014E1F7ED6A400A09C87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E43B01621F7ED6B900A09C87 /* ObjectController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectController.swift; sourceTree = "<group>"; };
-		E43B01631F7ED6BA00A09C87 /* Slider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slider.swift; sourceTree = "<group>"; };
-		E43B01641F7ED6BA00A09C87 /* Bindings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bindings.swift; sourceTree = "<group>"; };
-		E43B01651F7ED6BA00A09C87 /* Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
 		E43C3F0F1F8F0CDB00F4D1B5 /* RNDBindingConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDBindingConstants.m; sourceTree = "<group>"; };
 		E43C3F151F97B93500F4D1B5 /* RNDBindingProcessorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDBindingProcessorTests.m; sourceTree = "<group>"; };
 		E43C3F171F97B95600F4D1B5 /* RNDObjectControllerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDObjectControllerTests.m; sourceTree = "<group>"; };
@@ -424,19 +418,6 @@
 			path = "RNDMutableBinderTemplates-Mac";
 			sourceTree = "<group>";
 		};
-		E43B014C1F7ED6A400A09C87 /* SwiftKit */ = {
-			isa = PBXGroup;
-			children = (
-				E43B014D1F7ED6A400A09C87 /* SwiftKit.h */,
-				E43B01641F7ED6BA00A09C87 /* Bindings.swift */,
-				E43B01631F7ED6BA00A09C87 /* Slider.swift */,
-				E43B01651F7ED6BA00A09C87 /* Controller.swift */,
-				E43B01621F7ED6B900A09C87 /* ObjectController.swift */,
-				E43B014E1F7ED6A400A09C87 /* Info.plist */,
-			);
-			path = SwiftKit;
-			sourceTree = "<group>";
-		};
 		E43C3F531F9A850E00F4D1B5 /* RNDBindingControllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -584,7 +565,6 @@
 			children = (
 				E49CFBAB1F7EC17900CDFF29 /* RNDKit */,
 				E49CFBB61F7EC17900CDFF29 /* RNDKitTests */,
-				E43B014C1F7ED6A400A09C87 /* SwiftKit */,
 				E4295BBE1FA010440040BAC4 /* RND Workbench */,
 				E4295BDB1FA010440040BAC4 /* RND WorkbenchTests */,
 				E4295BE61FA010440040BAC4 /* RND WorkbenchUITests */,

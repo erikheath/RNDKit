@@ -154,7 +154,7 @@
 - (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
-    dispatch_sync(_syncQueue, ^{
+    dispatch_barrier_sync(_syncQueue, ^{
         objectValue = self.bindingObjectValue;
     });
     return objectValue;

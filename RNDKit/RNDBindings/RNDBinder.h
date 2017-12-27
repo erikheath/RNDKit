@@ -43,13 +43,13 @@
 
 - (void)bind;
 - (void)unbind;
-
 - (BOOL)bind:(NSError * _Nullable __autoreleasing * _Nullable)error;
 - (BOOL)unbind:(NSError * _Nullable __autoreleasing * _Nullable)error;
 
 - (BOOL)bindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
 - (BOOL)unbindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
-
+- (id _Nullable)bindingObjectValue;
+- (void)setBindingObjectValue:(id _Nullable)bindingObjectValue;
 
 // These methods must be overrideen to do anything
 - (void)updateBindingObjectValue;

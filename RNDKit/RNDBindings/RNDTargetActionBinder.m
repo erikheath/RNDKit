@@ -122,7 +122,7 @@
 - (void)performBindingObjectAction {
     dispatch_async(_serializerQueue, ^{
         dispatch_set_context(self.syncQueue, NULL);
-        for (NSInvocation *invocation in self.bindingObjectValue) {
+        for (NSInvocation *invocation in self.bindingValue) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });
@@ -136,7 +136,7 @@
         NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithCapacity:2];
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
-        for (NSInvocation *invocation in self.bindingObjectValue) {
+        for (NSInvocation *invocation in self.bindingValue) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });
@@ -151,7 +151,7 @@
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
         if (event != nil) { [contextDictionary setObject:event forKey:RNDEventArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
-        for (NSInvocation *invocation in self.bindingObjectValue) {
+        for (NSInvocation *invocation in self.bindingValue) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });
@@ -168,7 +168,7 @@
         if (event != nil) { [contextDictionary setObject:event forKey:RNDEventArgument]; }
         if (context != nil) { [contextDictionary setObject:context forKey:RNDContextArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
-        for (NSInvocation *invocation in self.bindingObjectValue) {
+        for (NSInvocation *invocation in self.bindingValue) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });

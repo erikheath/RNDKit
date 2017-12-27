@@ -26,43 +26,27 @@
     [processor.processorArguments addObject:processorArg2];
 
     RNDBinder *binder = [[RNDBinder alloc] init];
-    binder.binderMode = RNDValueOnlyMode;
-    binder.unwrapSingleValue = YES;
     XCTAssertNotNil(binder);
-    XCTAssertNil(binder.binderIdentifier);
-    XCTAssertNotNil(binder.inflowBindings);
-    XCTAssertNotNil(binder.outflowBindings);
-    XCTAssertNil(binder.boundInflowBindings);
-    XCTAssertNil(binder.boundInflowBindings);
+    XCTAssertNil(binder.bindingIdentifier);
     XCTAssertNil(binder.boundObject);
     XCTAssertNil(binder.boundObjectKey);
-    XCTAssertEqual(binder.binderMode, RNDValueOnlyMode);
     XCTAssertFalse(binder.monitorsBoundObject);
     XCTAssertNotNil(binder.syncQueue);
     XCTAssertNil(binder.bindingName);
-    XCTAssertNil(binder.bindingObjectValue);
-    XCTAssertNil(binder.nullPlaceholder);
-    XCTAssertNil(binder.multipleSelectionPlaceholder);
-    XCTAssertNil(binder.noSelectionPlaceholder);
-    XCTAssertNil(binder.notApplicablePlaceholder);
-    XCTAssertNil(binder.nilPlaceholder);
-    XCTAssertFalse(binder.filtersNilValues);
-    XCTAssertFalse(binder.filtersMarkerValues);
-    XCTAssertTrue(binder.unwrapSingleValue);
-    XCTAssertFalse(binder.mutuallyExclusive);
+    XCTAssertNil(binder.bindingValue);
     
-    XCTAssertNil(binder.bindingObjectValue);
+    XCTAssertNil(binder.bindingValue);
     XCTAssertFalse(binder.bound);
     [binder bind];
     XCTAssertTrue(binder.isBound);
-    XCTAssertNil(binder.bindingObjectValue);
+    XCTAssertNil(binder.bindingValue);
     [binder unbind];
     XCTAssertFalse(binder.bound);
-    XCTAssertNil(binder.bindingObjectValue);
+    XCTAssertNil(binder.bindingValue);
     
     NSError *error;
     binder.monitorsBoundObject = YES;
-    XCTAssertNil(binder.bindingObjectValue);
+    XCTAssertNil(binder.bindingValue);
     XCTAssertFalse(binder.bound);
     XCTAssertFalse([binder bind:&error]);
     XCTAssertNotNil(error);
@@ -70,43 +54,41 @@
     
     error = nil;
     
-    [binder.inflowBindings addObject:processor];
-    XCTAssertNil(binder.bindingObjectValue);
+    binder.inflowProcessor = processor;
+    XCTAssertNil(binder.bindingValue);
+    XCTAssertNil(binder.bindingValue);
     XCTAssertTrue([binder bind:&error]);
     XCTAssertNil(error);
-    XCTAssertNotNil(binder.bindingObjectValue);
-    XCTAssertEqualObjects(@"Hello World!", binder.bindingObjectValue);
+    XCTAssertNotNil(binder.bindingValue);
+    XCTAssertEqualObjects(@"Hello World!", binder.bindingValue);
     XCTAssertTrue([binder unbind:&error]);
     XCTAssertNil(error);
     
-    binder.binderMode = RNDKeyedValueMode;
-    XCTAssertNil(binder.bindingObjectValue);
+    XCTAssertNil(binder.bindingValue);
     XCTAssertTrue([binder bind:&error]);
     XCTAssertNil(error);
-    XCTAssertNotNil(binder.bindingObjectValue);
-    XCTAssertEqualObjects(@{@"0":@"Hello World!"}, binder.bindingObjectValue);
+    XCTAssertNotNil(binder.bindingValue);
+    XCTAssertEqualObjects(@{@"0":@"Hello World!"}, binder.bindingValue);
     XCTAssertTrue([binder unbind:&error]);
     XCTAssertNil(error);
 
-    binder.binderMode = RNDOrderedKeyedValueMode;
-    XCTAssertNil(binder.bindingObjectValue);
+    XCTAssertNil(binder.bindingValue);
     XCTAssertTrue([binder bind:&error]);
     XCTAssertNil(error);
-    XCTAssertNotNil(binder.bindingObjectValue);
-    XCTAssertEqualObjects(@[@{@"0":@"Hello World!"}], binder.bindingObjectValue);
+    XCTAssertNotNil(binder.bindingValue);
+    XCTAssertEqualObjects(@[@{@"0":@"Hello World!"}], binder.bindingValue);
     XCTAssertTrue([binder unbind:&error]);
     XCTAssertNil(error);
     
     // Observer
     NSMutableDictionary *observerDictionary = [[NSMutableDictionary alloc] init];
-    binder.binderMode = RNDValueOnlyMode;
     binder.boundObjectKey =  @"observerProperty";
     binder.boundObject = observerDictionary;
     XCTAssertEqual(0, observerDictionary.count);
-    XCTAssertNil(binder.bindingObjectValue);
+    XCTAssertNil(binder.bindingValue);
     XCTAssertTrue([binder bind:&error]);
     XCTAssertNil(error);
-    XCTAssertNotNil(binder.bindingObjectValue);
+    XCTAssertNotNil(binder.bindingValue);
     XCTKVOExpectation *expectation = [[XCTKVOExpectation alloc] initWithKeyPath:@"observerProperty"
                                                                          object:observerDictionary
                                                                   expectedValue:@"Hello World!"];
@@ -126,15 +108,14 @@
     outflowProcessor.controllerKey = @"testController";
     outflowProcessor.monitorsObservedObject = NO;
     outflowProcessor.bindingName = @"outflowname";
-    [binder.outflowBindings addObject:outflowProcessor];
-    [binder.inflowBindings removeAllObjects];
+    binder.outflowProcessor = outflowProcessor;
     RNDBindingProcessor *inflowProcessor = [RNDBindingProcessorTestFramework processorWithProfile:@"A"];
     inflowProcessor.observedObject = observedObject;
     inflowProcessor.observedObjectKeyPath = @"testProperty";
     inflowProcessor.controllerKey = @"testController";
     inflowProcessor.monitorsObservedObject = YES;
     inflowProcessor.bindingName = @"inflowname";
-    [binder.inflowBindings addObject:inflowProcessor];
+    binder.inflowProcessor = inflowProcessor;
     binder.monitorsBoundObject = YES;
     binder.bindingName = @"Test Binding";
     
@@ -149,8 +130,7 @@
     XCTAssertNil(error);
 
     // Test that you can not use a binding twice.
-    [binder.outflowBindings removeAllObjects];
-    [binder.outflowBindings addObject:inflowProcessor];
+    binder.outflowProcessor =  inflowProcessor;
     XCTAssertFalse([binder bind:&error]);
     XCTAssertNotNil(error);
     
