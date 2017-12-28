@@ -630,7 +630,48 @@
 }
 
 - (void)testProfileK {
+    RNDAggregationProcessor *processor = (RNDAggregationProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"K"];
+
     
+    XCTAssertNotNil(processor);
+    XCTAssertFalse(processor.isBound);
+    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNil(processor.observedObject);
+    XCTAssertNil(processor.observedObjectKeyPath);
+    XCTAssertNil(processor.observedObjectBindingIdentifier);
+    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertFalse(processor.monitorsObservedObject);
+    XCTAssertNil(processor.controllerKey);
+    XCTAssertNil(processor.binder);
+    XCTAssertNotNil(processor.bindingName);
+    XCTAssertNil(processor.nullPlaceholder);
+    XCTAssertNil(processor.multipleSelectionPlaceholder);
+    XCTAssertNil(processor.notApplicablePlaceholder);
+    XCTAssertNil(processor.nilPlaceholder);
+    XCTAssertNil(processor.noSelectionPlaceholder);
+    XCTAssertNil(processor.argumentName);
+    XCTAssertNil(processor.valueTransformerName);
+    XCTAssertNil(processor.valueTransformer);
+    XCTAssertNotNil(processor.processorArguments);
+    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
+    XCTAssertNotNil(processor.runtimeArguments);
+    XCTAssertNotNil(processor.processorNodes);
+    XCTAssertNil(processor.observedObjectEvaluationValue);
+    
+    [self runBindingTests:processor];
+    
+    NSError *error;
+    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertTrue([processor bind:&error]);
+    XCTAssertNil(error);
+    XCTAssertNotNil(processor.bindingObjectValue);
+    XCTAssertTrue([processor.bindingObjectValue isKindOfClass:[NSArray class]]);
+    XCTAssertTrue([processor unbind:&error]);
+
+    // TODO: Test different value modes
+    // TODO: Test different filterings
+
 }
 
 @end

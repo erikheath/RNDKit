@@ -139,4 +139,10 @@
     return profile;
 }
 
++ (RNDAggregationProcessor *)profileK {
+    RNDAggregationProcessor *profile = [[RNDAggregationProcessor alloc] init];
+    profile.bindingName = @"RNDTestBinding";
+    return profile;
+}
+
 @end

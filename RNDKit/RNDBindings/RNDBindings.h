@@ -18,3 +18,4 @@
 #import "RNDPredicateProcessor.h"
 #import "RNDExpressionProcessor.h"
 #import "RNDPatternedStringProcessor.h"
+#import "RNDAggregationProcessor.h"

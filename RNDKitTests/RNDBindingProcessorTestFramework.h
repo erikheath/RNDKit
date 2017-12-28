@@ -24,5 +24,6 @@
 + (RNDRegExProcessor *)profileH;
 + (RNDExpressionProcessor *)profileI;
 + (RNDInvocationProcessor *)profileJ;
++ (RNDInvocationProcessor *)profileK;
 
 @end
