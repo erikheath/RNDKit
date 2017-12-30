@@ -8,7 +8,6 @@
 
 #import "RNDBinder.h"
 #import "RNDBindingProcessor.h"
-#import "RNDPatternedStringProcessor.h"
 #import <objc/runtime.h>
 
 @interface RNDBinder()
@@ -18,6 +17,8 @@
 @end
 
 @implementation RNDBinder
+
+@synthesize boundOutflowProcessors = _boundOutflowProcessors;
 
 @synthesize inflowProcessor = _inflowProcessor;
 
@@ -36,19 +37,12 @@
     return localObject;
 }
 
-@synthesize outflowProcessor = _outflowProcessor;
+@synthesize outflowProcessors = _outflowProcessors;
 
-- (void)setOutflowProcessor:(RNDBindingProcessor *)outflowProcessor {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _outflowProcessor = outflowProcessor;
-    });
-}
-
-- (NSMutableArray<RNDBindingProcessor *> *)outflowProcessor {
+- (NSMutableArray<RNDBindingProcessor *> *)outflowProcessors {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _outflowProcessor;
+        localObject = _outflowProcessors;
     });
     return localObject;
 }
@@ -72,54 +66,54 @@
 }
 
 
-@synthesize boundObject = _boundObject;
+@synthesize bindingObject = _bindingObject;
 
-- (void)setBoundObject:(NSObject<RNDBindableObject> *)observer {
+- (void)setBindingObject:(NSObject<RNDBindableObject> *)observer {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _boundObject = observer;
+        _bindingObject = observer;
     });
 }
 
-- (NSObject<RNDBindableObject> *)boundObject {
+- (NSObject<RNDBindableObject> *)bindingObject {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _boundObject;
+        localObject = _bindingObject;
     });
     return localObject;
 }
 
 
-@synthesize boundObjectKey = _boundObjectKey;
+@synthesize bindingObjectKeyPath = _bindingObjectKeyPath;
 
-- (void)setBoundObjectKey:(NSString * _Nonnull)observerKey {
+- (void)setBindingObjectKeyPath:(NSString * _Nonnull)observerKey {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _boundObjectKey = observerKey;
+        _bindingObjectKeyPath = observerKey;
     });
 }
 
-- (NSString *)boundObjectKey {
+- (NSString *)bindingObjectKeyPath {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _boundObjectKey;
+        localObject = _bindingObjectKeyPath;
     });
     return localObject;
 }
 
-@synthesize monitorsBoundObject = _monitorsBoundObject;
+@synthesize monitorsBindingObject = _monitorsBindingObject;
 
-- (void)setMonitorsBoundObject:(BOOL)monitorsObserver {
+- (void)setMonitorsBindingObject:(BOOL)monitorsObserver {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
-        _monitorsBoundObject = monitorsObserver;
+        _monitorsBindingObject = monitorsObserver;
     });
 }
 
-- (BOOL)monitorsBoundObject {
+- (BOOL)monitorsBindingObject {
     BOOL __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _monitorsBoundObject;
+        localObject = _monitorsBindingObject;
     });
     return localObject;
 }
@@ -130,60 +124,163 @@
 @synthesize syncQueueIdentifier = _syncQueueIdentifier;
 @synthesize bound = _isBound;
 
-- (id _Nullable)bindingObjectValue {
-    dispatch_assert_queue_barrier_debug(_syncQueue);
+- (id _Nullable)bindingValue {
+    id __block objectValue = nil;
+    
+    dispatch_barrier_sync(_syncQueue, ^{
+        objectValue = [self coordinatedBindingValue];
+    });
+    return objectValue;
 
+}
+
+#pragma mark - Value Management Methods
+
+- (id _Nullable)coordinatedBindingValue {
+    //Check the queue
+    dispatch_assert_queue_barrier_debug(_syncQueue);
+    
     id objectValue = nil;
     
+    // Check the bound status
     if (_isBound == NO) {
         objectValue = nil;
         return objectValue;
     }
     
+    // Set the runtime arguments
     NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
     NSDictionary *contextDictionary = (dispatch_get_context(_syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_syncQueue)) : nil);
     if (contextDictionary != nil) {
         [arguments addEntriesFromDictionary:contextDictionary];
     }
     _inflowProcessor.runtimeArguments = [NSDictionary dictionaryWithDictionary:arguments];
-    objectValue = _inflowProcessor.bindingObjectValue;
+    
+    // Get the binding value
+    objectValue = [self rawBindingValue];
+    objectValue = [self calculatedBindingValue: objectValue];
+    objectValue = [self filteredBindingValue:objectValue];
+    objectValue = [self transformedBindingValue:objectValue];
+    objectValue = [self wrappedBindingValue:objectValue];
     
     return objectValue;
 }
 
-- (id _Nullable)bindingValue {
-    id __block objectValue = nil;
-    
-    dispatch_barrier_sync(_syncQueue, ^{
-        objectValue = self.bindingObjectValue;
-    });
-    return objectValue;
-
-}
-
-- (void)setBindingObjectValue:(id)bindingObjectValue {
-    dispatch_assert_queue_debug(_syncQueue);
-
-    // There may be no actual change, in which case nothing needs to happen.
-    id objectValue = bindingObjectValue;
-    if ([self.bindingObjectValue isEqual:objectValue]) { return; }
-
+- (id _Nullable)rawBindingValue {
+    id objectValue = nil;
     NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
     NSDictionary *contextDictionary = (dispatch_get_context(_syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_syncQueue)) : nil);
     if (contextDictionary != nil) {
         [arguments addEntriesFromDictionary:contextDictionary];
     }
-    [arguments setObject:bindingObjectValue forKey:RNDBinderObjectValue];
-    _outflowProcessor.runtimeArguments = [NSDictionary dictionaryWithDictionary:arguments];
-    [_outflowProcessor setBindingObjectValue:objectValue];
-
+    _inflowProcessor.runtimeArguments = [NSDictionary dictionaryWithDictionary:arguments];
+    objectValue = _inflowProcessor.bindingValue;
+    
+    return objectValue;
 }
 
-- (void)setBindingValue:(id)bindingValue {
-    dispatch_async(_syncQueue, ^{
-        [self setBindingObjectValue:bindingValue];
+- (id _Nullable)calculatedBindingValue:(id _Nullable)bindingValue {
+    return bindingValue;
+}
+
+- (id _Nullable)filteredBindingValue:(id _Nullable)bindingValue {
+    return bindingValue;
+}
+
+- (id _Nullable)transformedBindingValue:(id _Nullable)bindingValue {
+    return bindingValue;
+}
+
+- (id _Nullable)wrappedBindingValue:(id)bindingValue {
+    return bindingValue;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary<NSKeyValueChangeKey,id> *)change
+                       context:(void *)context {
+    
+    if (context == NULL || context == nil) {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+        return;
+    } else if ([(__bridge NSString * _Nonnull)(context) isKindOfClass: [NSString class]] == NO || [(__bridge NSString * _Nonnull)(context) isEqualToString:_bindingName] == NO) {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+    
+    if (change[NSKeyValueChangeNotificationIsPriorKey] != nil) {
+        // Add delegate calls?
+    } else {
+        // Add delegate calls?
+        
+        [self updateObservedObjectValue];
+        
+    }
+    
+}
+
+- (void)updateBindingObjectValue {
+    // Because this may be a UI object, this last unit of work must be performed on the main queue.
+    // This will serialize the work which removes the need for a barrier
+    dispatch_barrier_async(_syncQueue, ^{
+        id observedObjectValue = [self coordinatedBindingValue];
+        if (_bindingObjectKeyPath != nil && [observedObjectValue isEqual:[_bindingObject valueForKey:_bindingObjectKeyPath]] == NO) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [_bindingObject setValue:observedObjectValue forKeyPath:_bindingObjectKeyPath];
+            });
+            return;
+        }
     });
 }
+
+- (void)updateObservedObjectValue {
+    dispatch_barrier_async(_syncQueue, ^{
+        // Get the current value of the bindingObject
+        __block id bindingObjectValue = nil;
+        dispatch_block_t block = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS, ^{
+            bindingObjectValue = [_bindingObject valueForKeyPath:_bindingObjectKeyPath];
+        });
+        dispatch_async(dispatch_get_main_queue(), block);
+        dispatch_block_wait(block, DISPATCH_TIME_FOREVER);
+        
+        // Set the runtime arguments
+        NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
+        NSDictionary *contextDictionary = (dispatch_get_context(_syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_syncQueue)) : nil);
+        if (contextDictionary != nil) {
+            [arguments addEntriesFromDictionary:contextDictionary];
+        }
+        [arguments setObject:bindingObjectValue forKey:RNDBinderObjectValue];
+        for (RNDBindingProcessor *processor in _boundOutflowProcessors) {
+            processor.runtimeArguments = [NSDictionary dictionaryWithDictionary:arguments];
+            id processorBindingValue = processor.bindingValue;
+            id __block observedObjectBindingValue = nil;
+            if (processor.readOnMainQueue == YES) {
+                dispatch_block_t block = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS, ^{
+                    observedObjectBindingValue = [processor.observedObject valueForKeyPath:processor.resolvedObservedObjectKeyPath];
+                });
+                dispatch_async(dispatch_get_main_queue(), block);
+                dispatch_block_wait(block, DISPATCH_TIME_FOREVER);
+            } else {
+                observedObjectBindingValue = [processor.observedObject valueForKeyPath:processor.resolvedObservedObjectKeyPath];
+            }
+            
+            // If the two values are equal, nothing needs to be updated.
+            if ([processorBindingValue isEqual:observedObjectBindingValue] == YES) { return; }
+            
+            // Update the value of the observed object
+            if (processor.writeOnMainQueue == YES) {
+                dispatch_block_t block = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS, ^{
+                    [processor.observedObject setValue:processorBindingValue forKeyPath:processor.resolvedObservedObjectKeyPath];
+                });
+                dispatch_async(dispatch_get_main_queue(), block);
+                dispatch_block_wait(block, DISPATCH_TIME_FOREVER);
+            } else {
+                [processor.observedObject setValue:processorBindingValue forKeyPath:processor.resolvedObservedObjectKeyPath];
+            }
+        }
+        
+    });
+}
+
 #pragma mark - Object Lifecycle
 
 - (instancetype _Nullable)init {
@@ -239,7 +336,7 @@
 
 #pragma mark - Binding Management
 
-- (BOOL)bindObjects:(NSError *__autoreleasing  _Nullable *)error {
+- (BOOL)bindCoordinatedObjects:(NSError *__autoreleasing  _Nullable *)error {
     BOOL result = YES;
     NSError *internalError = nil;
     
@@ -260,8 +357,8 @@
         return result;
     }
     
-    if (_monitorsBoundObject == YES) {
-        if (_boundObject == nil) {
+    if (_monitorsBindingObject == YES) {
+        if (_bindingObject == nil) {
             result = NO;
             if (error != NULL) {
                 NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
@@ -274,7 +371,7 @@
                 *error = internalError;
             }
             return result;
-        } else if ([_boundObject isKindOfClass:[RNDBindingProcessor class]] == YES) {
+        } else if ([_bindingObject isKindOfClass:[RNDBindingProcessor class]] == YES) {
             result = NO;
             if (error != NULL) {
                 NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
@@ -288,7 +385,7 @@
             }
             return result;
             
-        } else if (_boundObjectKey == nil) {
+        } else if (_bindingObjectKeyPath == nil) {
             result = NO;
             if (error != NULL) {
                 NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
@@ -316,13 +413,26 @@
             return result;
         }
         
-        [_boundObject addObserver:self
-                    forKeyPath:_boundObjectKey
+        [_bindingObject addObserver:self
+                    forKeyPath:_bindingObjectKeyPath
                        options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionPrior |  NSKeyValueObservingOptionOld)
                        context:(__bridge void * _Nullable)(_bindingName)];
     }
     
-
+    // The processors must receive a bind message.
+    _inflowProcessor.binder = self;
+    if ([_inflowProcessor bind:error] == NO) {
+        [self unbindCoordinatedObjects:error];
+        return NO;
+    }
+    _boundOutflowProcessors = [NSArray arrayWithArray:_outflowProcessors];
+    for (RNDBindingProcessor *processor in _boundOutflowProcessors) {
+        processor.binder = self;
+        if ([processor bind:error] == NO) {
+            [self unbindCoordinatedObjects:error];
+            return NO;
+        }
+    }
 
     _isBound = YES;
     return _isBound;
@@ -330,19 +440,19 @@
 
 - (void)bind {
     dispatch_barrier_sync(_syncQueue, ^{
-        [self bindObjects:nil];
+        [self bindCoordinatedObjects:nil];
     });
 }
 
 - (BOOL)bind:(NSError * _Nullable __autoreleasing * _Nullable)error {
     __block BOOL result = NO;
     dispatch_barrier_sync(_syncQueue, ^{
-        result = [self bindObjects:error];
+        result = [self bindCoordinatedObjects:error];
     });
     return result;
 }
 
-- (BOOL)unbindObjects:(NSError * _Nullable __autoreleasing * _Nullable)error {
+- (BOOL)unbindCoordinatedObjects:(NSError * _Nullable __autoreleasing * _Nullable)error {
     BOOL result = YES;
     id underlyingError;
     NSMutableArray *underlyingErrorsArray = [NSMutableArray array];
@@ -351,9 +461,9 @@
     dispatch_assert_queue_barrier_debug(self.syncQueue);
     
     @try {
-        if (_isBound == YES && _monitorsBoundObject == YES) {
-            [_boundObject removeObserver:self
-                           forKeyPath:_boundObjectKey
+        if (_isBound == YES && _monitorsBindingObject == YES) {
+            [_bindingObject removeObserver:self
+                           forKeyPath:_bindingObjectKeyPath
                               context:(__bridge void * _Nullable)(_bindingName)];
         }
     }
@@ -374,7 +484,22 @@
         }
     }
     
-        
+    NSError *passedInError;
+    BOOL unbindingResult = [_inflowProcessor unbind:&passedInError];
+    if (unbindingResult == NO) {
+        result = NO;
+        [underlyingErrorsArray addObject:passedInError];
+    }
+    
+    for (RNDBindingProcessor *processor in _boundOutflowProcessors) {
+        unbindingResult = [processor unbind:&passedInError];
+        if (unbindingResult == NO) {
+            result = NO;
+            [underlyingErrorsArray addObject:passedInError];
+        }
+    }
+    _boundOutflowProcessors = nil;
+    
     if (error != NULL && (underlyingErrorsArray.count > 0 || underlyingError != nil)) {
         NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
         internalError = [NSError errorWithDomain:RNDKitErrorDomain
@@ -394,65 +519,17 @@
 
 - (void)unbind {
     dispatch_barrier_sync(_syncQueue, ^{
-        [self unbindObjects:nil];
+        [self unbindCoordinatedObjects:nil];
     });
 }
 
 - (BOOL)unbind:(NSError * _Nullable __autoreleasing * _Nullable)error {
     __block BOOL result = NO;
     dispatch_barrier_sync(_syncQueue, ^{
-        result = [self unbindObjects:error];
+        result = [self unbindCoordinatedObjects:error];
     });
     return result;
 }
-
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary<NSKeyValueChangeKey,id> *)change
-                       context:(void *)context {
-    
-    if (context == NULL || context == nil) {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-        return;
-    } else if ([(__bridge NSString * _Nonnull)(context) isKindOfClass: [NSString class]] == NO || [(__bridge NSString * _Nonnull)(context) isEqualToString:_bindingName] == NO) {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
-    
-    if (change[NSKeyValueChangeNotificationIsPriorKey] != nil) {
-        // Add delegate calls?
-    } else {
-        // Add delegate calls?
-        
-        [self updateValueOfObservedObject];
-        
-    }
-    
-}
-
-- (void)updateBindingObjectValue {
-    // Because this may be a UI object, this last unit of work must be performed on the main queue.
-    // This will serialize the work which removes the need for a barrier
-    dispatch_async(_syncQueue, ^{
-        id observedObjectValue = self.bindingObjectValue;
-        if (_boundObjectKey != nil && [observedObjectValue isEqual:[_boundObject valueForKey:_boundObjectKey]] == NO) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [_boundObject setValue:observedObjectValue forKeyPath:_boundObjectKey];
-            });
-            return;
-        }
-    });
-}
-
-- (void)updateValueOfObservedObject {
-    dispatch_async(_syncQueue, ^{
-        __block id observerObjectValue = nil;
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            observerObjectValue = [_boundObject valueForKeyPath:_boundObjectKey];
-        });
-        [_outflowProcessor setBindingObjectValue:observerObjectValue];
-    });
-}
-
 
 @end
 

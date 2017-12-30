@@ -88,6 +88,7 @@ FOUNDATION_EXPORT RNDBindingMarker RNDBindingUnboundErrorMarker;
 FOUNDATION_EXPORT RNDBindingMarker RNDBindingInvalidKeyPathMarker;
 FOUNDATION_EXPORT RNDBindingMarker RNDBindingBinderNotFoundMarker;
 FOUNDATION_EXPORT RNDBindingMarker RNDBindingInvalidArgumentMarker;
+FOUNDATION_EXPORT RNDBindingMarker RNDBindingRemoveValueMarker;
 
 FOUNDATION_EXPORT BOOL RNDIsControllerMarker(__nullable id object);
 

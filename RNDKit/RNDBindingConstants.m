@@ -49,10 +49,12 @@ RNDBindingMarker RNDBindingUnboundErrorMarker = @"RNDBindingUnboundErrorMarker";
 RNDBindingMarker RNDBindingInvalidKeyPathMarker = @"RNDBindingInvalidKeyPathMarker";
 RNDBindingMarker RNDBindingBinderNotFoundMarker = @"RNDBindingBinderNotFoundMarker";
 RNDBindingMarker RNDBindingInvalidArgumentMarker = @"RNDBindingInvalidArgumentMarker";
+RNDBindingMarker RNDBindingRemoveValueMarker = @"RNDBindingRemoveValueMarker";
 
 
 #pragma mark - RNDResouceInfoKeys
 RNDResourceInfoKey RNDResourceInfoLoadingTypeKey = @"RNDResourceInfoLoadingTypeKey";
+
 
 #pragma mark - RNDResourceInfoOptions
 RNDResourceInfoOption RNDResourceInfoSynchronousOption = @"RNDResourceInfoSynchronousOption";

@@ -22,9 +22,15 @@
  The difference between the two output types is illustrated by the RNDRegExNode which can output a regular expression as its processorValue, or can apply that regular expression and replacement template to the value of it's observed object's property. The RNDPredicateNode, RNDInvocationNode, and RNDExpression processor have similar behavior.
 
  */
-typedef NS_ENUM(NSUInteger, RNDProcessorValueType) {
+typedef NS_ENUM(NSUInteger, RNDProcessorOutputType) {
     RNDRawValueOutputType,
     RNDCalculatedValueOutputType
+};
+
+typedef NS_ENUM(NSUInteger, RNDValueMode) {
+    RNDValueOnlyMode,
+    RNDKeyedValueMode,
+    RNDOrderedKeyedValueMode
 };
 
 @class RNDBinder;
@@ -77,6 +83,50 @@ typedef NS_ENUM(NSUInteger, RNDProcessorValueType) {
  @discussion The syncQueue coordinates reading and writing to properties, including preventing property mutation when an instance is binding or unbinding from an observed object. The syncQueue is automatically created for an RNDBindingProcessor instance and has a unique application-wide runtime identifier.
  */
 @property (nonnull, strong, readonly) dispatch_queue_t syncQueue;
+
+/**
+ @abstract The binder the processor is managed by.
+ 
+ @discussion Nodes use a binder to gain access to the larger object graph. This includes automatic configuration of a processor's observed object, notifying the binder that a change has been detected and an update may be required, informing the binder about the status of a binding attempt, and producing values that a binder can use for various tasks.
+ 
+ @note Because processing processors can be used in other contexts, a binder is not required to configure or use a processing processor.
+ */
+@property (weak, nullable, readwrite) RNDBinder * binder;
+
+/**
+ @abstract A user definable name that is used during error reporting and logging.
+ 
+ @discussion Every processor processor has an automatically generated binding name that can be used to trace errors at runtime. In addition, if a processor processor is constructed in the RNDWorkbench, a name is automatically generated that can be referenced between runtime and compile time to locate a processor that generated an error.
+ 
+ When a processor is created programatically, a binding name is only generated at runtime and therefore varies between application runs. By setting a binding name in source code, you can enable the tracing of errors at runtime back to a specific processor within the source code.
+ */
+@property (strong, nullable, readwrite) NSString *bindingName;
+
+/**
+ @abstract The name used during argument replacement for a processor's template.
+ 
+ @discussion For processor processors that have templates, any binding object value of any processor argument may be referred to using the argument name set for a respective argument processor. For example, if an argument processor has the the name "BoxWidth", it may be referred to in the template by prepending the processors argument name with a $ as shown below:
+ 
+ @code
+ 
+ $BoxWidth
+ 
+ @endcode
+ 
+ @note Argument names should not have any spaces, but may otherwise be composed of any characters compatible with NSString's replaceOccurencesOfString:withString:options:range.
+ 
+ */
+@property (strong, nullable, readwrite) NSString *argumentName;
+
+/**
+ @abstract All binding processors used as nodes by a binding processor.
+ 
+ @discussion A binding processor uses other binding processors for a number of functions including construction of arguments for templates, evaluation predicates, placeholders, etc. These are collectively referred to as the binding processor's processorNodes, which this property returns.
+ */
+@property (strong, nonnull, readonly) NSArray<RNDBindingProcessor *> *processorNodes;
+
+
+#pragma mark - Observed Object Management
 
 /**
  @abstract The observed object is an object that exposes a KVC-compliant property (that property can be self) that can be read from and optionally monitored using KVO.
@@ -132,14 +182,7 @@ typedef NS_ENUM(NSUInteger, RNDProcessorValueType) {
  
  @discussion The observedObjectEvaluationValue is the result of requesting the value specified by the observedObjectKeyPath from the observedObject. This value is used when the processor is configured to use the CalculatedValueOutputType, and it is also passed as an argument to the observedObjectEvaluator using the key $OO_BINDING_VALUE.
  */
-@property (strong, nullable, readonly) id observedObjectEvaluationValue;
-
-/**
- @abstract A predicate processor that is evaluated against the observed object binding value. A NO result causes the processor to abort processing and to return nil or, if a nil placeholder is set, to return the placeholder.
- 
- @discussion The observed object evaluator is used to determine if a processor should attempt to resolve its binding object value. While the predicate is evaluated against the observed object binding value, it does not need to use it in the construction of the predicate. However, if use of the observed object binding value is required, it can be included in the predicate via the SELF format specifier.
- */
-@property (strong, nullable, readwrite) RNDPredicateProcessor *observedObjectEvaluator;
+@property (strong, nullable, readonly) id observedObjectBindingValue;
 
 /**
  @abstract Determines if the observed object's property will be monitored using Key-Value Observing.
@@ -179,59 +222,17 @@ typedef NS_ENUM(NSUInteger, RNDProcessorValueType) {
  */
 @property (strong, nullable, readwrite) NSString *controllerKey;
 
-/**
- @abstract The binder the processor is managed by.
- 
- @discussion Nodes use a binder to gain access to the larger object graph. This includes automatic configuration of a processor's observed object, notifying the binder that a change has been detected and an update may be required, informing the binder about the status of a binding attempt, and producing values that a binder can use for various tasks.
- 
- @note Because processing processors can be used in other contexts, a binder is not required to configure or use a processing processor.
- */
-@property (weak, nullable, readwrite) RNDBinder * binder;
-
-/**
- @abstract A user definable name that is used during error reporting and logging.
- 
- @discussion Every processor processor has an automatically generated binding name that can be used to trace errors at runtime. In addition, if a processor processor is constructed in the RNDWorkbench, a name is automatically generated that can be referenced between runtime and compile time to locate a processor that generated an error.
- 
- When a processor is created programatically, a binding name is only generated at runtime and therefore varies between application runs. By setting a binding name in source code, you can enable the tracing of errors at runtime back to a specific processor within the source code.
- */
-@property (strong, nullable, readwrite) NSString *bindingName;
-
-/**
- @abstract The key that should be associated with the processorValue.
- 
- @discussion In many cases, a processor processor's value will need to be associated with a key when used as the inflow value processors of a binder. The user string is generated via a RNDPatternedStringNode that can dynamically construct an approprite key based on processor and runtime arguments.
- */
-@property (strong, nullable, readwrite) RNDPatternedStringProcessor *userString;
+@property (strong, nullable, readonly) NSString *resolvedObservedObjectKeyPath;
 
 
-/**
- @abstract Determines if a processor will evaluate its raw value to create a calculated value.
- 
- @discussion Certain processor types can product two versions of a binding object value. The first version, called the RawValueOutputType generally conforms to the related class of the processor. For example, a RNDPredicateNode's raw value is an NSPredicate. The second version, called the CalculatedValueOutputType, is the result of evaluating the raw value. For example, the RNDPredicateNode's calculated value would be a YES or NO wrapped in an NSNumber.
- 
- */
-@property (readwrite) RNDProcessorValueType processorOutputType;
+#pragma mark - Object Lifecycle
 
-/**
- @abstract The result of processing processors configuration.
- 
- @discussion Nodes have a binding object value that results from the processing of the processors configuration and its intersection with the current state of the runtime and object graph. A processor's binding object value is typically constructed using the following process:
- 
- 1. Should the processor evaluate? If it should not evaluate, is there a nil placeholder whose binding object value should be processed and returned in its place? If there is, return the nil placeholder's binding object value; otherwise, return nil.
- 
- 2. If the processor should evaluate, process and capture all of the processor's argument's binding object values and all of the runtime arguments. Then, depending on the processor type, perform all argument replacements to create a raw value.
- 
- 3. If the processor's output type is CalculatedValueOutputType, evaluate the processor's raw value to create an object value. Otherwise, assign the raw value to the object value.
- 
- 4. If the object value is any one of the known markers and a placeholder has been set for the marker, replace the object value with the placeholder. In either case, return the object value as the processor's binding object value.
- 
- 5. If the object value is not one of the known markers and a transformer is set for the processor processor, transform the object value, assigning the transformed output to the object value.
- 
- 6. If the object value is nil and a nil placeholder has been set, then assign the binding object value of the nil placeholder to the processor's object value. Return the object value as the processor's binding object value.
+- (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;
 
- */
-@property (readwrite, nullable) id bindingObjectValue;
+- (instancetype _Nullable)initWithCoder:(NSCoder * _Nullable)aDecoder NS_DESIGNATED_INITIALIZER;
+-(void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
+
+#pragma mark - Binding Management
 
 /**
  @abstract Indicates if the processor is in a bound state.
@@ -239,110 +240,7 @@ typedef NS_ENUM(NSUInteger, RNDProcessorValueType) {
  @discussion When a processor has been bound, its properties can not be mutated with the single exception of its runtime arguments.
  
  */
-@property (readonly) BOOL isBound;
-
-/**
- @abstract A processor processor whose binding object value is used when a processor processor's binding object value is equal to the RNDBindingNullValueMarker.
- 
- @discussion A null value marker is used to indicate that an expected/required value is null. This is in constrast to a nil value which indicates the absence or failure to produce a value. When a null value marker is produced during binding object value processing, the binding object value of a processor set as the null placeholder is substituted for the null value marker. Sometimes this is simply the replacement of the null value marker with an instance of the NSNull class. In other scenarios, an alternate evaluation path is process to return a default value.
- */
-@property (strong, nullable, readwrite) RNDBindingProcessor *nullPlaceholder;
-
-/**
- @abstract A processor processor whose binding object value is used when a processor processor's binding object value is equal to the RNDBindingMultipleValuesMarker.
- 
- @discussion A multiple values marker is used to indicate that multiple values could not be coalesced into a valid binding object value for the processor. When a multiple values marker is produced during binding object value processing, the binding object value of a processor set as the multiple selection placeholder is substituted for the multiple values marker. Sometimes this is simply the replacement of the marker with a string that indicates the presence of multiple values. In other scenarios, an alternate evaluation path is process to return a default value.
- */
-@property (strong, nullable, readwrite) RNDBindingProcessor *multipleSelectionPlaceholder;
-/**
- @abstract A processor processor whose binding object value is used when a processor processor's binding object value is equal to the RNDBindingNoSelectionMarker.
- 
- @discussion A no selection marker is used to indicate that there is no valid selection to read a value from or generate a value for. When a no selection marker is produced during binding object value processing, the binding object value of a processor set as the no selection placeholder is substituted for the no selection marker. Sometimes this is simply the replacement of the marker with a string that indicates the lack of a selection. In other scenarios, an alternate evaluation path is process to return a default value.
-
- */
-@property (strong, nullable, readwrite) RNDBindingProcessor *noSelectionPlaceholder;
-
-/**
- @abstract A processor processor whose binding object value is used when a processor processor's binding object value is equal to the RNDBindingNotApplicableMarker.
- 
- @discussion A not applicable marker is used to indicate that the processor can not produce an applicable value. Generally this is a marker that is recieved from a controller. When a not applicable marker is produced during binding object value processing, the binding object value of a processor set as the not applicable placeholder is substituted for the no applicable marker. Sometimes this is simply the replacement of the marker with a string that indicates that their is not an applicable value. In other scenarios, an alternate evaluation path is process to return a default value.
-
- */
-@property (strong, nullable, readwrite) RNDBindingProcessor *notApplicablePlaceholder;
-
-/**
- @abstract A processor processor whose binding object value is used when a processor processor's binding object value is equal to nil.
- 
- @discussion When a nil value is produced during binding object value processing, the binding object value of a processor set as the nil placeholder is substituted for the nil value. Sometimes this is simply the replacement of nil with a string that indicates the presence of a nil value. In other scenarios, an alternate evaluation path is process to return a default value.
-
- */
-@property (strong, nullable, readwrite) RNDBindingProcessor *nilPlaceholder;
-
-/**
- @abstract The name used during argument replacement for a processor's template.
- 
- @discussion For processor processors that have templates, any binding object value of any processor argument may be referred to using the argument name set for a respective argument processor. For example, if an argument processor has the the name "BoxWidth", it may be referred to in the template by prepending the processors argument name with a $ as shown below:
-
- @code
- 
- $BoxWidth
- 
- @endcode
- 
- @note Argument names should not have any spaces, but may otherwise be composed of any characters compatible with NSString's replaceOccurencesOfString:withString:options:range.
- 
- */
-@property (strong, nullable, readwrite) NSString *argumentName;
-
-/**
- @abstract A registered name of a value transformer that should be used by the processor processor.
- 
- @discussion To use a value transformer with a processor processor, set the value transformer name. At runtime, the value transformer will be added to the processor processor.
- */
-@property (strong, nullable, readwrite) NSString *valueTransformerName;
-
-/**
- @abstract The value transformer used by the processor processor during the processing of the processors binding object value.
- 
- @discussion A value transformer is retrieved at runtime based on the value transformer name that has been set for the processor.
- */
-@property (strong, nullable, readonly) NSValueTransformer *valueTransformer;
-
-/**
- @abstract Processors that are used as arguments during the processing of a binding object value.
- 
- @discussion A processor may have one or more processors whose binding object values can be used as substitutions in templates or other processes. Use the boundArguments array when the processor is bound to determine what arguments, if any are being used by the processor.
- */
-@property (strong, nullable, readonly) NSMutableArray<RNDBindingProcessor *> *processorArguments;
-
-/**
- @abstract The processors used as arguments when bound.
- 
- @discussion When a processor is bound, it creates a read only copy of its processor arguments array that is used for the duration of the binding. When the processor is not bound, this property is nil.
- */
-@property (strong, nullable, readonly) NSArray<RNDBindingProcessor *> *boundArguments;
-
-/**
- @abstract All binding processors used as nodes by a binding processor.
- 
- @discussion A binding processor uses other binding processors for a number of functions including construction of arguments for templates, evaluation predicates, placeholders, etc. These are collectively referred to as the binding processor's processorNodes, which this property returns.
- */
-@property (strong, nonnull, readonly) NSArray<RNDBindingProcessor *> *processorNodes;
-
-/**
- @abstract The curent arguments assigned to the processor for its use during the construction of the processor node's binding object value.
- 
- @discussion When a processor constructs its binding object value, it can use arguments that are passed to it at runtime. This enables the construction of binding object values that are dependent upon information that can only be known at runtime, such as device orientation, size of a view, etc. While most runtime information can be retrieved by processors by traversing object hierarchies, runtime arguments provide a useful, and often more performant means of passing information to processors.
- 
- To the use the runtime arguments dictionary, create a new dictionary by combining the existing runtime arguments dictionary with any additional key-value pairs, assigning the resulting dictionary to the runtime arguments dictionary.
- */
-@property (strong, null_resettable, readwrite) NSDictionary<NSString *, id> *runtimeArguments;
-
-
-- (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;
-
-- (instancetype _Nullable)initWithCoder:(NSCoder * _Nullable)aDecoder NS_DESIGNATED_INITIALIZER;
--(void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
+@property (readonly, getter=isBound) BOOL bound;
 
 /**
  @abstract Causes the binding processor to attempt to enter into a bound state.
@@ -412,6 +310,145 @@ typedef NS_ENUM(NSUInteger, RNDProcessorValueType) {
 
  */
 - (BOOL)unbindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
+
+
+#pragma mark - Value Management
+
+@property (readwrite) RNDValueMode processorValueMode;
+
+/**
+ @abstract Determines if a processor will evaluate its raw value to create a calculated value.
+ 
+ @discussion Certain processor types can product two versions of a binding value. The first version, called the RawValueOutputType generally conforms to the related class of the processor. For example, a RNDPredicateNode's raw value is an NSPredicate. The second version, called the CalculatedValueOutputType, is the result of evaluating the raw value. For example, the RNDPredicateNode's calculated value would be a YES or NO wrapped in an NSNumber.
+ 
+ */
+@property (readwrite) RNDProcessorOutputType processorOutputType;
+
+/**
+ @abstract A predicate processor that is evaluated against the observed object binding value. A NO result causes the processor to abort processing and to return nil or, if a nil placeholder is set, to return the placeholder.
+ 
+ @discussion The observed object evaluator is used to determine if a processor should attempt to resolve its binding object value. While the predicate is evaluated against the observed object binding value, it does not need to use it in the construction of the predicate. However, if use of the observed object binding value is required, it can be included in the predicate via the SELF format specifier.
+ */
+@property (strong, nullable, readwrite) RNDPredicateProcessor *processorCondition;
+
+/**
+ @abstract Processors that are used as arguments during the processing of a binding object value.
+ 
+ @discussion A processor may have one or more processors whose binding object values can be used as substitutions in templates or other processes. Use the boundArguments array when the processor is bound to determine what arguments, if any are being used by the processor.
+ */
+@property (strong, nullable, readonly) NSMutableArray<RNDBindingProcessor *> *processorArguments;
+
+/**
+ @abstract The processors used as arguments when bound.
+ 
+ @discussion When a processor is bound, it creates a read only copy of its processor arguments array that is used for the duration of the binding. When the processor is not bound, this property is nil.
+ */
+@property (strong, nullable, readonly) NSArray<RNDBindingProcessor *> *boundProcessorArguments;
+
+/**
+ @abstract The curent arguments assigned to the processor for its use during the construction of the processor node's binding object value.
+ 
+ @discussion When a processor constructs its binding object value, it can use arguments that are passed to it at runtime. This enables the construction of binding object values that are dependent upon information that can only be known at runtime, such as device orientation, size of a view, etc. While most runtime information can be retrieved by processors by traversing object hierarchies, runtime arguments provide a useful, and often more performant means of passing information to processors.
+ 
+ To the use the runtime arguments dictionary, create a new dictionary by combining the existing runtime arguments dictionary with any additional key-value pairs, assigning the resulting dictionary to the runtime arguments dictionary.
+ */
+@property (strong, null_resettable, readwrite) NSDictionary<NSString *, id> *runtimeArguments;
+
+/**
+ @abstract The key that should be associated with the processorValue.
+ 
+ @discussion In many cases, a processor processor's value will need to be associated with a key when used as the inflow value processors of a binder. The user string is generated via a RNDPatternedStringNode that can dynamically construct an approprite key based on processor and runtime arguments.
+ */
+@property (strong, nullable, readwrite) RNDPatternedStringProcessor *bindingValueLabel;
+
+/**
+ @abstract The result of processing processors configuration.
+ 
+ @discussion Nodes have a binding object value that results from the processing of the processors configuration and its intersection with the current state of the runtime and object graph. A processor's binding object value is typically constructed using the following process:
+ 
+ 1. Should the processor evaluate? If it should not evaluate, is there a nil placeholder whose binding object value should be processed and returned in its place? If there is, return the nil placeholder's binding object value; otherwise, return nil.
+ 
+ 2. If the processor should evaluate, process and capture all of the processor's argument's binding object values and all of the runtime arguments. Then, depending on the processor type, perform all argument replacements to create a raw value.
+ 
+ 3. If the processor's output type is CalculatedValueOutputType, evaluate the processor's raw value to create an object value. Otherwise, assign the raw value to the object value.
+ 
+ 4. If the object value is any one of the known markers and a placeholder has been set for the marker, replace the object value with the placeholder. In either case, return the object value as the processor's binding object value.
+ 
+ 5. If the object value is not one of the known markers and a transformer is set for the processor processor, transform the object value, assigning the transformed output to the object value.
+ 
+ 6. If the object value is nil and a nil placeholder has been set, then assign the binding object value of the nil placeholder to the processor's object value. Return the object value as the processor's binding object value.
+ 
+ */
+@property (readonly, nullable) id bindingValue;
+
+- (id _Nullable)coordinatedBindingValue;
+- (id _Nullable)rawBindingValue:(id _Nullable)bindingValue;
+- (id _Nullable)calculatedBindingValue:(id _Nullable)bindingValue;
+
+#pragma mark - Value Filtering
+
+/**
+ @abstract A processor processor whose binding object value is used when a processor processor's binding object value is equal to the RNDBindingNullValueMarker.
+ 
+ @discussion A null value marker is used to indicate that an expected/required value is null. This is in constrast to a nil value which indicates the absence or failure to produce a value. When a null value marker is produced during binding object value processing, the binding object value of a processor set as the null placeholder is substituted for the null value marker. Sometimes this is simply the replacement of the null value marker with an instance of the NSNull class. In other scenarios, an alternate evaluation path is process to return a default value.
+ */
+@property (strong, nullable, readwrite) RNDBindingProcessor *nullPlaceholder;
+
+/**
+ @abstract A processor processor whose binding object value is used when a processor processor's binding object value is equal to the RNDBindingMultipleValuesMarker.
+ 
+ @discussion A multiple values marker is used to indicate that multiple values could not be coalesced into a valid binding object value for the processor. When a multiple values marker is produced during binding object value processing, the binding object value of a processor set as the multiple selection placeholder is substituted for the multiple values marker. Sometimes this is simply the replacement of the marker with a string that indicates the presence of multiple values. In other scenarios, an alternate evaluation path is process to return a default value.
+ */
+@property (strong, nullable, readwrite) RNDBindingProcessor *multipleSelectionPlaceholder;
+/**
+ @abstract A processor processor whose binding object value is used when a processor processor's binding object value is equal to the RNDBindingNoSelectionMarker.
+ 
+ @discussion A no selection marker is used to indicate that there is no valid selection to read a value from or generate a value for. When a no selection marker is produced during binding object value processing, the binding object value of a processor set as the no selection placeholder is substituted for the no selection marker. Sometimes this is simply the replacement of the marker with a string that indicates the lack of a selection. In other scenarios, an alternate evaluation path is process to return a default value.
+ 
+ */
+@property (strong, nullable, readwrite) RNDBindingProcessor *noSelectionPlaceholder;
+
+/**
+ @abstract A processor processor whose binding object value is used when a processor processor's binding object value is equal to the RNDBindingNotApplicableMarker.
+ 
+ @discussion A not applicable marker is used to indicate that the processor can not produce an applicable value. Generally this is a marker that is recieved from a controller. When a not applicable marker is produced during binding object value processing, the binding object value of a processor set as the not applicable placeholder is substituted for the no applicable marker. Sometimes this is simply the replacement of the marker with a string that indicates that their is not an applicable value. In other scenarios, an alternate evaluation path is process to return a default value.
+ 
+ */
+@property (strong, nullable, readwrite) RNDBindingProcessor *notApplicablePlaceholder;
+
+/**
+ @abstract A processor processor whose binding object value is used when a processor processor's binding object value is equal to nil.
+ 
+ @discussion When a nil value is produced during binding object value processing, the binding object value of a processor set as the nil placeholder is substituted for the nil value. Sometimes this is simply the replacement of nil with a string that indicates the presence of a nil value. In other scenarios, an alternate evaluation path is process to return a default value.
+ 
+ */
+@property (strong, nullable, readwrite) RNDBindingProcessor *nilPlaceholder;
+
+- (id _Nullable)filteredBindingValue:(id _Nullable)bindingValue;
+
+
+#pragma mark - Value Transformation
+/**
+ @abstract A registered name of a value transformer that should be used by the processor processor.
+ 
+ @discussion To use a value transformer with a processor processor, set the value transformer name. At runtime, the value transformer will be added to the processor processor.
+ */
+@property (strong, nullable, readwrite) NSString *valueTransformerName;
+
+/**
+ @abstract The value transformer used by the processor processor during the processing of the processors binding object value.
+ 
+ @discussion A value transformer is retrieved at runtime based on the value transformer name that has been set for the processor.
+ */
+@property (strong, nullable, readonly) NSValueTransformer *valueTransformer;
+
+- (id _Nullable)transformedBindingValue:(id _Nullable)bindingValue;
+
+#pragma mark - Value Wrapping
+
+@property (readwrite) BOOL unwrapSingleValue;
+
+- (id _Nullable)wrappedBindingValue:(id _Nullable)bindingValue;
 
 @end
 

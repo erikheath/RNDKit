@@ -31,7 +31,7 @@
     return localObject;
 }
 
-- (id _Nullable)bindingObjectValue {
+- (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
     dispatch_sync(self.syncQueue, ^{
@@ -41,15 +41,15 @@
             return;
         }
         
-        if (self.observedObjectEvaluator != nil && ((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        if (self.processorCondition != nil && ((NSNumber *)self.processorCondition.bindingValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
 
         id rawObjectValue;
         NSMutableDictionary *argumentDictionary = [NSMutableDictionary dictionary];
-        for (RNDBindingProcessor *binding in self.boundArguments) {
-            id argumentValue = binding.bindingObjectValue;
+        for (RNDBindingProcessor *binding in self.boundProcessorArguments) {
+            id argumentValue = binding.bindingValue;
             if (argumentValue == nil) { argumentValue = [NSNull null]; }
             [argumentDictionary setObject:argumentValue forKey:binding.argumentName];
         }
@@ -62,30 +62,30 @@
         if (self.processorOutputType == RNDRawValueOutputType) {
             objectValue = rawObjectValue;
         } else {
-            objectValue = [rawObjectValue expressionValueWithObject:self.observedObjectEvaluationValue context:argumentDictionary];
+            objectValue = [rawObjectValue expressionValueWithObject:self.observedObjectBindingValue context:argumentDictionary];
             
             if ([objectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-                objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : objectValue;
+                objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingValue : objectValue;
                 return;
             }
             
             if ([objectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-                objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : objectValue;
+                objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingValue : objectValue;
                 return;
             }
             
             if ([objectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-                objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : objectValue;
+                objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingValue : objectValue;
                 return;
             }
             
             if ([objectValue isEqual: RNDBindingNullValueMarker] == YES) {
-                objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : objectValue;
+                objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingValue : objectValue;
                 return;
             }
             
             if (objectValue == nil) {
-                objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : objectValue;
+                objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingValue : objectValue;
                 return;
             }
             

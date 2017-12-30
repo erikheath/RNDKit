@@ -7,29 +7,16 @@
 //
 
 #import "RNDTargetActionBinder.h"
-#import "RNDBindingProcessor.h"
 #import "RNDInvocationProcessor.h"
-#import "RNDPredicateProcessor.h"
-#import "NSObject+RNDObjectBinding.h"
 #import <objc/runtime.h>
-
-@interface RNDTargetActionBinder ()
-
-@property (strong, nonnull, readonly) NSUUID *serializerQueueIdentifier;
-@property (strong, nonnull, readonly) dispatch_queue_t serializerQueue;
-@property (nullable, readonly) SEL actionSelector;
-@property (strong, nonnull, readonly) NSDictionary *substitutions;
-
-@end
 
 @implementation RNDTargetActionBinder
 
 #pragma mark - Properties
-@synthesize serializerQueue = _serializerQueue;
-@synthesize serializerQueueIdentifier = _serializerQueueIdentifier;
-@synthesize bindingInvocation = _bindingInvocation;
-@synthesize unbindingInvocation = _unbindingInvocation;
-@synthesize actionInvocation = _actionInvocation;
+@synthesize bindingInvocationProcessor = _bindingInvocationProcessor;
+@synthesize unbindingInvocationProcessor = _unbindingInvocationProcessor;
+@synthesize actionInvocationProcessor = _actionInvocationProcessor;
+@synthesize bindingObject = _bindingObject;
 
 #pragma mark - Object Lifecycle
 
@@ -43,14 +30,10 @@
         objc_property_t * properties = class_copyPropertyList([self class], &propertyCount);
         for (int i = 0; i < propertyCount; i++) {
             NSString * propertyName = [NSString stringWithCString:property_getName(properties[i]) encoding:NSUTF8StringEncoding] ;
-            if ([propertyName isEqualToString:@"serializerQueueIdentifier"] ||
-                [propertyName isEqualToString:@"serializerQueue"]) { continue; }
+            if ([propertyName isEqualToString:@"bindingObject"]) { continue; }
             [self setValue:[aDecoder decodeObjectForKey:propertyName] forKey:propertyName];
         }
         
-        _serializerQueueIdentifier = [[NSUUID alloc] init];
-        _serializerQueue = dispatch_queue_create([[_serializerQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_SERIAL);
-
         if (propertyCount > 0) {
             free(properties);
         }
@@ -71,8 +54,7 @@
     objc_property_t * properties = class_copyPropertyList([self class], &propertyCount);
     for (int i = 0; i < propertyCount; i++) {
         NSString * propertyName = [NSString stringWithCString:property_getName(properties[i]) encoding:NSUTF8StringEncoding] ;
-        if ([propertyName isEqualToString:@"serializerQueueIdentifier"] ||
-            [propertyName isEqualToString:@"serializerQueue"]) { continue; }
+        if ([propertyName isEqualToString:@"bindingObject"]) { continue; }
         [aCoder encodeObject:[self valueForKey:propertyName] forKey:propertyName];
     }
     
@@ -84,35 +66,43 @@
 
 #pragma mark - Binding Management
 
-- (BOOL)bindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error {
+- (BOOL)bindCoordinatedObjects:(NSError * __autoreleasing _Nullable * _Nullable)error {
     __block BOOL result = NO;
     
-    if ((result = [super bindObjects:error]) == NO) { return result; }
+    if ((result = [super bindCoordinatedObjects:error]) == NO) { return result; }
     
-    if ([self.boundObject respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.boundObject respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
-        NSInvocation *invocation = _bindingInvocation.bindingObjectValue;
-        if (invocation == nil) { return result; }
-        // Should this be sync
-        dispatch_async(dispatch_get_main_queue(), ^{
+    if ([_bindingObject respondsToSelector:NSSelectorFromString(_bindingInvocationProcessor.bindingSelectorString)] && [_bindingObject respondsToSelector:NSSelectorFromString(_unbindingInvocationProcessor.bindingSelectorString)]) {
+        NSInvocation *invocation = _bindingInvocationProcessor.bindingValue;
+        if (invocation == nil) {
+            result = NO;
+            return result;
+        }
+        dispatch_block_t block = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS, ^{
             [invocation invoke];
         });
+        dispatch_async(dispatch_get_main_queue(), block);
+        dispatch_block_wait(block, DISPATCH_TIME_FOREVER);
     }
     
     return result;
 }
 
-- (BOOL)unbindObjects:(NSError *__autoreleasing  _Nullable *)error {
+- (BOOL)unbindCoordinatedObjects:(NSError *__autoreleasing  _Nullable *)error {
     __block BOOL result = NO;
     
-    if ((result = [super unbind:error]) == NO) { return result; }
+    if ((result = [super unbindCoordinatedObjects:error]) == NO) { return result; }
     
-    if ([self.boundObject respondsToSelector:NSSelectorFromString(_bindingInvocation.bindingSelectorString)] && [self.boundObject respondsToSelector:NSSelectorFromString(_unbindingInvocation.bindingSelectorString)]) {
-        NSInvocation *invocation = _unbindingInvocation.bindingObjectValue;
-        if (invocation == nil) { return result; }
-        // Should this be sync
-        dispatch_async(dispatch_get_main_queue(), ^{
+    if ([_bindingObject respondsToSelector:NSSelectorFromString(_bindingInvocationProcessor.bindingSelectorString)] && [_bindingObject respondsToSelector:NSSelectorFromString(_unbindingInvocationProcessor.bindingSelectorString)]) {
+        NSInvocation *invocation = _unbindingInvocationProcessor.bindingValue;
+        if (invocation == nil) {
+            result = NO;
+            return result;
+        }
+        dispatch_block_t block = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS, ^{
             [invocation invoke];
         });
+        dispatch_async(dispatch_get_main_queue(), block);
+        dispatch_block_wait(block, DISPATCH_TIME_FOREVER);
     }
     
     return result;
@@ -120,9 +110,9 @@
 }
 
 - (void)performBindingObjectAction {
-    dispatch_async(_serializerQueue, ^{
+    dispatch_barrier_async(self.syncQueue, ^{
         dispatch_set_context(self.syncQueue, NULL);
-        for (NSInvocation *invocation in self.bindingValue) {
+        for (NSInvocation *invocation in [self coordinatedBindingValue]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });
@@ -132,11 +122,11 @@
 }
 
 - (void)performBindingObjectAction:(id _Nullable)sender {
-    dispatch_sync(_serializerQueue, ^{
-        NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithCapacity:2];
+    dispatch_barrier_sync(self.syncQueue, ^{
+        NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithCapacity:1];
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
-        for (NSInvocation *invocation in self.bindingValue) {
+        for (NSInvocation *invocation in [self coordinatedBindingValue]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });
@@ -146,12 +136,12 @@
 }
 
 - (void)performBindingObjectAction:(id _Nullable)sender forEvent:(id _Nullable)event {
-    dispatch_sync(_serializerQueue, ^{
+    dispatch_sync(self.syncQueue, ^{
         NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithCapacity:2];
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
         if (event != nil) { [contextDictionary setObject:event forKey:RNDEventArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
-        for (NSInvocation *invocation in self.bindingValue) {
+        for (NSInvocation *invocation in [self coordinatedBindingValue]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });
@@ -162,13 +152,13 @@
 }
 
 - (void)performBindingObjectAction:(id _Nullable)sender forEvent:(id _Nullable)event withContext:(id _Nullable)context {
-    dispatch_sync(_serializerQueue, ^{
-        NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithCapacity:2];
+    dispatch_sync(self.syncQueue, ^{
+        NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithCapacity:3];
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
         if (event != nil) { [contextDictionary setObject:event forKey:RNDEventArgument]; }
         if (context != nil) { [contextDictionary setObject:context forKey:RNDContextArgument]; }
         dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
-        for (NSInvocation *invocation in self.bindingValue) {
+        for (NSInvocation *invocation in [self coordinatedBindingValue]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });

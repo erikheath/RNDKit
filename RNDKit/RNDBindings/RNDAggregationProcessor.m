@@ -14,23 +14,8 @@
 @implementation RNDAggregationProcessor
 #pragma mark - Properties
 
-@synthesize valueMode = _valueMode;
-
-- (void)setValueMode:(RNDValueMode)valueMode {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _valueMode = valueMode;
-    });
-}
-
-- (RNDValueMode)valueMode {
-    BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _valueMode;
-    });
-    return localObject;
-}
-
+@synthesize processorValueMode = _processorValueMode;
+@synthesize unwrapSingleValue = _unwrapSingleValue;
 
 @synthesize filtersNilValues = _filtersNilValues;
 
@@ -85,107 +70,81 @@
     return localObject;
 }
 
-
-@synthesize unwrapSingleValue = _unwrapSingleValue;
-
-- (void)setUnwrapSingleValue:(BOOL)unwrapSingleValue {
-    dispatch_barrier_sync(self.syncQueue, ^{
-        if (self.isBound == YES) { return; }
-        _unwrapSingleValue = unwrapSingleValue;
-    });
-}
-
-- (BOOL)unwrapSingleValue {
-    BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
-        localObject = _unwrapSingleValue;
-    });
-    return localObject;
-}
-
-
 #pragma mark - Transient (Calculated) Properties
-- (id _Nullable)bindingObjectValue {
+- (id _Nullable)coordinatedBindingValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.syncQueue, ^{
-        if (self.isBound == NO) {
-            objectValue = nil;
-            return;
-        }
+    NSMutableArray *valuesArray = [NSMutableArray arrayWithCapacity:self.boundProcessorArguments.count];
         
-        NSMutableArray *valuesArray = [NSMutableArray arrayWithCapacity:self.boundArguments.count];
+    [self.boundProcessorArguments enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        // Generate the raw value from the current processor
+        id aggregationValue = [self rawBindingValue:((RNDBindingProcessor *)obj)];
         
-        [self.boundArguments enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            id rawObjectValue = ((RNDBindingProcessor *)obj).bindingObjectValue;
-            if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-                if (_filtersMarkerValues == YES) { return; }
-                rawObjectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : rawObjectValue;
-            }
-            
-            if ([rawObjectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-                if (_filtersMarkerValues == YES) { return; }
-                rawObjectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : rawObjectValue;
-            }
-            
-            if ([rawObjectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-                if (_filtersMarkerValues == YES) { return; }
-                rawObjectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : rawObjectValue;
-            }
-            
-            if ([rawObjectValue isEqual: RNDBindingNullValueMarker] == YES) {
-                if (_filtersMarkerValues == YES) { return; }
-                rawObjectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : rawObjectValue;
-            }
-            
-            if (rawObjectValue == nil) {
-                if (_filtersMarkerValues == YES || _filtersNilValues == YES) { return; }
-                rawObjectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : [NSNull null];
-            }
-            
-            NSString *entryString = ((RNDBindingProcessor *)obj).userString.bindingObjectValue;
-            entryString = entryString != nil ? entryString : [NSString stringWithFormat:@"%lu", (unsigned long)idx];
-            [valuesArray addObject:@{entryString: rawObjectValue}];
-            if (_mutuallyExclusive == YES) { *stop = YES; }
-            
-        }];
+        // Apply calculations to the value
+        aggregationValue = [self calculatedBindingValue:aggregationValue];
         
+        // Filter the value
+        aggregationValue = [self filteredBindingValue:aggregationValue];
+        if (aggregationValue == RNDBindingRemoveValueMarker) { return; }
         
-        switch (_valueMode) {
-            case RNDValueOnlyMode:
-            {
-                NSMutableArray *valueOnlyArray = [NSMutableArray arrayWithCapacity:valuesArray.count];
-                for (NSDictionary *dictionary in valuesArray) {
-                    [valueOnlyArray addObjectsFromArray:[dictionary allValues]];
-                }
-                objectValue = _unwrapSingleValue == YES ? (valueOnlyArray.count < 2 ? valueOnlyArray.firstObject : valueOnlyArray) : valueOnlyArray;
-                break;
-            }
-            case RNDKeyedValueMode:
-            {
-                NSMutableDictionary *keyedValueDictionary = [NSMutableDictionary dictionaryWithCapacity:valuesArray.count];
-                for (NSDictionary *dictionary in valuesArray) {
-                    [keyedValueDictionary addEntriesFromDictionary:dictionary];
-                }
-                objectValue = keyedValueDictionary;
-                break;
-            }
-            case RNDOrderedKeyedValueMode:
-            {
-                objectValue = valuesArray;
-                break;
-            }
-            default:
-            {
-                objectValue = valuesArray;
-                break;
-            }
-        }
+        // Transform the value
+        aggregationValue = [self transformedBindingValue:aggregationValue];
         
-    });
+        // Label the value
+        NSString *entryString = ((RNDBindingProcessor *)obj).bindingValueLabel.bindingValue;
+        entryString = entryString != nil ? entryString : [NSString stringWithFormat:@"%lu", (unsigned long)idx];
+        
+        // Add the value to the aggregated output
+        [valuesArray addObject:@{entryString: aggregationValue}];
+        if (_mutuallyExclusive == YES) { *stop = YES; }
+        
+    }];
+    
+    // Apply the correct wrapping to the aggregated values.
+    objectValue = [self wrappedBindingValue:valuesArray];
     
     return objectValue;
 }
+
+- (id _Nullable)rawBindingValue:(id _Nullable)bindingValue {
+    return ((RNDBindingProcessor *)bindingValue).bindingValue;
+}
+
+- (id _Nullable)filteredBindingValue:(id)bindingValue {
+    id objectValue = nil;
+    
+    if ([bindingValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
+        if (_filtersMarkerValues == YES) { return RNDBindingRemoveValueMarker; }
+        objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingValue : bindingValue;
+    }
+    
+    if ([bindingValue isEqual: RNDBindingNoSelectionMarker] == YES) {
+        if (_filtersMarkerValues == YES) { return RNDBindingRemoveValueMarker; }
+        objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingValue : bindingValue;
+    }
+    
+    if ([bindingValue isEqual: RNDBindingNotApplicableMarker] == YES) {
+        if (_filtersMarkerValues == YES) { return RNDBindingRemoveValueMarker; }
+        objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingValue : bindingValue;
+    }
+    
+    if ([bindingValue isEqual: RNDBindingNullValueMarker] == YES) {
+        if (_filtersMarkerValues == YES) { return RNDBindingRemoveValueMarker; }
+        objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingValue : bindingValue;
+    }
+    
+    if (bindingValue == nil) {
+        if (_filtersMarkerValues == YES || _filtersNilValues == YES) { return RNDBindingRemoveValueMarker; }
+        objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingValue : [NSNull null];
+    }
+
+    return objectValue;
+}
+
+- (id _Nullable)transformedBindingValue:(id)bindingValue {
+    return bindingValue;
+}
+
 
 #pragma mark - Object Lifecycle
 
@@ -200,7 +159,6 @@
         return nil;
     }
     if ((self = [super initWithCoder:aDecoder]) != nil) {
-        _valueMode = [aDecoder decodeIntForKey:@"valueMode"];
         _filtersNilValues = [aDecoder decodeBoolForKey:@"filtersNilValues"];
         _filtersMarkerValues = [aDecoder decodeBoolForKey:@"filtersMarkerValues"];
         _mutuallyExclusive = [aDecoder decodeBoolForKey:@"mutuallyExclusive"];
@@ -211,7 +169,6 @@
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     if (aCoder == nil) { return; }
-    [aCoder encodeInt:_valueMode forKey:@"valueMode"];
     [aCoder encodeBool:_filtersNilValues forKey:@"filtersNilValues"];
     [aCoder encodeBool:_filtersMarkerValues forKey:@"filtersMarkerValues"];
     [aCoder encodeBool:_mutuallyExclusive forKey:@"mutuallyExclusive"];

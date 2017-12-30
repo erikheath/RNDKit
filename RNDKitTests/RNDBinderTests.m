@@ -28,9 +28,9 @@
     RNDBinder *binder = [[RNDBinder alloc] init];
     XCTAssertNotNil(binder);
     XCTAssertNil(binder.bindingIdentifier);
-    XCTAssertNil(binder.boundObject);
-    XCTAssertNil(binder.boundObjectKey);
-    XCTAssertFalse(binder.monitorsBoundObject);
+    XCTAssertNil(binder.bindingObject);
+    XCTAssertNil(binder.bindingObjectKeyPath);
+    XCTAssertFalse(binder.monitorsBindingObject);
     XCTAssertNotNil(binder.syncQueue);
     XCTAssertNil(binder.bindingName);
     XCTAssertNil(binder.bindingValue);
@@ -45,12 +45,12 @@
     XCTAssertNil(binder.bindingValue);
     
     NSError *error;
-    binder.monitorsBoundObject = YES;
+    binder.monitorsBindingObject = YES;
     XCTAssertNil(binder.bindingValue);
     XCTAssertFalse(binder.bound);
     XCTAssertFalse([binder bind:&error]);
     XCTAssertNotNil(error);
-    binder.monitorsBoundObject = NO;
+    binder.monitorsBindingObject = NO;
     
     error = nil;
     
@@ -82,8 +82,8 @@
     
     // Observer
     NSMutableDictionary *observerDictionary = [[NSMutableDictionary alloc] init];
-    binder.boundObjectKey =  @"observerProperty";
-    binder.boundObject = observerDictionary;
+    binder.bindingObjectKeyPath =  @"observerProperty";
+    binder.bindingObject = observerDictionary;
     XCTAssertEqual(0, observerDictionary.count);
     XCTAssertNil(binder.bindingValue);
     XCTAssertTrue([binder bind:&error]);
@@ -116,7 +116,7 @@
     inflowProcessor.monitorsObservedObject = YES;
     inflowProcessor.bindingName = @"inflowname";
     binder.inflowProcessor = inflowProcessor;
-    binder.monitorsBoundObject = YES;
+    binder.monitorsBindingObject = YES;
     binder.bindingName = @"Test Binding";
     
     XCTAssertTrue([binder bind:&error]);

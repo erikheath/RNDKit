@@ -30,7 +30,7 @@
     return localObject;
 }
 
-- (id _Nullable)bindingObjectValue {
+- (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
     dispatch_sync(self.syncQueue, ^{
@@ -40,16 +40,16 @@
             return;
         }
         
-        if (self.observedObjectEvaluator != nil && ((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        if (self.processorCondition != nil && ((NSNumber *)self.processorCondition.bindingValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
 
         NSMutableString *replacableObjectValue = [NSMutableString stringWithString:_patternTemplate];
         
-        for (RNDBindingProcessor *binding in self.boundArguments) {
+        for (RNDBindingProcessor *binding in self.boundProcessorArguments) {
             [replacableObjectValue replaceOccurrencesOfString:binding.argumentName
-                                                   withString:binding.bindingObjectValue
+                                                   withString:binding.bindingValue
                                                       options:0
                                                         range:NSMakeRange(0, replacableObjectValue.length)];
         }
@@ -63,27 +63,27 @@
 
         
         if ([replacableObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-            objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : replacableObjectValue;
+            objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingValue : replacableObjectValue;
             return;
         }
         
         if ([replacableObjectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-            objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : replacableObjectValue;
+            objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingValue : replacableObjectValue;
             return;
         }
         
         if ([replacableObjectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-            objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : replacableObjectValue;
+            objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingValue : replacableObjectValue;
             return;
         }
         
         if ([replacableObjectValue isEqual: RNDBindingNullValueMarker] == YES) {
-            objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : replacableObjectValue;
+            objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingValue : replacableObjectValue;
             return;
         }
         
         if (replacableObjectValue == nil) {
-            objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : replacableObjectValue;
+            objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingValue : replacableObjectValue;
             return;
         }
 

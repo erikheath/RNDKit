@@ -27,7 +27,7 @@
     return localObject;
 }
 
-- (id _Nullable)bindingObjectValue {
+- (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
     dispatch_sync(self.syncQueue, ^{
@@ -37,16 +37,16 @@
             return;
         }
         
-        if (self.observedObjectEvaluator != nil && ((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        if (self.processorCondition != nil && ((NSNumber *)self.processorCondition.bindingValue).boolValue == NO ) {
             objectValue = nil;
             return;
         }
 
         NSMutableDictionary * __block argumentsDictionary = [NSMutableDictionary dictionary];
 
-        [self.boundArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.boundProcessorArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             RNDBindingProcessor *binding = obj;
-            id argumentValue = binding.bindingObjectValue;
+            id argumentValue = binding.bindingValue;
             [argumentsDictionary setObject:argumentValue forKey:binding.argumentName];
         }];
 
@@ -59,7 +59,7 @@
             return;
             // TODO: Error Handling
         } else {
-            objectValue = @([predicate evaluateWithObject:self.observedObjectEvaluationValue]);
+            objectValue = @([predicate evaluateWithObject:self.observedObjectBindingValue]);
             
             objectValue = self.valueTransformer != nil ? [self.valueTransformer transformedValue:objectValue] : objectValue;
         }

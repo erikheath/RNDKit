@@ -39,7 +39,7 @@
     return localObject;
 }
 
-- (id _Nullable)bindingObjectValue {
+- (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
     dispatch_sync(self.syncQueue, ^{
@@ -49,12 +49,12 @@
             return;
         }
         
-        if (self.observedObjectEvaluator != nil && ((NSNumber *)self.observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+        if (self.processorCondition != nil && ((NSNumber *)self.processorCondition.bindingValue).boolValue == NO ) {
             objectValue = nil;
         } else {
             NSInvocation * __block invocation;
             SEL bindingSelector = NSSelectorFromString(_bindingSelectorString);
-            id evaluationValue = self.observedObjectEvaluationValue;
+            id evaluationValue = self.observedObjectBindingValue;
             NSMethodSignature *signature = [evaluationValue methodSignatureForSelector: bindingSelector];
             if (signature != nil) {
                 invocation = [NSInvocation invocationWithMethodSignature: signature];
@@ -65,10 +65,10 @@
                 [invocation setSelector:bindingSelector];
                 [invocation setTarget:evaluationValue];
                 
-                [self.boundArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [self.boundProcessorArguments enumerateObjectsUsingBlock:^(RNDBindingProcessor * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                     
                     RNDBindingProcessor *binding = obj;
-                    BOOL result = [self addBindingArgumentValue:binding.bindingObjectValue toInvocation:invocation atPosition:idx + 2];
+                    BOOL result = [self addBindingArgumentValue:binding.bindingValue toInvocation:invocation atPosition:idx + 2];
                     if (result == NO) {
                         // There was an error. The invocation will be nil'd and the process will end.
                         invocation = nil;
@@ -93,22 +93,22 @@
                 invocation = nil;
                 
                 if ([result isEqual: RNDBindingMultipleValuesMarker] == YES) {
-                    objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingObjectValue : RNDBindingMultipleValuesMarker;
+                    objectValue = self.multipleSelectionPlaceholder != nil ? self.multipleSelectionPlaceholder.bindingValue : RNDBindingMultipleValuesMarker;
                     return;
                 }
                 
                 if ([result isEqual: RNDBindingNoSelectionMarker] == YES) {
-                    objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingObjectValue : RNDBindingNoSelectionMarker;
+                    objectValue = self.noSelectionPlaceholder != nil ? self.noSelectionPlaceholder.bindingValue : RNDBindingNoSelectionMarker;
                     return;
                 }
                 
                 if ([result isEqual: RNDBindingNotApplicableMarker] == YES) {
-                    objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingObjectValue : RNDBindingNotApplicableMarker;
+                    objectValue = self.notApplicablePlaceholder != nil ? self.notApplicablePlaceholder.bindingValue : RNDBindingNotApplicableMarker;
                     return;
                 }
                 
                 if ([result isEqual: RNDBindingNullValueMarker] == YES) {
-                    objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingObjectValue : RNDBindingNullValueMarker;
+                    objectValue = self.nullPlaceholder != nil ? self.nullPlaceholder.bindingValue : RNDBindingNullValueMarker;
                     return;
                 }
                 
@@ -120,7 +120,7 @@
         }
         
         if (objectValue == nil) {
-            objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingObjectValue : objectValue;
+            objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingValue : objectValue;
         }
         
     });

@@ -98,7 +98,7 @@
     XCTAssertNil(processor.observedObject);
     XCTAssertNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertFalse(processor.monitorsObservedObject);
     XCTAssertNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -112,45 +112,45 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNil(processor.observedObjectEvaluationValue);
+    XCTAssertNil(processor.observedObjectBindingValue);
     
     [self runBindingTests:processor];
     
     NSError *error;
     
     // TODO: FAILED EVALUATION
-    processor.observedObjectEvaluator = (RNDPredicateProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"G"];
-    [processor.observedObjectEvaluator.processorArguments addObject:[RNDBindingProcessorTestFramework processorWithProfile:@"F"]];
-    processor.observedObjectEvaluator.processorArguments[0].argumentName = @"ARG3"
+    processor.processorCondition = (RNDPredicateProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"G"];
+    [processor.processorCondition.processorArguments addObject:[RNDBindingProcessorTestFramework processorWithProfile:@"F"]];
+    processor.processorCondition.processorArguments[0].argumentName = @"ARG3"
     ;
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
-    processor.observedObjectEvaluator = nil;
+    processor.processorCondition = nil;
     
     // NIL TESTING
     processor.observedObject = nil;
     processor.observedObjectKeyPath = nil;
     processor.nilPlaceholder = [RNDBindingProcessorTestFramework processorWithProfile:@"B"];
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertNotNil(processor.bindingObjectValue);
+    XCTAssertNotNil(processor.bindingValue);
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
 
     processor.nilPlaceholder = [RNDBindingProcessorTestFramework processorWithProfile:@"C"];
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"propertyValue");
+    XCTAssertEqualObjects(processor.bindingValue, @"propertyValue");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
 
@@ -159,10 +159,10 @@
     
     processor.observedObject = [NSMutableDictionary dictionaryWithObject:[NSNull null] forKey:@"testProperty"];
     processor.observedObjectKeyPath = @"testProperty";
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"Hello");
+    XCTAssertEqualObjects(processor.bindingValue, @"Hello");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
 
@@ -170,10 +170,10 @@
     processor.noSelectionPlaceholder = [RNDBindingProcessorTestFramework processorWithProfile:@"E"];
     processor.observedObject = [NSMutableDictionary dictionaryWithObject:RNDBindingNoSelectionMarker
                                                                   forKey:@"testProperty"];
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"World");
+    XCTAssertEqualObjects(processor.bindingValue, @"World");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
 
@@ -181,10 +181,10 @@
     processor.notApplicablePlaceholder = [RNDBindingProcessorTestFramework processorWithProfile:@"F"];
     processor.observedObject = [NSMutableDictionary dictionaryWithObject:RNDBindingNotApplicableMarker
                                                                   forKey:@"testProperty"];
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"$ARG1 $ARG2!");
+    XCTAssertEqualObjects(processor.bindingValue, @"$ARG1 $ARG2!");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
 
@@ -194,10 +194,10 @@
     [processor.multipleSelectionPlaceholder.processorArguments addObject:[RNDBindingProcessorTestFramework processorWithProfile:@"E"]];
     processor.observedObject = [NSMutableDictionary dictionaryWithObject:RNDBindingMultipleValuesMarker
                                                                   forKey:@"testProperty"];
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"Hello World!");
+    XCTAssertEqualObjects(processor.bindingValue, @"Hello World!");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
 
@@ -213,7 +213,7 @@
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue(processor.monitorsObservedObject);
     XCTAssertNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -227,11 +227,11 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNotNil(processor.observedObjectEvaluationValue);
+    XCTAssertNotNil(processor.observedObjectBindingValue);
     
     [self runBindingTests:processor];
     
@@ -246,7 +246,7 @@
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue(processor.monitorsObservedObject);
     XCTAssertNotNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -260,11 +260,11 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNotNil(processor.observedObjectEvaluationValue);
+    XCTAssertNotNil(processor.observedObjectBindingValue);
     
     [self runBindingTests:processor];
     
@@ -272,10 +272,10 @@
     
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"propertyValue");
+    XCTAssertEqualObjects(processor.bindingValue, @"propertyValue");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
 }
 
 - (void)testProfileD {
@@ -287,7 +287,7 @@
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue(processor.monitorsObservedObject);
     XCTAssertNotNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -301,11 +301,11 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNotNil(processor.observedObjectEvaluationValue);
+    XCTAssertNotNil(processor.observedObjectBindingValue);
     XCTAssertNotNil(processor.patternTemplate);
     
     [self runBindingTests:processor];
@@ -315,10 +315,10 @@
     // TODO: Add a Binder/Observer/ObservedObject
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"Hello");
+    XCTAssertEqualObjects(processor.bindingValue, @"Hello");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
 }
 
 - (void)testProfileE {
@@ -330,7 +330,7 @@
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue(processor.monitorsObservedObject);
     XCTAssertNotNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -344,11 +344,11 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNotNil(processor.observedObjectEvaluationValue);
+    XCTAssertNotNil(processor.observedObjectBindingValue);
     XCTAssertNotNil(processor.patternTemplate);
     
     [self runBindingTests:processor];
@@ -358,10 +358,10 @@
     // TODO: Add a Binder/Observer/ObservedObject
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"World");
+    XCTAssertEqualObjects(processor.bindingValue, @"World");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
 }
 
 - (void)testProfileF {
@@ -375,7 +375,7 @@
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue(processor.monitorsObservedObject);
     XCTAssertNotNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -389,11 +389,11 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNotNil(processor.observedObjectEvaluationValue);
+    XCTAssertNotNil(processor.observedObjectBindingValue);
     XCTAssertNotNil(processor.patternTemplate);
     
     [self runBindingTests:processor];
@@ -402,16 +402,16 @@
 
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"$ARG1 $ARG2!");
+    XCTAssertEqualObjects(processor.bindingValue, @"$ARG1 $ARG2!");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     
     [processor.processorArguments addObject:processorArg1];
     [processor.processorArguments addObject:processorArg2];
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"Hello World!");
+    XCTAssertEqualObjects(processor.bindingValue, @"Hello World!");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
 
@@ -431,7 +431,7 @@
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue(processor.monitorsObservedObject);
     XCTAssertNotNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -445,11 +445,11 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNotNil(processor.observedObjectEvaluationValue);
+    XCTAssertNotNil(processor.observedObjectBindingValue);
     XCTAssertNotNil(processor.predicateFormatString);
     
     [self runBindingTests:processor];
@@ -458,22 +458,22 @@
     
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, [NSPredicate predicateWithFormat:@"'Hello World!' = $ARG3"]);
+    XCTAssertEqualObjects(processor.bindingValue, [NSPredicate predicateWithFormat:@"'Hello World!' = $ARG3"]);
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     
     [processor.processorArguments addObject:processorArg3];
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, [NSPredicate predicateWithFormat:@"'Hello World!' = 'Hello World!'"]);
+    XCTAssertEqualObjects(processor.bindingValue, [NSPredicate predicateWithFormat:@"'Hello World!' = 'Hello World!'"]);
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
 
     processor.processorOutputType = RNDCalculatedValueOutputType;
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertTrue([processor.bindingObjectValue boolValue]);
+    XCTAssertTrue([processor.bindingValue boolValue]);
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
 
@@ -488,7 +488,7 @@
     XCTAssertNil(processor.observedObject);
     XCTAssertNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertFalse(processor.monitorsObservedObject);
     XCTAssertNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -502,11 +502,11 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNil(processor.observedObjectEvaluationValue);
+    XCTAssertNil(processor.observedObjectBindingValue);
     XCTAssertNotNil(processor.regExTemplate);
     XCTAssertNotNil(processor.replacementTemplate);
     
@@ -523,11 +523,11 @@
     processor.observedObjectKeyPath = @"bindingObjectValue";
     
     NSError *error;
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     processor.processorOutputType = RNDCalculatedValueOutputType;
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertEqualObjects(processor.bindingObjectValue, @"My World!");
+    XCTAssertEqualObjects(processor.bindingValue, @"My World!");
     XCTAssertTrue([processor unbind:&error]);
     XCTAssertNil(error);
     
@@ -542,7 +542,7 @@
     XCTAssertNil(processor.observedObject);
     XCTAssertNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertFalse(processor.monitorsObservedObject);
     XCTAssertNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -556,21 +556,21 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNil(processor.observedObjectEvaluationValue);
+    XCTAssertNil(processor.observedObjectBindingValue);
     XCTAssertNotNil(processor.expressionTemplate);
     
     [self runBindingTests:processor];
 
     NSError *error;
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     processor.processorOutputType = RNDCalculatedValueOutputType;
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertNotNil(processor.bindingObjectValue);
+    XCTAssertNotNil(processor.bindingValue);
 }
 
 - (void)testProfileJ {
@@ -582,7 +582,7 @@
     XCTAssertNil(processor.observedObject);
     XCTAssertNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertFalse(processor.monitorsObservedObject);
     XCTAssertNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -596,20 +596,20 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNil(processor.observedObjectEvaluationValue);
+    XCTAssertNil(processor.observedObjectBindingValue);
     XCTAssertNotNil(processor.bindingSelectorString);
     
     [self runBindingTests:processor];
     
     NSError *error;
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor unbind:&error]);
     processor.processorOutputType = RNDCalculatedValueOutputType;
     
@@ -621,10 +621,10 @@
     processor.observedObjectKeyPath = @"bindingObjectValue";
     
     
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertNotNil(processor.bindingObjectValue);
+    XCTAssertNotNil(processor.bindingValue);
 
     
 }
@@ -632,14 +632,13 @@
 - (void)testProfileK {
     RNDAggregationProcessor *processor = (RNDAggregationProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"K"];
 
-    
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
     XCTAssertNotNil(processor.syncQueue);
     XCTAssertNil(processor.observedObject);
     XCTAssertNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertFalse(processor.monitorsObservedObject);
     XCTAssertNil(processor.controllerKey);
     XCTAssertNil(processor.binder);
@@ -653,23 +652,67 @@
     XCTAssertNil(processor.valueTransformerName);
     XCTAssertNil(processor.valueTransformer);
     XCTAssertNotNil(processor.processorArguments);
-    XCTAssertNil(processor.observedObjectEvaluator);
+    XCTAssertNil(processor.processorCondition);
     XCTAssertEqual(processor.processorOutputType, RNDRawValueOutputType);
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
-    XCTAssertNil(processor.observedObjectEvaluationValue);
+    XCTAssertNil(processor.observedObjectBindingValue);
     
     [self runBindingTests:processor];
     
     NSError *error;
-    XCTAssertNil(processor.bindingObjectValue);
+    XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
-    XCTAssertNotNil(processor.bindingObjectValue);
-    XCTAssertTrue([processor.bindingObjectValue isKindOfClass:[NSArray class]]);
+    XCTAssertNotNil(processor.bindingValue);
+    XCTAssertTrue([processor.bindingValue isKindOfClass:[NSArray class]]);
     XCTAssertTrue([processor unbind:&error]);
 
     // TODO: Test different value modes
+    RNDInvocationProcessor *invProcessor = (RNDInvocationProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"J"];
+    invProcessor.processorOutputType = RNDCalculatedValueOutputType;
+    
+    RNDPatternedStringProcessor *processorArg1 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"D"];
+    RNDPatternedStringProcessor *processorArg2 = (RNDPatternedStringProcessor *)[RNDBindingProcessorTestFramework processorWithProfile:@"E"];
+
+    [invProcessor.processorArguments addObjectsFromArray:@[processorArg2]];
+    invProcessor.observedObject = processorArg1;
+    invProcessor.observedObjectKeyPath = @"bindingObjectValue";
+
+    [processor.processorArguments addObject:invProcessor];
+    XCTAssertNil(processor.bindingValue);
+    XCTAssertTrue([processor bind:&error]);
+    XCTAssertNil(error);
+    XCTAssertNotNil(processor.bindingValue);
+    XCTAssertTrue([processor.bindingValue isKindOfClass:[NSArray class]]);
+    XCTAssertTrue([processor unbind:&error]);
+    
+    processor.valueMode = RNDKeyedValueMode;
+    XCTAssertNil(processor.bindingValue);
+    XCTAssertTrue([processor bind:&error]);
+    XCTAssertNil(error);
+    XCTAssertNotNil(processor.bindingValue);
+    XCTAssertTrue([processor.bindingValue isKindOfClass:[NSDictionary class]]);
+    XCTAssertTrue([processor unbind:&error]);
+
+    processor.valueMode = RNDOrderedKeyedValueMode;
+    XCTAssertNil(processor.bindingValue);
+    XCTAssertTrue([processor bind:&error]);
+    XCTAssertNil(error);
+    XCTAssertNotNil(processor.bindingValue);
+    XCTAssertTrue([processor.bindingValue isKindOfClass:[NSArray class]]);
+    XCTAssertTrue([[processor.bindingValue firstObject] isKindOfClass:[NSDictionary class]]);
+    XCTAssertTrue([processor unbind:&error]);
+
+    processor.valueMode = RNDValueOnlyMode;
+    processor.unwrapSingleValue = YES;
+    XCTAssertNil(processor.bindingValue);
+    XCTAssertTrue([processor bind:&error]);
+    XCTAssertNil(error);
+    XCTAssertNotNil(processor.bindingValue);
+    XCTAssertTrue([processor.bindingValue isKindOfClass:[NSString class]]);
+    XCTAssertTrue([processor unbind:&error]);
+
     // TODO: Test different filterings
 
 }

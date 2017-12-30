@@ -286,34 +286,52 @@
     return localObject;
 }
 
-@synthesize boundArguments = _boundArguments;
+@synthesize boundProcessorArguments = _boundProcessorArguments;
 
-- (NSArray<RNDBindingProcessor *> *)boundArguments {
+- (NSArray<RNDBindingProcessor *> *)boundProcessorArguments {
     id __block localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _boundArguments;
+        localObject = _boundProcessorArguments;
     });
     return localObject;
 }
 
-@synthesize observedObjectEvaluator = _observedObjectEvaluator;
+@synthesize processorCondition = _processorCondition;
 
-- (void)setObservedObjectEvaluator:(RNDPredicateProcessor *)observedObjectEvaluator {
+- (void)setProcessorCondition:(RNDPredicateProcessor *)observedObjectEvaluator {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
         if (observedObjectEvaluator == nil) {
-            _observedObjectEvaluator = [[RNDPredicateProcessor alloc] init];
+            _processorCondition = [[RNDPredicateProcessor alloc] init];
         } else {
-            _observedObjectEvaluator = observedObjectEvaluator;
+            _processorCondition = observedObjectEvaluator;
         }
-        _observedObjectEvaluator.processorOutputType = RNDCalculatedValueOutputType;
+        _processorCondition.processorOutputType = RNDCalculatedValueOutputType;
     });
 }
 
-- (RNDPredicateProcessor *)observedObjectEvaluator {
+- (RNDPredicateProcessor *)processorCondition {
     RNDPredicateProcessor __block *localObject;
     dispatch_sync(self.syncQueue, ^{
-        localObject = _observedObjectEvaluator;
+        localObject = _processorCondition;
+    });
+    return localObject;
+}
+
+
+@synthesize processorValueMode = _processorValueMode;
+
+- (void)setProcessorValueMode:(RNDValueMode)processorValueMode {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _processorValueMode = processorValueMode;
+    });
+}
+
+- (RNDValueMode)processorValueMode {
+    BOOL __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _processorValueMode;
     });
     return localObject;
 }
@@ -321,15 +339,15 @@
 
 @synthesize processorOutputType = _processorOutputType;
 
-- (void)setProcessorOutputType:(RNDProcessorValueType)processorOutputType {
+- (void)setProcessorOutputType:(RNDProcessorOutputType)processorOutputType {
     dispatch_barrier_sync(self.syncQueue, ^{
         if (self.isBound == YES) { return; }
         _processorOutputType = processorOutputType;
     });
 }
 
-- (RNDProcessorValueType)processorOutputType {
-    RNDProcessorValueType __block localValue;
+- (RNDProcessorOutputType)processorOutputType {
+    RNDProcessorOutputType __block localValue;
     dispatch_sync(self.syncQueue, ^{
         localValue = _processorOutputType;
     });
@@ -356,116 +374,179 @@
     return localObject;
 }
 
+@synthesize unwrapSingleValue = _unwrapSingleValue;
+
+- (void)setUnwrapSingleValue:(BOOL)unwrapSingleValue {
+    dispatch_barrier_sync(self.syncQueue, ^{
+        if (self.isBound == YES) { return; }
+        _unwrapSingleValue = unwrapSingleValue;
+    });
+}
+
+- (BOOL)unwrapSingleValue {
+    BOOL __block localObject;
+    dispatch_sync(self.syncQueue, ^{
+        localObject = _unwrapSingleValue;
+    });
+    return localObject;
+}
+
 #pragma mark - Transient (Calculated) Properties
 @synthesize valueTransformer = _valueTransformer;
 @synthesize syncQueueIdentifier = _syncQueueIdentifier;
 @synthesize syncQueue = _syncQueue;
-@synthesize isBound = _isBound;
+@synthesize bound = _isBound;
 
-- (id _Nullable)bindingObjectValue {
+- (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
     dispatch_barrier_sync(_syncQueue, ^{
-        objectValue = [self readBindingObjectValue];
+        objectValue = [self coordinatedBindingValue];
     });
     
     return objectValue;
 }
 
-- (id _Nullable)readBindingObjectValue {
-
+- (id _Nullable)coordinatedBindingValue {
+    //Check the queue
     dispatch_assert_queue_barrier_debug(_syncQueue);
-
-    id __block objectValue = nil;
     
+    id objectValue = nil;
+    
+    // Check the bound status
     if (_isBound == NO) {
         objectValue = nil;
         return objectValue;
     }
+
+    // Generate the raw value
+    objectValue = [self rawBindingValue:nil];
     
-    id rawObjectValue;
+    // Apply calculations to the value
+    objectValue = [self calculatedBindingValue: objectValue];
     
-    NSMutableArray *keyPathArray = [NSMutableArray array];
-    if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
-    if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
-    NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
+    // Filter the value
+    objectValue = [self filteredBindingValue:objectValue];
     
-    if (_observedObjectEvaluator != nil && ((NSNumber *)_observedObjectEvaluator.bindingObjectValue).boolValue == NO ) {
+    // Transform the value
+    objectValue = [self transformedBindingValue:objectValue];
+    
+    // Generate the value label
+    NSString *entryString = self.bindingValueLabel.bindingValue;
+    entryString = entryString != nil ? entryString : [NSString stringWithFormat:@"%lu", 1ul];
+    
+    // Wrap the value in the default form
+    objectValue = @[@{entryString:objectValue}];
+    
+    // Apply the correct wrapping to the value.
+    objectValue = [self wrappedBindingValue:objectValue];
+
+    return objectValue;
+}
+
+- (id _Nullable)rawBindingValue:(id _Nullable)bindingValue {
+    id __block rawObjectValue;
+    
+    NSString * keyPath = self.resolvedObservedObjectKeyPath;
+    
+    if (_processorCondition != nil && ((NSNumber *)_processorCondition.bindingValue).boolValue == NO ) {
         rawObjectValue = nil;
     } else {
-        rawObjectValue = [_observedObject valueForKeyPath:keyPath];
+        if (self.readOnMainQueue == YES) {
+            dispatch_block_t block = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS, ^{
+                rawObjectValue = [_observedObject valueForKeyPath:keyPath];
+            });
+            dispatch_async(dispatch_get_main_queue(), block);
+            dispatch_block_wait(block, DISPATCH_TIME_FOREVER);
+
+        } else {
+            rawObjectValue = [_observedObject valueForKeyPath:keyPath];
+        }
     }
-    
-    if ([rawObjectValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
-        objectValue = _multipleSelectionPlaceholder != nil ? _multipleSelectionPlaceholder.bindingObjectValue : rawObjectValue;
+
+    return rawObjectValue;
+}
+
+- (id _Nullable)calculatedBindingValue:(id _Nullable)bindingValue {
+    return bindingValue;
+}
+
+- (id _Nullable)filteredBindingValue:(id _Nullable)bindingValue {
+    id objectValue = nil;
+    if ([bindingValue isEqual: RNDBindingMultipleValuesMarker] == YES) {
+        objectValue = _multipleSelectionPlaceholder != nil ? _multipleSelectionPlaceholder.bindingValue : bindingValue;
         return objectValue;
     }
     
-    if ([rawObjectValue isEqual: RNDBindingNoSelectionMarker] == YES) {
-        objectValue = _noSelectionPlaceholder != nil ? _noSelectionPlaceholder.bindingObjectValue : rawObjectValue;
+    if ([bindingValue isEqual: RNDBindingNoSelectionMarker] == YES) {
+        objectValue = _noSelectionPlaceholder != nil ? _noSelectionPlaceholder.bindingValue : bindingValue;
         return objectValue;
     }
     
-    if ([rawObjectValue isEqual: RNDBindingNotApplicableMarker] == YES) {
-        objectValue = _notApplicablePlaceholder != nil ? _notApplicablePlaceholder.bindingObjectValue : rawObjectValue;
+    if ([bindingValue isEqual: RNDBindingNotApplicableMarker] == YES) {
+        objectValue = _notApplicablePlaceholder != nil ? _notApplicablePlaceholder.bindingValue : bindingValue;
         return objectValue;
     }
     
-    if ([rawObjectValue isEqual: RNDBindingNullValueMarker] == YES || rawObjectValue == [NSNull null]) {
-        objectValue = _nullPlaceholder != nil ? _nullPlaceholder.bindingObjectValue : rawObjectValue;
+    if ([bindingValue isEqual: RNDBindingNullValueMarker] == YES || bindingValue == [NSNull null]) {
+        objectValue = _nullPlaceholder != nil ? _nullPlaceholder.bindingValue : bindingValue;
         return objectValue;
     }
     
-    if (rawObjectValue == nil) {
-        objectValue = _nilPlaceholder != nil ? _nilPlaceholder.bindingObjectValue : rawObjectValue;
+    if (bindingValue == nil) {
+        objectValue = _nilPlaceholder != nil ? _nilPlaceholder.bindingValue : bindingValue;
         return objectValue;
     }
+
+    return objectValue;
+}
+
+- (id _Nullable)transformedBindingValue:(id _Nullable)bindingValue {
+    return _valueTransformer != nil ? [_valueTransformer transformedValue:bindingValue] : bindingValue;
+}
+
+- (id _Nullable)wrappedBindingValue:(id)bindingValue {
+    id objectValue = nil;
+    NSArray *valuesArray = (NSArray *)bindingValue;
     
-    
-    objectValue = _valueTransformer != nil ? [_valueTransformer transformedValue:rawObjectValue] : rawObjectValue;
-    
+    switch (_processorValueMode) {
+        case RNDValueOnlyMode:
+        {
+            NSMutableArray *valueOnlyArray = [NSMutableArray arrayWithCapacity:valuesArray.count];
+            for (NSDictionary *dictionary in valuesArray) {
+                [valueOnlyArray addObjectsFromArray:[dictionary allValues]];
+            }
+            objectValue = _unwrapSingleValue == YES ? (valueOnlyArray.count < 2 ? valueOnlyArray.firstObject : valueOnlyArray) : valueOnlyArray;
+            break;
+        }
+        case RNDKeyedValueMode:
+        {
+            NSMutableDictionary *keyedValueDictionary = [NSMutableDictionary dictionaryWithCapacity:valuesArray.count];
+            for (NSDictionary *dictionary in valuesArray) {
+                [keyedValueDictionary addEntriesFromDictionary:dictionary];
+            }
+            objectValue = keyedValueDictionary;
+            break;
+        }
+        case RNDOrderedKeyedValueMode:
+        {
+            objectValue = valuesArray;
+            break;
+        }
+        default:
+        {
+            objectValue = valuesArray;
+            break;
+        }
+    }
     
     return objectValue;
 }
 
-- (void)setBindingObjectValue:(id)bindingObjectValue {    
-    dispatch_barrier_async(_syncQueue, ^{
-        [self writeBindingObjectValue:bindingObjectValue];
-    });
-}
-
-- (void)writeBindingObjectValue:(id)bindingObjectValue {
-    
-    dispatch_assert_queue_barrier_debug(_syncQueue);
-    // In some cases, a different value on screen may not actually be a different value in the model.
-    // This happens when part of the model record is split up into multiple parts.
-    
-    // We generate the value to be written (and compared) by processing it into a form that can be compared. We use the binding object value to calculate the value that should be written to the observed object.
-    id objectValue = bindingObjectValue;
-    if (_valueTransformer != nil && [[_valueTransformer class] allowsReverseTransformation] == YES) {
-        objectValue = [_valueTransformer reverseTransformedValue:objectValue];
-    }
-    NSMutableArray *keyPathArray = [NSMutableArray array];
-    if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
-    if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
-    NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
-
-    // There may be no actual change for this part of the write value, in which case nothing needs to happen.
-    if ([objectValue isEqual:[_observedObject valueForKeyPath:keyPath]]) {
-        return;
-    }
-    
-    [_observedObject setValue:objectValue forKeyPath:keyPath];
-
-}
-
-- (id)observedObjectEvaluationValue {
+- (id)observedObjectBindingValue {
     id __block localObject = nil;
     dispatch_sync(_syncQueue, ^{
-        NSMutableArray *keyPathArray = [NSMutableArray array];
-        if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
-        if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
-        NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
+        NSString *keyPath = self.resolvedObservedObjectKeyPath;
         if ([keyPath isEqualToString:@""] == NO) {
             localObject = [_observedObject valueForKeyPath:keyPath];
         } else {
@@ -480,11 +561,11 @@
     if (_processorArguments != nil) {
         [bindings addObjectsFromArray:_processorArguments];
     }
-    if (_userString != nil) {
-        [bindings addObject:_userString];
+    if (_bindingValueLabel != nil) {
+        [bindings addObject:_bindingValueLabel];
     }
-    if (_observedObjectEvaluator != nil) {
-        [bindings addObject:_observedObjectEvaluator];
+    if (_processorCondition != nil) {
+        [bindings addObject:_processorCondition];
     }
     if (_nilPlaceholder != nil) {
         [bindings addObject:_nilPlaceholder];
@@ -504,6 +585,15 @@
     return bindings;
 }
 
+- (NSString * _Nullable)resolvedObservedObjectKeyPath {
+    NSMutableArray *keyPathArray = [NSMutableArray array];
+    if (_controllerKey != nil) { [keyPathArray addObject:_controllerKey]; }
+    if (_observedObjectKeyPath != nil) { [keyPathArray addObject:_observedObjectKeyPath]; }
+    NSString *keyPath = [keyPathArray componentsJoinedByString:@"."];
+    return keyPath;
+}
+
+
 #pragma mark - Object Lifecycle
 - (instancetype)init {
     if ((self = [super init]) != nil) {
@@ -511,6 +601,7 @@
         _syncQueueIdentifier = [[NSUUID alloc] init];
         _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
         _processorArguments = [NSMutableArray array];
+        _unwrapSingleValue = YES;
     }
     return self;
 }
@@ -589,7 +680,7 @@
     }
     
     if (_observedObject == nil && _observedObjectBindingIdentifier != nil) {
-        NSUInteger index = [_binder.boundObject.bindingDestinations indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSUInteger index = [_binder.bindingObject.bindingDestinations indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([((id<RNDBindableObject>)obj).bindingIdentifier isEqualToString:_observedObjectBindingIdentifier]) {
                 _observedObject = obj;
                 *stop = YES;
@@ -680,8 +771,8 @@
             return result;
         }
     }
-    _boundArguments = [NSArray arrayWithArray:self.processorNodes];
-    for (RNDBindingProcessor *binding in _boundArguments) {
+    _boundProcessorArguments = [NSArray arrayWithArray:self.processorNodes];
+    for (RNDBindingProcessor *binding in _boundProcessorArguments) {
         binding.binder = _binder;
         if ((result = [binding bind:&internalError]) == YES) { continue; }
         [self unbind:NULL];
@@ -746,7 +837,7 @@
     }
     
 
-    for (RNDBindingProcessor *binding in _boundArguments) {
+    for (RNDBindingProcessor *binding in _boundProcessorArguments) {
         NSError *passedInError;
         BOOL unbindingResult = [binding unbind:&passedInError];
         if (unbindingResult == NO) {
@@ -754,7 +845,7 @@
             [underlyingErrorsArray addObject:passedInError];
         }
     }
-    _boundArguments = nil;
+    _boundProcessorArguments = nil;
     
     // The observed object must be unbound.
     if ([_observedObject isKindOfClass:[RNDBindingProcessor class]] == YES) {

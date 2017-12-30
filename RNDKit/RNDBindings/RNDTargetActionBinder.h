@@ -9,9 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "RNDBinder.h"
 
-@class RNDBinding;
 @class RNDInvocationProcessor;
-@class RNDPredicateProcessor;
 
 typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
     RNDNoArgumentType,
@@ -19,21 +17,15 @@ typedef NS_ENUM(NSUInteger, RNDBindingInvocationType) {
     RNDSenderEventArgumentType
 };
 
-
-/**
- The RNDMultiValueTargetActionBinder enables the construction of an invocation with varying number of arguments that can be sent to a target object.
- 
- This binder has one or more bindings that connect to the properties of model objects and provide those values to the binder when requested. The values are treated as named arguments for the selector associated with the binder. This binder constructs an invocation based on the selector and arguments, and then executes the invocation for the target that has been set for the binding.
- 
- It is possible to set more than one target for the binding and to vary the selector and/or arguments used in the invocation by associating a predicate with each selector. In this case, an invocation using the selector will only be invoked if the predicate returns true. You can further specialize the behavior of the binder by associating a specific target for a selector.
- 
- This binder is a read only binder which means it can not write to its model objects, but it does update the values of its observer when requested.
- */
 @interface RNDTargetActionBinder: RNDBinder
 
-@property (strong, nonnull, readonly) RNDInvocationProcessor *bindingInvocation;
-@property (strong, nonnull, readonly) RNDInvocationProcessor *unbindingInvocation;
-@property (strong, nonnull, readonly) RNDInvocationProcessor *actionInvocation;
+@property (strong, nonnull, readonly) RNDInvocationProcessor *bindingInvocationProcessor;
+@property (strong, nonnull, readonly) RNDInvocationProcessor *unbindingInvocationProcessor;
+@property (strong, nonnull, readonly) RNDInvocationProcessor *actionInvocationProcessor;
 
+- (void)performBindingObjectAction;
+- (void)performBindingObjectAction:(id _Nullable)sender;
+- (void)performBindingObjectAction:(id _Nullable)sender forEvent:(id _Nullable)event;
+- (void)performBindingObjectAction:(id _Nullable)sender forEvent:(id _Nullable)event withContext:(id _Nullable)context;
 @end
 
