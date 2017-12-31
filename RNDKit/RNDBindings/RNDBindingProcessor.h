@@ -84,6 +84,8 @@ typedef NS_ENUM(NSUInteger, RNDValueMode) {
  */
 @property (nonnull, strong, readonly) dispatch_queue_t syncQueue;
 
+@property (nonnull, strong, readonly) dispatch_semaphore_t syncCoordinator;
+
 /**
  @abstract The binder the processor is managed by.
  

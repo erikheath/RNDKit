@@ -520,7 +520,7 @@
     processorArg3.argumentName = @"ARG3";
     processorArg3.processorOutputType = RNDCalculatedValueOutputType;
     processor.observedObject = processorArg3;
-    processor.observedObjectKeyPath = @"bindingObjectValue";
+    processor.observedObjectKeyPath = @"bindingValue";
     
     NSError *error;
     XCTAssertNil(processor.bindingValue);
@@ -618,7 +618,7 @@
 
     [processor.processorArguments addObjectsFromArray:@[processorArg2]];
     processor.observedObject = processorArg1;
-    processor.observedObjectKeyPath = @"bindingObjectValue";
+    processor.observedObjectKeyPath = @"bindingValue";
     
     
     XCTAssertNil(processor.bindingValue);
@@ -657,10 +657,19 @@
     XCTAssertNotNil(processor.runtimeArguments);
     XCTAssertNotNil(processor.processorNodes);
     XCTAssertNil(processor.observedObjectBindingValue);
+    XCTAssertTrue(processor.unwrapSingleValue);
     
     [self runBindingTests:processor];
     
     NSError *error;
+    XCTAssertNil(processor.bindingValue);
+    XCTAssertTrue([processor bind:&error]);
+    XCTAssertNil(error);
+    XCTAssertNil(processor.bindingValue);
+    XCTAssertTrue([processor unbind:&error]);
+
+    error = nil;
+    processor.unwrapSingleValue = NO;
     XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
@@ -687,7 +696,7 @@
     XCTAssertTrue([processor.bindingValue isKindOfClass:[NSArray class]]);
     XCTAssertTrue([processor unbind:&error]);
     
-    processor.valueMode = RNDKeyedValueMode;
+    processor.processorValueMode = RNDKeyedValueMode;
     XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
@@ -695,7 +704,7 @@
     XCTAssertTrue([processor.bindingValue isKindOfClass:[NSDictionary class]]);
     XCTAssertTrue([processor unbind:&error]);
 
-    processor.valueMode = RNDOrderedKeyedValueMode;
+    processor.processorValueMode = RNDOrderedKeyedValueMode;
     XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);
     XCTAssertNil(error);
@@ -704,7 +713,7 @@
     XCTAssertTrue([[processor.bindingValue firstObject] isKindOfClass:[NSDictionary class]]);
     XCTAssertTrue([processor unbind:&error]);
 
-    processor.valueMode = RNDValueOnlyMode;
+    processor.processorValueMode = RNDValueOnlyMode;
     processor.unwrapSingleValue = YES;
     XCTAssertNil(processor.bindingValue);
     XCTAssertTrue([processor bind:&error]);

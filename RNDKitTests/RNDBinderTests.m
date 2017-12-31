@@ -108,7 +108,7 @@
     outflowProcessor.controllerKey = @"testController";
     outflowProcessor.monitorsObservedObject = NO;
     outflowProcessor.bindingName = @"outflowname";
-    binder.outflowProcessor = outflowProcessor;
+    [binder.outflowProcessors addObject:outflowProcessor];
     RNDBindingProcessor *inflowProcessor = [RNDBindingProcessorTestFramework processorWithProfile:@"A"];
     inflowProcessor.observedObject = observedObject;
     inflowProcessor.observedObjectKeyPath = @"testProperty";
@@ -130,7 +130,7 @@
     XCTAssertNil(error);
 
     // Test that you can not use a binding twice.
-    binder.outflowProcessor =  inflowProcessor;
+    [binder.outflowProcessors addObject:inflowProcessor];
     XCTAssertFalse([binder bind:&error]);
     XCTAssertNotNil(error);
     

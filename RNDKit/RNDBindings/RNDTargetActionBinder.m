@@ -16,7 +16,6 @@
 @synthesize bindingInvocationProcessor = _bindingInvocationProcessor;
 @synthesize unbindingInvocationProcessor = _unbindingInvocationProcessor;
 @synthesize actionInvocationProcessor = _actionInvocationProcessor;
-@synthesize bindingObject = _bindingObject;
 
 #pragma mark - Object Lifecycle
 
@@ -71,7 +70,7 @@
     
     if ((result = [super bindCoordinatedObjects:error]) == NO) { return result; }
     
-    if ([_bindingObject respondsToSelector:NSSelectorFromString(_bindingInvocationProcessor.bindingSelectorString)] && [_bindingObject respondsToSelector:NSSelectorFromString(_unbindingInvocationProcessor.bindingSelectorString)]) {
+    if ([self.bindingObject respondsToSelector:NSSelectorFromString(_bindingInvocationProcessor.bindingSelectorString)] && [self.bindingObject respondsToSelector:NSSelectorFromString(_unbindingInvocationProcessor.bindingSelectorString)]) {
         NSInvocation *invocation = _bindingInvocationProcessor.bindingValue;
         if (invocation == nil) {
             result = NO;
@@ -92,7 +91,7 @@
     
     if ((result = [super unbindCoordinatedObjects:error]) == NO) { return result; }
     
-    if ([_bindingObject respondsToSelector:NSSelectorFromString(_bindingInvocationProcessor.bindingSelectorString)] && [_bindingObject respondsToSelector:NSSelectorFromString(_unbindingInvocationProcessor.bindingSelectorString)]) {
+    if ([self.bindingObject respondsToSelector:NSSelectorFromString(_bindingInvocationProcessor.bindingSelectorString)] && [self.bindingObject respondsToSelector:NSSelectorFromString(_unbindingInvocationProcessor.bindingSelectorString)]) {
         NSInvocation *invocation = _unbindingInvocationProcessor.bindingValue;
         if (invocation == nil) {
             result = NO;

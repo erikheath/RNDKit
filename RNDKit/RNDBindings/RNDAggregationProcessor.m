@@ -14,9 +14,6 @@
 @implementation RNDAggregationProcessor
 #pragma mark - Properties
 
-@synthesize processorValueMode = _processorValueMode;
-@synthesize unwrapSingleValue = _unwrapSingleValue;
-
 @synthesize filtersNilValues = _filtersNilValues;
 
 - (void)setFiltersNilValues:(BOOL)filtersNilValues {
@@ -72,6 +69,8 @@
 
 #pragma mark - Transient (Calculated) Properties
 - (id _Nullable)coordinatedBindingValue {
+    dispatch_assert_queue_debug(self.syncQueue);
+
     id __block objectValue = nil;
     
     NSMutableArray *valuesArray = [NSMutableArray arrayWithCapacity:self.boundProcessorArguments.count];
@@ -138,6 +137,8 @@
         objectValue = self.nilPlaceholder != nil ? self.nilPlaceholder.bindingValue : [NSNull null];
     }
 
+    objectValue = bindingValue;
+    
     return objectValue;
 }
 
@@ -162,7 +163,6 @@
         _filtersNilValues = [aDecoder decodeBoolForKey:@"filtersNilValues"];
         _filtersMarkerValues = [aDecoder decodeBoolForKey:@"filtersMarkerValues"];
         _mutuallyExclusive = [aDecoder decodeBoolForKey:@"mutuallyExclusive"];
-        _unwrapSingleValue = [aDecoder decodeBoolForKey:@"unwrapSingleValue"];
     }
     return self;
 }
@@ -172,7 +172,6 @@
     [aCoder encodeBool:_filtersNilValues forKey:@"filtersNilValues"];
     [aCoder encodeBool:_filtersMarkerValues forKey:@"filtersMarkerValues"];
     [aCoder encodeBool:_mutuallyExclusive forKey:@"mutuallyExclusive"];
-    [aCoder encodeBool:_unwrapSingleValue forKey:@"unwrapSingleValue"];
 
 }
 

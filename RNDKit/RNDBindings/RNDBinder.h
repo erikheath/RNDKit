@@ -15,6 +15,7 @@
 @interface RNDBinder : NSObject <NSCoding>
 
 @property (strong, nullable, readonly) dispatch_queue_t syncQueue;
+@property (nonnull, strong, readonly) dispatch_semaphore_t syncCoordinator;
 
 #pragma mark - Binding Object
 @property (strong, nonnull, readwrite) NSString *bindingName;

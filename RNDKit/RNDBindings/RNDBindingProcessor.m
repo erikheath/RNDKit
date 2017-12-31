@@ -395,21 +395,26 @@
 @synthesize valueTransformer = _valueTransformer;
 @synthesize syncQueueIdentifier = _syncQueueIdentifier;
 @synthesize syncQueue = _syncQueue;
+@synthesize syncCoordinator = _syncCoordinator;
 @synthesize bound = _isBound;
 
 - (id _Nullable)bindingValue {
+    dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
+    
     id __block objectValue = nil;
     
-    dispatch_barrier_sync(_syncQueue, ^{
+    dispatch_sync(_syncQueue, ^{
         objectValue = [self coordinatedBindingValue];
     });
+    
+    dispatch_semaphore_signal(_syncCoordinator);
     
     return objectValue;
 }
 
 - (id _Nullable)coordinatedBindingValue {
     //Check the queue
-    dispatch_assert_queue_barrier_debug(_syncQueue);
+    dispatch_assert_queue_debug(_syncQueue);
     
     id objectValue = nil;
     
@@ -436,7 +441,11 @@
     entryString = entryString != nil ? entryString : [NSString stringWithFormat:@"%lu", 1ul];
     
     // Wrap the value in the default form
-    objectValue = @[@{entryString:objectValue}];
+    if (objectValue != nil) {
+        objectValue = @[@{entryString:objectValue}];
+    } else {
+        objectValue = @[@{}];
+    }
     
     // Apply the correct wrapping to the value.
     objectValue = [self wrappedBindingValue:objectValue];
@@ -498,6 +507,8 @@
         return objectValue;
     }
 
+    objectValue = bindingValue;
+    
     return objectValue;
 }
 
@@ -600,6 +611,7 @@
         _runtimeArguments = @{};
         _syncQueueIdentifier = [[NSUUID alloc] init];
         _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
+        _syncCoordinator = dispatch_semaphore_create(1);
         _processorArguments = [NSMutableArray array];
         _unwrapSingleValue = YES;
     }
@@ -617,7 +629,8 @@
                 [propertyName isEqualToString:@"valueTransformer"] ||
                 [propertyName isEqualToString:@"syncQueueIdentifier"] ||
                 [propertyName isEqualToString:@"isBound"] ||
-                [propertyName isEqualToString:@"observedObject"]) { continue; }
+                [propertyName isEqualToString:@"observedObject"] ||
+                [propertyName isEqualToString:@"readWriteCoordinator"]) { continue; }
             [self setValue:[aDecoder decodeObjectForKey:propertyName] forKey:propertyName];
         }
         
@@ -627,7 +640,8 @@
         
         _syncQueueIdentifier = [[NSUUID alloc] init];
         _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
-        
+        _syncCoordinator = dispatch_semaphore_create(1);
+
         if (_valueTransformerName != nil) {
             _valueTransformer = [NSValueTransformer valueTransformerForName:_valueTransformerName];
         }
@@ -647,7 +661,8 @@
             [propertyName isEqualToString:@"valueTransformer"] ||
             [propertyName isEqualToString:@"syncQueueIdentifier"] ||
             [propertyName isEqualToString:@"isBound"] ||
-            [propertyName isEqualToString:@"observedObject"]) { continue; }
+            [propertyName isEqualToString:@"observedObject"] ||
+            [propertyName isEqualToString:@"readWriteCoordinator"]) { continue; }
         [aCoder encodeObject:[self valueForKey:propertyName] forKey:propertyName];
     }
     
@@ -662,7 +677,7 @@
     BOOL result = YES;
     NSError *internalError = nil;
     
-    dispatch_assert_queue_barrier_debug(_syncQueue);
+    dispatch_assert_queue_debug(_syncQueue);
     
     if (_isBound == YES) {
         result = NO;
@@ -785,16 +800,20 @@
 }
 
 - (void)bind {
-    dispatch_barrier_sync(_syncQueue, ^{
+    dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
+    dispatch_sync(_syncQueue, ^{
         [self bindObjects:NULL];
     });
+    dispatch_semaphore_signal(_syncCoordinator);
 }
 
 - (BOOL)bind:(NSError * _Nullable __autoreleasing *)error {
+    dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     __block BOOL result = NO;
     dispatch_barrier_sync(_syncQueue, ^{
         result = [self bindObjects:error];
     });
+    dispatch_semaphore_signal(_syncCoordinator);
     return result;
 }
 
@@ -804,7 +823,7 @@
     NSMutableArray *underlyingErrorsArray = [NSMutableArray array];
     NSError * internalError;
     
-    dispatch_assert_queue_barrier_debug(_syncQueue);
+    dispatch_assert_queue_debug(_syncQueue);
     
     @try {
         if (_isBound == YES && _monitorsObservedObject == YES) {
@@ -876,16 +895,20 @@
 }
 
 - (void)unbind {
+    dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     dispatch_barrier_sync(_syncQueue, ^{
         [self unbindObjects:NULL];
     });
+    dispatch_semaphore_signal(_syncCoordinator);
 }
 
 - (BOOL)unbind:(NSError * _Nullable __autoreleasing *)error {
+    dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     __block BOOL result = NO;
     dispatch_barrier_sync(_syncQueue, ^{
         result = [self unbindObjects:error];
     });
+    dispatch_semaphore_signal(_syncCoordinator);
     return result;
 }
 
