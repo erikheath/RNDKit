@@ -109,60 +109,60 @@
 }
 
 - (void)performBindingObjectAction {
-    dispatch_barrier_async(self.syncQueue, ^{
-        dispatch_set_context(self.syncQueue, NULL);
+    dispatch_barrier_async(self.coordinator, ^{
+        dispatch_set_context(self.coordinator, NULL);
         for (NSInvocation *invocation in [self coordinatedBindingValue]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });
         }
-        dispatch_set_context(self.syncQueue, NULL);
+        dispatch_set_context(self.coordinator, NULL);
     });
 }
 
 - (void)performBindingObjectAction:(id _Nullable)sender {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithCapacity:1];
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
-        dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
+        dispatch_set_context(self.coordinator, (__bridge void * _Nullable)(contextDictionary));
         for (NSInvocation *invocation in [self coordinatedBindingValue]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });
         }
-        dispatch_set_context(self.syncQueue, NULL);
+        dispatch_set_context(self.coordinator, NULL);
     });
 }
 
 - (void)performBindingObjectAction:(id _Nullable)sender forEvent:(id _Nullable)event {
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithCapacity:2];
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
         if (event != nil) { [contextDictionary setObject:event forKey:RNDEventArgument]; }
-        dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
+        dispatch_set_context(self.coordinator, (__bridge void * _Nullable)(contextDictionary));
         for (NSInvocation *invocation in [self coordinatedBindingValue]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });
         }
-        dispatch_set_context(self.syncQueue, NULL);
+        dispatch_set_context(self.coordinator, NULL);
 
     });
 }
 
 - (void)performBindingObjectAction:(id _Nullable)sender forEvent:(id _Nullable)event withContext:(id _Nullable)context {
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         NSMutableDictionary *contextDictionary = [NSMutableDictionary dictionaryWithCapacity:3];
         if (sender != nil) { [contextDictionary setObject:sender forKey:RNDSenderArgument]; }
         if (event != nil) { [contextDictionary setObject:event forKey:RNDEventArgument]; }
         if (context != nil) { [contextDictionary setObject:context forKey:RNDContextArgument]; }
-        dispatch_set_context(self.syncQueue, (__bridge void * _Nullable)(contextDictionary));
+        dispatch_set_context(self.coordinator, (__bridge void * _Nullable)(contextDictionary));
         for (NSInvocation *invocation in [self coordinatedBindingValue]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [invocation invoke];
             });
         }
-        dispatch_set_context(self.syncQueue, NULL);
+        dispatch_set_context(self.coordinator, NULL);
 
     });
 }

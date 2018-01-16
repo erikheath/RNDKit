@@ -7,14 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "../RNDBindingProtocolsCategories/RNDEditorRegistration.h"
+#import "../RNDBindingProtocolsCategories/RNDEditorDelegate.h"
+
 
 @class RNDBindingProcessor;
 
 @protocol RNDBindableObject;
 
-@interface RNDBinder : NSObject <NSCoding>
+@interface RNDBinder : NSObject <NSCoding, RNDEditor>
 
-@property (strong, nullable, readonly) dispatch_queue_t syncQueue;
+@property (strong, nullable, readonly) dispatch_queue_t coordinator;
 @property (nonnull, strong, readonly) dispatch_semaphore_t syncCoordinator;
 
 #pragma mark - Binding Object
@@ -41,6 +44,7 @@
 - (BOOL)bind:(NSError * _Nullable __autoreleasing * _Nullable)error;
 - (BOOL)unbind:(NSError * _Nullable __autoreleasing * _Nullable)error;
 
+
 - (BOOL)bindCoordinatedObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
 - (BOOL)unbindCoordinatedObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
@@ -55,7 +59,29 @@
 - (id _Nullable)wrappedBindingValue:(id _Nullable)bindingValue;
 
 - (void)updateBindingObjectValue;
-- (void)updateObservedObjectValue;
+- (BOOL)updateObservedObjectValue:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
+#pragma mark - Editor Management
+@property BOOL requiresConfirmationOnLockingFailure;
+@property BOOL registersAsEditor;
+@property BOOL validatesImmediately;
+@property BOOL editedValueIsValid; // Observable
+@property (strong, readwrite, nullable) NSError *editedValueError; // Observable
+
+- (void)editorDidBeginEditingBoundValue:(id _Nullable)value; // Editor (view) notifies binder of a pending value change.
+- (void)editorDidEndEditingBoundValue:(id _Nullable)value; // Editor (view) notifies binder that a value change happened.
+
+- (void)dataSourceWillChangeEditedValue:(id _Nullable)value forKeyPath:(NSString * _Nonnull)keyPath; // Tells the editor that the value in the model will change while an edit in is progress.
+- (void)dataSourceDidChangeEditedValue:(id _Nullable)value forKeyPath:(NSString * _Nonnull)keyPath; // Tells the editor that the value in the model will change while an edit is in progress.
+
+- (BOOL)editedValue:(id _Nullable)editedValue shouldChangeToValue:(id _Nullable)newValue fromDataSourceValue:(id _Nullable)dataSourceValue; // If an optimistic locking failure has occurred where the current model value does not match the edited value, provides the binder with an opportunity to confirm that the change should occur.
+
+- (void)discardBoundEdit; // Reverts to the current binding value and pushes it to the Editor(view).
+
+- (BOOL)commitBoundEdit; // Generally called by a mediating controller that has the binder registered as an editor.
+
+- (void)commitBoundEditWithDelegate:(nullable id<RNDEditorDelegate>)delegate contextInfo:(nullable void *)contextInfo; // Generally called by an external actor that waits for an async result. For example, a save button that triggers a write to a remote database.
+
+- (BOOL)commitBoundEditAndReturnError:(NSError * _Nullable __autoreleasing * _Nullable)error; // Generally called by the object(editor) associated with the binder. Provide a way to automatically present an eror message.
 
 @end

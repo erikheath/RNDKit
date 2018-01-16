@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "../RNDBindingConstants.h"
-#import "../RNDBindingProtocols+Categories/NSObject+RNDObjectBinding.h"
+#import "../RNDBindingProtocolsCategories/NSObject+RNDObjectBinding.h"
 
 /**
  @abstract The RNDValueType determines the value semantics of the processorValue property.

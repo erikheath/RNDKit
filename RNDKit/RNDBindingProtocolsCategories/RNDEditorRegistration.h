@@ -7,15 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-
-@protocol RNDEditor;
+#import "RNDEditor.h"
 
 @protocol RNDEditorRegistration <NSObject>
 
-@property (readonly, nonnull) NSSet<id<RNDEditor>> * editorSet;
+- (void)editor:(id<RNDEditor> _Nonnull)editor didBeginEditingValueAtKeyPath:(NSString * _Nonnull)keyPath;
 
-- (void)objectDidBeginBoundEdit:(id<RNDEditor> _Nonnull)editor;
-
-- (void)objectDidEndBoundEdit:(id<RNDEditor> _Nonnull)editor;
+- (void)editor:(id<RNDEditor> _Nonnull)editor didEndEditingValueAtKeyPath:(NSString * _Nonnull)keyPath;
 
 @end

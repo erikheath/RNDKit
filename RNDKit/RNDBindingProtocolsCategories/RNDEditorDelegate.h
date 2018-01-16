@@ -7,10 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+@protocol RNDEditor;
 
 @protocol RNDEditorDelegate <NSObject>
 
-- (void)boundEditor:(id<RNDEditor>)editor didCommit:(BOOL)didCommit contextInfo:(void *)contextInfo;
+- (void)boundEditor:(id<RNDEditorDelegate>)editor didCommit:(BOOL)didCommit contextInfo:(void *)contextInfo error:(NSError **)error;
 
 @end
 

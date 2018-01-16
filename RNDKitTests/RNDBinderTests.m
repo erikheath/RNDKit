@@ -31,20 +31,21 @@
     XCTAssertNil(binder.bindingObject);
     XCTAssertNil(binder.bindingObjectKeyPath);
     XCTAssertFalse(binder.monitorsBindingObject);
-    XCTAssertNotNil(binder.syncQueue);
+    XCTAssertNotNil(binder.coordinator);
     XCTAssertNil(binder.bindingName);
     XCTAssertNil(binder.bindingValue);
     
+    NSError *error;
     XCTAssertNil(binder.bindingValue);
     XCTAssertFalse(binder.bound);
-    [binder bind];
+    [binder bind:&error];
     XCTAssertTrue(binder.isBound);
     XCTAssertNil(binder.bindingValue);
     [binder unbind];
     XCTAssertFalse(binder.bound);
     XCTAssertNil(binder.bindingValue);
     
-    NSError *error;
+    error = nil;
     binder.monitorsBindingObject = YES;
     XCTAssertNil(binder.bindingValue);
     XCTAssertFalse(binder.bound);

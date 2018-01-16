@@ -14,8 +14,6 @@
 
 @property (readwrite) BOOL filtersMarkerValues;
 
-@property (readwrite) BOOL unwrapSingleValue;
-
 @property (readwrite) BOOL mutuallyExclusive;
 
 @end

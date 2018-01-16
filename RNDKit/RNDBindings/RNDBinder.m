@@ -12,7 +12,7 @@
 
 @interface RNDBinder()
 
-@property (strong, nullable, readonly) NSUUID *syncQueueIdentifier;
+@property (strong, nullable, readonly) NSUUID *coordinatorQueueIdentifier;
 
 @end
 
@@ -23,7 +23,7 @@
 @synthesize inflowProcessor = _inflowProcessor;
 
 - (void)setInflowProcessor:(RNDBindingProcessor *)inflowProcessor {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _inflowProcessor = inflowProcessor;
     });
@@ -31,7 +31,7 @@
 
 - (NSMutableArray<RNDBindingProcessor *> *)inflowProcessor {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _inflowProcessor;
     });
     return localObject;
@@ -41,7 +41,7 @@
 
 - (NSMutableArray<RNDBindingProcessor *> *)outflowProcessors {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _outflowProcessors;
     });
     return localObject;
@@ -51,7 +51,7 @@
 @synthesize bindingName = _bindingName;
 
 - (void)setBindingName:(NSString * _Nonnull)bindingName {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _bindingName = bindingName;
     });
@@ -59,7 +59,7 @@
 
 - (NSString *)bindingName {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _bindingName;
     });
     return localObject;
@@ -69,7 +69,7 @@
 @synthesize bindingObject = _bindingObject;
 
 - (void)setBindingObject:(NSObject<RNDBindableObject> *)observer {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _bindingObject = observer;
     });
@@ -77,7 +77,7 @@
 
 - (NSObject<RNDBindableObject> *)bindingObject {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _bindingObject;
     });
     return localObject;
@@ -87,7 +87,7 @@
 @synthesize bindingObjectKeyPath = _bindingObjectKeyPath;
 
 - (void)setBindingObjectKeyPath:(NSString * _Nonnull)observerKey {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _bindingObjectKeyPath = observerKey;
     });
@@ -95,7 +95,7 @@
 
 - (NSString *)bindingObjectKeyPath {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _bindingObjectKeyPath;
     });
     return localObject;
@@ -104,7 +104,7 @@
 @synthesize monitorsBindingObject = _monitorsBindingObject;
 
 - (void)setMonitorsBindingObject:(BOOL)monitorsObserver {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _monitorsBindingObject = monitorsObserver;
     });
@@ -112,7 +112,7 @@
 
 - (BOOL)monitorsBindingObject {
     BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _monitorsBindingObject;
     });
     return localObject;
@@ -120,8 +120,8 @@
 
 
 #pragma mark - Transient (Calculated) Properties
-@synthesize syncQueue = _syncQueue;
-@synthesize syncQueueIdentifier = _syncQueueIdentifier;
+@synthesize coordinator = _coordinator;
+@synthesize coordinatorQueueIdentifier = _coordinatorQueueIdentifier;
 @synthesize syncCoordinator = _syncCoordinator;
 @synthesize bound = _isBound;
 
@@ -129,7 +129,14 @@
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     id __block objectValue = nil;
     
-    dispatch_sync(_syncQueue, ^{
+    // Check the bound status
+    if (_isBound == NO) {
+        objectValue = nil;
+        dispatch_semaphore_signal(_syncCoordinator);
+        return objectValue;
+    }
+    
+    dispatch_sync(_coordinator, ^{
         objectValue = [self coordinatedBindingValue];
     });
     
@@ -143,19 +150,13 @@
 
 - (id _Nullable)coordinatedBindingValue {
     //Check the queue
-    dispatch_assert_queue_debug(_syncQueue);
+    dispatch_assert_queue_debug(_coordinator);
     
     id objectValue = nil;
     
-    // Check the bound status
-    if (_isBound == NO) {
-        objectValue = nil;
-        return objectValue;
-    }
-    
     // Set the runtime arguments
     NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
-    NSDictionary *contextDictionary = (dispatch_get_context(_syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_syncQueue)) : nil);
+    NSDictionary *contextDictionary = (dispatch_get_context(_coordinator) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_coordinator)) : nil);
     if (contextDictionary != nil) {
         [arguments addEntriesFromDictionary:contextDictionary];
     }
@@ -174,7 +175,7 @@
 - (id _Nullable)rawBindingValue {
     id objectValue = nil;
     NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
-    NSDictionary *contextDictionary = (dispatch_get_context(_syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_syncQueue)) : nil);
+    NSDictionary *contextDictionary = (dispatch_get_context(_coordinator) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_coordinator)) : nil);
     if (contextDictionary != nil) {
         [arguments addEntriesFromDictionary:contextDictionary];
     }
@@ -217,7 +218,7 @@
     } else {
         // Add delegate calls?
         
-        [self updateObservedObjectValue];
+        [self updateObservedObjectValue:nil]; // TODO: Determine
         
     }
     
@@ -226,7 +227,7 @@
 - (void)updateBindingObjectValue {
     // Because this may be a UI object, this last unit of work must be performed on the main queue.
     // This will serialize the work which removes the need for a barrier
-    dispatch_barrier_async(_syncQueue, ^{
+    dispatch_barrier_async(_coordinator, ^{
         id observedObjectValue = [self coordinatedBindingValue];
         if (_bindingObjectKeyPath != nil && [observedObjectValue isEqual:[_bindingObject valueForKey:_bindingObjectKeyPath]] == NO) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -237,8 +238,10 @@
     });
 }
 
-- (void)updateObservedObjectValue {
-    dispatch_barrier_async(_syncQueue, ^{
+- (BOOL)updateObservedObjectValue:(NSError * __autoreleasing _Nullable * _Nullable)error {
+    NSError * __block internalError;
+    NSMutableArray * __block internalErrorArray = [NSMutableArray new];
+    dispatch_barrier_async(_coordinator, ^{
         // Get the current value of the bindingObject
         __block id bindingObjectValue = nil;
         dispatch_block_t block = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS, ^{
@@ -249,7 +252,7 @@
         
         // Set the runtime arguments
         NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
-        NSDictionary *contextDictionary = (dispatch_get_context(_syncQueue) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_syncQueue)) : nil);
+        NSDictionary *contextDictionary = (dispatch_get_context(_coordinator) != NULL ? (__bridge NSDictionary *)(dispatch_get_context(_coordinator)) : nil);
         if (contextDictionary != nil) {
             [arguments addEntriesFromDictionary:contextDictionary];
         }
@@ -271,7 +274,11 @@
             // If the two values are equal, nothing needs to be updated.
             if ([processorBindingValue isEqual:observedObjectBindingValue] == YES) { return; }
             
-            // Update the value of the observed object
+            // Update the value of the observed object.
+            // If the destination provides validation methods and validates immediately is
+            // set to yes, then validate prior to writing. Otherwise, just write the value to the
+            // key.
+            // TODO: Add validation
             if (processor.writeOnMainQueue == YES) {
                 dispatch_block_t block = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS, ^{
                     [processor.observedObject setValue:processorBindingValue forKeyPath:processor.resolvedObservedObjectKeyPath];
@@ -284,6 +291,31 @@
         }
         
     });
+    return NO; // TODO: Fix
+}
+
+#pragma mark RNDEditor
+
+- (void)discardBoundEdit {
+    // If the observer (binding object) maintains an in process edit, call the discardBoundEdit method.
+    // Otherwise, simply reset the value to the model value.
+    if ([_bindingObject conformsToProtocol:@protocol(RNDEditor)] == YES && [_bindingObject respondsToSelector:@selector(discardBoundEdit)] == YES) {
+        dispatch_block_t block = dispatch_block_create(DISPATCH_BLOCK_INHERIT_QOS_CLASS, ^{
+            [((id<RNDEditor>)_bindingObject) discardBoundEdit];
+
+        });
+        dispatch_async(dispatch_get_main_queue(), block);
+        dispatch_block_wait(block, DISPATCH_TIME_FOREVER);
+    }
+    [self updateBindingObjectValue];
+}
+- (BOOL)commitBoundEdit {
+    return [self commitBoundEditAndReturnError:NULL];
+}
+
+- (BOOL)commitBoundEditAndReturnError:(NSError * _Nullable __autoreleasing * _Nullable)error {
+    return [self updateObservedObjectValue:error];
+    
 }
 
 #pragma mark - Object Lifecycle
@@ -291,8 +323,8 @@
 - (instancetype _Nullable)init {
     if ((self = [super init]) != nil) {
         
-        _syncQueueIdentifier = [[NSUUID alloc] init];
-        _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
+        _coordinatorQueueIdentifier = [[NSUUID alloc] init];
+        _coordinator = dispatch_queue_create([[_coordinatorQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
         _syncCoordinator = dispatch_semaphore_create(1);
 
     }
@@ -310,13 +342,13 @@
             NSString * propertyName = [NSString stringWithCString:property_getName(properties[i]) encoding:NSUTF8StringEncoding] ;
             if ([propertyName isEqualToString:@"syncQueue"] ||
                 [propertyName isEqualToString:@"observer"] ||
-                [propertyName isEqualToString:@"syncQueueIdentifier"] ||
+                [propertyName isEqualToString:@"coordinatorQueueIdentifier"] ||
                 [propertyName isEqualToString:@"syncCoordinator"]) { continue; }
             [self setValue:[aDecoder decodeObjectForKey:propertyName] forKey:propertyName];
         }
         
-        _syncQueueIdentifier = [[NSUUID alloc] init];
-        _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
+        _coordinatorQueueIdentifier = [[NSUUID alloc] init];
+        _coordinator = dispatch_queue_create([[_coordinatorQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
         _syncCoordinator = dispatch_semaphore_create(1);
 
 
@@ -335,7 +367,7 @@
             NSString * propertyName = [NSString stringWithCString:property_getName(properties[i]) encoding:NSUTF8StringEncoding] ;
             if ([propertyName isEqualToString:@"syncQueue"] ||
                 [propertyName isEqualToString:@"observer"] ||
-                [propertyName isEqualToString:@"syncQueueIdentifier"] ||
+                [propertyName isEqualToString:@"coordinatorQueueIdentifier"] ||
                 [propertyName isEqualToString:@"syncCoordinator"]) { continue; }
             [aCoder encodeObject:[self valueForKey:propertyName] forKey:propertyName];
         }
@@ -351,7 +383,7 @@
     BOOL result = YES;
     NSError *internalError = nil;
     
-    dispatch_assert_queue_debug(_syncQueue);
+    dispatch_assert_queue_debug(_coordinator);
 
     if (_isBound == YES) {
         result = NO;
@@ -432,10 +464,11 @@
     
     // The processors must receive a bind message.
     _inflowProcessor.binder = self;
-    if ([_inflowProcessor bind:error] == NO) {
+    if (_inflowProcessor != nil && [_inflowProcessor bind:error] == NO) {
         [self unbindCoordinatedObjects:error];
         return NO;
     }
+
     _boundOutflowProcessors = [NSArray arrayWithArray:_outflowProcessors];
     for (RNDBindingProcessor *processor in _boundOutflowProcessors) {
         processor.binder = self;
@@ -451,7 +484,7 @@
 
 - (void)bind {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
-    dispatch_sync(_syncQueue, ^{
+    dispatch_sync(_coordinator, ^{
         [self bindCoordinatedObjects:nil];
     });
     dispatch_semaphore_signal(_syncCoordinator);
@@ -460,7 +493,7 @@
 - (BOOL)bind:(NSError * _Nullable __autoreleasing * _Nullable)error {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     __block BOOL result = NO;
-    dispatch_barrier_sync(_syncQueue, ^{
+    dispatch_barrier_sync(_coordinator, ^{
         result = [self bindCoordinatedObjects:error];
     });
     dispatch_semaphore_signal(_syncCoordinator);
@@ -473,7 +506,7 @@
     NSMutableArray *underlyingErrorsArray = [NSMutableArray array];
     NSError * internalError;
 
-    dispatch_assert_queue_barrier_debug(self.syncQueue);
+    dispatch_assert_queue_debug(self.coordinator);
     
     @try {
         if (_isBound == YES && _monitorsBindingObject == YES) {
@@ -534,7 +567,7 @@
 
 - (void)unbind {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
-    dispatch_barrier_sync(_syncQueue, ^{
+    dispatch_barrier_sync(_coordinator, ^{
         [self unbindCoordinatedObjects:nil];
     });
     dispatch_semaphore_signal(_syncCoordinator);
@@ -543,7 +576,7 @@
 - (BOOL)unbind:(NSError * _Nullable __autoreleasing * _Nullable)error {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     __block BOOL result = NO;
-    dispatch_barrier_sync(_syncQueue, ^{
+    dispatch_barrier_sync(_coordinator, ^{
         result = [self unbindCoordinatedObjects:error];
     });
     dispatch_semaphore_signal(_syncCoordinator);

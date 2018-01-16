@@ -17,7 +17,7 @@
 
 @property (class, strong, nonnull, readonly) RNDResourceManager *sharedManager;
 @property (strong, nonnull, readonly) dispatch_queue_t syncQueue;
-@property (strong, nonnull, readonly) NSUUID *syncQueueIdentifier;
+@property (strong, nonnull, readonly) NSUUID *coordinatorQueueIdentifier;
 
 @end
 
@@ -27,7 +27,7 @@
 @synthesize mergedManifest = _mergedManifest;
 @synthesize resources = _resources;
 @synthesize syncQueue = _syncQueue;
-@synthesize syncQueueIdentifier = _syncQueueIdentifier;
+@synthesize coordinatorQueueIdentifier = _coordinatorQueueIdentifier;
 
 + (RNDResourceManager *)sharedManager {
     static RNDResourceManager *manager = nil;
@@ -43,8 +43,8 @@
     if((self = [super init]) != nil) {
         _resources = [NSMutableDictionary dictionary];
         
-        _syncQueueIdentifier = [[NSUUID alloc] init];
-        _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
+        _coordinatorQueueIdentifier = [[NSUUID alloc] init];
+        _syncQueue = dispatch_queue_create([[_coordinatorQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
         
         // TODO: dispatch merged manifest construction on sync queue
         // TODO: load resources that should be preloaded

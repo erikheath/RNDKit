@@ -17,7 +17,7 @@
 
 @interface RNDBindingProcessor ()
 
-@property (strong, nullable, readonly) NSUUID *syncQueueIdentifier;
+@property (strong, nullable, readonly) NSUUID *coordinatorQueueIdentifier;
 
 @end
 
@@ -393,7 +393,7 @@
 
 #pragma mark - Transient (Calculated) Properties
 @synthesize valueTransformer = _valueTransformer;
-@synthesize syncQueueIdentifier = _syncQueueIdentifier;
+@synthesize coordinatorQueueIdentifier = _coordinatorQueueIdentifier;
 @synthesize syncQueue = _syncQueue;
 @synthesize syncCoordinator = _syncCoordinator;
 @synthesize bound = _isBound;
@@ -402,6 +402,13 @@
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     
     id __block objectValue = nil;
+
+    // Check the bound status
+    if (_isBound == NO) {
+        objectValue = nil;
+        dispatch_semaphore_signal(_syncCoordinator);
+        return objectValue;
+    }
     
     dispatch_sync(_syncQueue, ^{
         objectValue = [self coordinatedBindingValue];
@@ -418,12 +425,6 @@
     
     id objectValue = nil;
     
-    // Check the bound status
-    if (_isBound == NO) {
-        objectValue = nil;
-        return objectValue;
-    }
-
     // Generate the raw value
     objectValue = [self rawBindingValue:nil];
     
@@ -609,8 +610,8 @@
 - (instancetype)init {
     if ((self = [super init]) != nil) {
         _runtimeArguments = @{};
-        _syncQueueIdentifier = [[NSUUID alloc] init];
-        _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
+        _coordinatorQueueIdentifier = [[NSUUID alloc] init];
+        _syncQueue = dispatch_queue_create([[_coordinatorQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
         _syncCoordinator = dispatch_semaphore_create(1);
         _processorArguments = [NSMutableArray array];
         _unwrapSingleValue = YES;
@@ -627,7 +628,7 @@
             NSString * propertyName = [NSString stringWithCString:property_getName(properties[i]) encoding:NSUTF8StringEncoding] ;
             if ([propertyName isEqualToString:@"syncQueue"] ||
                 [propertyName isEqualToString:@"valueTransformer"] ||
-                [propertyName isEqualToString:@"syncQueueIdentifier"] ||
+                [propertyName isEqualToString:@"coordinatorQueueIdentifier"] ||
                 [propertyName isEqualToString:@"isBound"] ||
                 [propertyName isEqualToString:@"observedObject"] ||
                 [propertyName isEqualToString:@"readWriteCoordinator"]) { continue; }
@@ -638,8 +639,8 @@
             free(properties);
         }
         
-        _syncQueueIdentifier = [[NSUUID alloc] init];
-        _syncQueue = dispatch_queue_create([[_syncQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
+        _coordinatorQueueIdentifier = [[NSUUID alloc] init];
+        _syncQueue = dispatch_queue_create([[_coordinatorQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
         _syncCoordinator = dispatch_semaphore_create(1);
 
         if (_valueTransformerName != nil) {
@@ -659,7 +660,7 @@
         NSString * propertyName = [NSString stringWithCString:property_getName(properties[i]) encoding:NSUTF8StringEncoding] ;
         if ([propertyName isEqualToString:@"syncQueue"] ||
             [propertyName isEqualToString:@"valueTransformer"] ||
-            [propertyName isEqualToString:@"syncQueueIdentifier"] ||
+            [propertyName isEqualToString:@"coordinatorQueueIdentifier"] ||
             [propertyName isEqualToString:@"isBound"] ||
             [propertyName isEqualToString:@"observedObject"] ||
             [propertyName isEqualToString:@"readWriteCoordinator"]) { continue; }

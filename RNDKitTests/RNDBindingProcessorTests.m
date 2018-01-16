@@ -686,7 +686,7 @@
 
     [invProcessor.processorArguments addObjectsFromArray:@[processorArg2]];
     invProcessor.observedObject = processorArg1;
-    invProcessor.observedObjectKeyPath = @"bindingObjectValue";
+    invProcessor.observedObjectKeyPath = @"bindingValue";
 
     [processor.processorArguments addObject:invProcessor];
     XCTAssertNil(processor.bindingValue);

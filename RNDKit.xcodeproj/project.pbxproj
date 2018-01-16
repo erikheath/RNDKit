@@ -435,7 +435,7 @@
 			path = RNDBindingControllers;
 			sourceTree = "<group>";
 		};
-		E43C3F541F9A854900F4D1B5 /* RNDBindingProtocols+Categories */ = {
+		E43C3F541F9A854900F4D1B5 /* RNDBindingProtocolsCategories */ = {
 			isa = PBXGroup;
 			children = (
 				E454B00C1FD8A74A00C59FB3 /* NSObject+RNDObjectBinding.h */,
@@ -447,7 +447,7 @@
 				E43C3F511F9A822E00F4D1B5 /* RNDUserInterfaceValidation.h */,
 				E4F85A291FEDC585000CF48F /* RNDBindableObject.h */,
 			);
-			path = "RNDBindingProtocols+Categories";
+			path = RNDBindingProtocolsCategories;
 			sourceTree = "<group>";
 		};
 		E43C3F551F9A857900F4D1B5 /* RNDBindings */ = {
@@ -600,7 +600,7 @@
 				E43C3F551F9A857900F4D1B5 /* RNDBindings */,
 				E434971F1FCDEDF400E1FD2B /* RNDResourceBindings */,
 				E454AFFD1FD89C7900C59FB3 /* RNDTransformers */,
-				E43C3F541F9A854900F4D1B5 /* RNDBindingProtocols+Categories */,
+				E43C3F541F9A854900F4D1B5 /* RNDBindingProtocolsCategories */,
 				E43C3F531F9A850E00F4D1B5 /* RNDBindingControllers */,
 				E49CFBAD1F7EC17900CDFF29 /* Info.plist */,
 			);
@@ -1252,6 +1252,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$SRCROOT/**";
 			};
 			name = Debug;
 		};
@@ -1273,6 +1274,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$SRCROOT/**";
 			};
 			name = Release;
 		};
