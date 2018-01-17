@@ -17,7 +17,7 @@
 @synthesize replacementTemplate = _replacementTemplate;
 
 - (void)setRegExTemplate:(NSString * _Nullable)regExTemplate {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _regExTemplate = regExTemplate;
     });
@@ -25,14 +25,14 @@
 
 - (NSString * _Nullable)regExTemplate {
     id __block localObject = nil;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _regExTemplate;
     });
     return localObject;
 }
 
 - (void)setReplacementTemplate:(NSString * _Nullable)replacementTemplate {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _replacementTemplate = replacementTemplate;
     });
@@ -40,7 +40,7 @@
 
 - (NSString * _Nullable)replacementTemplate {
     id __block localObject = nil;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _regExTemplate;
     });
     return localObject;
@@ -49,7 +49,7 @@
 - (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         
         if (self.isBound == NO) {
             objectValue = nil;

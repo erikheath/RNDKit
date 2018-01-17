@@ -17,7 +17,7 @@
 @synthesize expressionTemplate = _expressionTemplate;
 
 - (void)setExpressionTemplate:(NSString * _Nullable)expressionTemplate {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _expressionTemplate = expressionTemplate;
     });
@@ -25,7 +25,7 @@
 
 - (NSString * _Nullable)expressionTemplate {
     NSString __block *localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _expressionTemplate;
     });
     return localObject;
@@ -34,7 +34,7 @@
 - (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         
         if (self.isBound == NO) {
             objectValue = nil;

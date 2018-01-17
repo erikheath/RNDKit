@@ -94,7 +94,7 @@
     RNDBindingProcessor *processor = [RNDBindingProcessorTestFramework processorWithProfile:@"A"];
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNil(processor.observedObject);
     XCTAssertNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
@@ -209,7 +209,7 @@
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
@@ -242,7 +242,7 @@
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
@@ -283,7 +283,7 @@
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
@@ -326,7 +326,7 @@
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
@@ -371,7 +371,7 @@
 
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
@@ -427,7 +427,7 @@
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNotNil(processor.observedObject);
     XCTAssertNotNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
@@ -484,7 +484,7 @@
 
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNil(processor.observedObject);
     XCTAssertNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
@@ -538,7 +538,7 @@
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNil(processor.observedObject);
     XCTAssertNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
@@ -578,7 +578,7 @@
     
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNil(processor.observedObject);
     XCTAssertNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);
@@ -634,7 +634,7 @@
 
     XCTAssertNotNil(processor);
     XCTAssertFalse(processor.isBound);
-    XCTAssertNotNil(processor.syncQueue);
+    XCTAssertNotNil(processor.coordinator);
     XCTAssertNil(processor.observedObject);
     XCTAssertNil(processor.observedObjectKeyPath);
     XCTAssertNil(processor.observedObjectBindingIdentifier);

@@ -19,7 +19,9 @@ typedef NS_ENUM(NSUInteger, RNDBindingProcessorErrorCode) {
     RNDExceptionAsError = 4,
     RNDObjectIsBoundError = 5,
     RNDAttemptToObserveProcessorError = 6,
-    RNDKeyValuePathError = 7
+    RNDKeyValuePathError = 7,
+    RNDResourceNotFound = 8,
+    RNDResourceCreationError = 9
 };
 
 typedef NSString * const RNDKitErrorKey;
@@ -39,6 +41,13 @@ FOUNDATION_EXPORT RNDKitErrorKey RNDUnbindingExceptionRecoverySuggestionErrorKey
 FOUNDATION_EXPORT RNDKitErrorKey RNDUnderlyingErrorsArrayKey;
 FOUNDATION_EXPORT RNDKitErrorKey RNDObjectIsBoundErrorKey;
 FOUNDATION_EXPORT RNDKitErrorKey RNDObjectIsBoundRecoverySuggestionErrorKey;
+FOUNDATION_EXPORT RNDKitErrorKey RNDBinderSetCreationErrorKey;
+FOUNDATION_EXPORT RNDKitErrorKey RNDBinderSetArchiveNotFoundErrorKey;
+FOUNDATION_EXPORT RNDKitErrorKey RNDBinderSetCreationFailureRecoverySuggestionErrorKey;
+FOUNDATION_EXPORT RNDKitErrorKey RNDBinderSetArchiveCreationErrorKey;
+FOUNDATION_EXPORT RNDKitErrorKey RNDBinderSetArchiveDataIsNilErrorKey;
+FOUNDATION_EXPORT RNDKitErrorKey RNDBinderSetArchiveCreationFailureRecoverySuggestionErrorKey;
+
 
 #pragma mark - RNDBinderManifestKeys
 typedef NSString * const RNDBinderManifestKey;

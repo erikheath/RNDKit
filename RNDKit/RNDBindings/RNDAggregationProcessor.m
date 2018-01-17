@@ -17,7 +17,7 @@
 @synthesize filtersNilValues = _filtersNilValues;
 
 - (void)setFiltersNilValues:(BOOL)filtersNilValues {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _filtersNilValues = filtersNilValues;
     });
@@ -25,7 +25,7 @@
 
 - (BOOL)filtersNilValues {
     BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _filtersNilValues;
     });
     return localObject;
@@ -35,7 +35,7 @@
 @synthesize filtersMarkerValues = _filtersMarkerValues;
 
 - (void)setFiltersMarkerValues:(BOOL)filtersMarkerValues {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _filtersMarkerValues = filtersMarkerValues;
     });
@@ -43,7 +43,7 @@
 
 - (BOOL)filtersMarkerValues {
     BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _filtersMarkerValues;
     });
     return localObject;
@@ -53,7 +53,7 @@
 @synthesize mutuallyExclusive = _mutuallyExclusive;
 
 - (void)setMutuallyExclusive:(BOOL)mutuallyExclusive {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _mutuallyExclusive = mutuallyExclusive;
     });
@@ -61,7 +61,7 @@
 
 - (BOOL)mutuallyExclusive {
     BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _mutuallyExclusive;
     });
     return localObject;
@@ -69,7 +69,7 @@
 
 #pragma mark - Transient (Calculated) Properties
 - (id _Nullable)coordinatedBindingValue {
-    dispatch_assert_queue_debug(self.syncQueue);
+    dispatch_assert_queue_debug(self.coordinator);
 
     id __block objectValue = nil;
     

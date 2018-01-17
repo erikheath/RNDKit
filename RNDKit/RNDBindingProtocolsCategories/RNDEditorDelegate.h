@@ -11,7 +11,12 @@
 
 @protocol RNDEditorDelegate <NSObject>
 
-- (void)boundEditor:(id<RNDEditorDelegate>)editor didCommit:(BOOL)didCommit contextInfo:(void *)contextInfo error:(NSError **)error;
+@required
 
+- (void)boundEditor:(id<RNDEditorDelegate> _Nonnull)editor didCommit:(BOOL)didCommit contextInfo:(void * _Nullable)contextInfo error:(NSError * __autoreleasing _Nullable * _Nullable)error;
+
+@optional
+
+- (BOOL)editedValue:(id _Nullable)editedValue shouldChangeToValue:(id _Nullable)newValue fromDataSourceValue:(id _Nullable)dataSourceValue;
 @end
 

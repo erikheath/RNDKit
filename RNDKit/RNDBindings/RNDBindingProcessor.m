@@ -27,7 +27,7 @@
 @synthesize observedObject = _observedObject;
 
 - (void)setObservedObject:(NSObject *)observedObject {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _observedObject = observedObject;
     });
@@ -35,7 +35,7 @@
 
 - (NSString *)observedObject {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _observedObject;
     });
     return localObject;
@@ -45,7 +45,7 @@
 @synthesize observedObjectKeyPath = _observedObjectKeyPath;
 
 - (void)setObservedObjectKeyPath:(NSString *)observedObjectKeyPath {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _observedObjectKeyPath = observedObjectKeyPath;
     });
@@ -53,7 +53,7 @@
 
 - (NSString *)observedObjectKeyPath {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _observedObjectKeyPath;
     });
     return localObject;
@@ -63,7 +63,7 @@
 @synthesize observedObjectBindingIdentifier = _observedObjectBindingIdentifier;
 
 - (void)setObservedObjectBindingIdentifier:(NSString *)observedObjectBindingIdentifier {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _observedObjectBindingIdentifier = observedObjectBindingIdentifier;
     });
@@ -71,7 +71,7 @@
 
 - (NSString *)observedObjectBindingIdentifier {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _observedObjectBindingIdentifier;
     });
     return localObject;
@@ -81,7 +81,7 @@
 @synthesize monitorsObservedObject = _monitorsObservedObject;
 
 - (void)setMonitorsObservedObject:(BOOL)monitorsObservedObject {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _monitorsObservedObject = monitorsObservedObject;
     });
@@ -89,7 +89,7 @@
 
 - (BOOL)monitorsObservedObject {
     BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _monitorsObservedObject;
     });
     return localObject;
@@ -99,7 +99,7 @@
 @synthesize controllerKey = _controllerKey;
 
 - (void)setControllerKey:(NSString *)controllerKey {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _controllerKey = controllerKey;
     });
@@ -107,7 +107,7 @@
 
 - (NSString *)controllerKey {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _controllerKey;
     });
     return localObject;
@@ -117,7 +117,7 @@
 @synthesize binder = _binder;
 
 - (void)setBinder:(RNDBinder *)binder {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _binder = binder;
     });
@@ -125,7 +125,7 @@
 
 - (RNDBinder *)binder {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _binder;
     });
     return localObject;
@@ -135,7 +135,7 @@
 @synthesize bindingName = _bindingName;
 
 - (void)setBindingName:(NSString *)bindingName {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _bindingName = bindingName;
     });
@@ -143,7 +143,7 @@
 
 - (NSString *)bindingName {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _bindingName;
     });
     return localObject;
@@ -153,7 +153,7 @@
 @synthesize nullPlaceholder = _nullPlaceholder;
 
 - (void)setNullPlaceholder:(RNDBindingProcessor *)nullPlaceholder {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _nullPlaceholder = nullPlaceholder;
     });
@@ -161,7 +161,7 @@
 
 - (RNDBindingProcessor *)nullPlaceholder {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _nullPlaceholder;
     });
     return localObject;
@@ -171,7 +171,7 @@
 @synthesize multipleSelectionPlaceholder = _multipleSelectionPlaceholder;
 
 - (void)setMultipleSelectionPlaceholder:(RNDBindingProcessor *)multipleSelectionPlaceholder {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _multipleSelectionPlaceholder = multipleSelectionPlaceholder;
     });
@@ -179,7 +179,7 @@
 
 - (RNDBindingProcessor *)multipleSelectionPlaceholder {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _multipleSelectionPlaceholder;
     });
     return localObject;
@@ -189,7 +189,7 @@
 @synthesize notApplicablePlaceholder = _notApplicablePlaceholder;
 
 - (void)setNotApplicablePlaceholder:(RNDBindingProcessor *)notApplicablePlaceholder {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _notApplicablePlaceholder = notApplicablePlaceholder;
     });
@@ -197,7 +197,7 @@
 
 - (RNDBindingProcessor *)notApplicablePlaceholder {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _notApplicablePlaceholder;
     });
     return localObject;
@@ -207,7 +207,7 @@
 @synthesize nilPlaceholder = _nilPlaceholder;
 
 - (void)setNilPlaceholder:(RNDBindingProcessor *)nilPlaceholder {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _nilPlaceholder = nilPlaceholder;
     });
@@ -215,7 +215,7 @@
 
 - (RNDBindingProcessor *)nilPlaceholder {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _nilPlaceholder;
     });
     return localObject;
@@ -225,7 +225,7 @@
 @synthesize noSelectionPlaceholder = _noSelectionPlaceholder;
 
 - (void)setNoSelectionPlaceholder:(RNDBindingProcessor *)noSelectionPlaceholder {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _noSelectionPlaceholder = noSelectionPlaceholder;
     });
@@ -233,7 +233,7 @@
 
 - (RNDBindingProcessor *)noSelectionPlaceholder {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _noSelectionPlaceholder;
     });
     return localObject;
@@ -243,7 +243,7 @@
 @synthesize argumentName = _argumentName;
 
 - (void)setArgumentName:(NSString *)argumentName {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _argumentName = argumentName;
     });
@@ -251,7 +251,7 @@
 
 - (NSString *)argumentName {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _argumentName;
     });
     return localObject;
@@ -261,7 +261,7 @@
 @synthesize valueTransformerName = _valueTransformerName;
 
 - (void)setValueTransformerName:(NSString *)valueTransformerName {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _valueTransformerName = valueTransformerName;
     });
@@ -269,7 +269,7 @@
 
 - (NSString *)valueTransformerName {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _valueTransformerName;
     });
     return localObject;
@@ -280,7 +280,7 @@
 
 - (NSMutableArray<RNDBindingProcessor *> *)processorArguments {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _processorArguments;
     });
     return localObject;
@@ -290,7 +290,7 @@
 
 - (NSArray<RNDBindingProcessor *> *)boundProcessorArguments {
     id __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _boundProcessorArguments;
     });
     return localObject;
@@ -299,7 +299,7 @@
 @synthesize processorCondition = _processorCondition;
 
 - (void)setProcessorCondition:(RNDPredicateProcessor *)observedObjectEvaluator {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         if (observedObjectEvaluator == nil) {
             _processorCondition = [[RNDPredicateProcessor alloc] init];
@@ -312,7 +312,7 @@
 
 - (RNDPredicateProcessor *)processorCondition {
     RNDPredicateProcessor __block *localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _processorCondition;
     });
     return localObject;
@@ -322,7 +322,7 @@
 @synthesize processorValueMode = _processorValueMode;
 
 - (void)setProcessorValueMode:(RNDValueMode)processorValueMode {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _processorValueMode = processorValueMode;
     });
@@ -330,7 +330,7 @@
 
 - (RNDValueMode)processorValueMode {
     BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _processorValueMode;
     });
     return localObject;
@@ -340,7 +340,7 @@
 @synthesize processorOutputType = _processorOutputType;
 
 - (void)setProcessorOutputType:(RNDProcessorOutputType)processorOutputType {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _processorOutputType = processorOutputType;
     });
@@ -348,7 +348,7 @@
 
 - (RNDProcessorOutputType)processorOutputType {
     RNDProcessorOutputType __block localValue;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localValue = _processorOutputType;
     });
     return localValue;
@@ -358,7 +358,7 @@
 @synthesize runtimeArguments = _runtimeArguments;
 
 - (void)setRuntimeArguments:(NSDictionary *)runtimeArguments {
-    dispatch_barrier_sync(_syncQueue, ^{
+    dispatch_barrier_sync(_coordinator, ^{
         _runtimeArguments = runtimeArguments != nil ? runtimeArguments : @{};
         for (RNDBindingProcessor *binding in self.processorNodes) {
             binding.runtimeArguments = _runtimeArguments;
@@ -368,7 +368,7 @@
 
 - (NSDictionary *)runtimeArguments {
     id __block localObject = nil;
-    dispatch_sync(_syncQueue, ^{
+    dispatch_sync(_coordinator, ^{
         localObject = _runtimeArguments;
     });
     return localObject;
@@ -377,7 +377,7 @@
 @synthesize unwrapSingleValue = _unwrapSingleValue;
 
 - (void)setUnwrapSingleValue:(BOOL)unwrapSingleValue {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _unwrapSingleValue = unwrapSingleValue;
     });
@@ -385,7 +385,7 @@
 
 - (BOOL)unwrapSingleValue {
     BOOL __block localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _unwrapSingleValue;
     });
     return localObject;
@@ -394,7 +394,7 @@
 #pragma mark - Transient (Calculated) Properties
 @synthesize valueTransformer = _valueTransformer;
 @synthesize coordinatorQueueIdentifier = _coordinatorQueueIdentifier;
-@synthesize syncQueue = _syncQueue;
+@synthesize coordinator = _coordinator;
 @synthesize syncCoordinator = _syncCoordinator;
 @synthesize bound = _isBound;
 
@@ -410,7 +410,7 @@
         return objectValue;
     }
     
-    dispatch_sync(_syncQueue, ^{
+    dispatch_sync(_coordinator, ^{
         objectValue = [self coordinatedBindingValue];
     });
     
@@ -421,7 +421,7 @@
 
 - (id _Nullable)coordinatedBindingValue {
     //Check the queue
-    dispatch_assert_queue_debug(_syncQueue);
+    dispatch_assert_queue_debug(_coordinator);
     
     id objectValue = nil;
     
@@ -557,7 +557,7 @@
 
 - (id)observedObjectBindingValue {
     id __block localObject = nil;
-    dispatch_sync(_syncQueue, ^{
+    dispatch_sync(_coordinator, ^{
         NSString *keyPath = self.resolvedObservedObjectKeyPath;
         if ([keyPath isEqualToString:@""] == NO) {
             localObject = [_observedObject valueForKeyPath:keyPath];
@@ -611,7 +611,7 @@
     if ((self = [super init]) != nil) {
         _runtimeArguments = @{};
         _coordinatorQueueIdentifier = [[NSUUID alloc] init];
-        _syncQueue = dispatch_queue_create([[_coordinatorQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
+        _coordinator = dispatch_queue_create([[_coordinatorQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
         _syncCoordinator = dispatch_semaphore_create(1);
         _processorArguments = [NSMutableArray array];
         _unwrapSingleValue = YES;
@@ -640,7 +640,7 @@
         }
         
         _coordinatorQueueIdentifier = [[NSUUID alloc] init];
-        _syncQueue = dispatch_queue_create([[_coordinatorQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
+        _coordinator = dispatch_queue_create([[_coordinatorQueueIdentifier UUIDString] cStringUsingEncoding:[NSString defaultCStringEncoding]], DISPATCH_QUEUE_CONCURRENT);
         _syncCoordinator = dispatch_semaphore_create(1);
 
         if (_valueTransformerName != nil) {
@@ -678,7 +678,7 @@
     BOOL result = YES;
     NSError *internalError = nil;
     
-    dispatch_assert_queue_debug(_syncQueue);
+    dispatch_assert_queue_debug(_coordinator);
     
     if (_isBound == YES) {
         result = NO;
@@ -802,7 +802,7 @@
 
 - (void)bind {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
-    dispatch_sync(_syncQueue, ^{
+    dispatch_sync(_coordinator, ^{
         [self bindObjects:NULL];
     });
     dispatch_semaphore_signal(_syncCoordinator);
@@ -811,7 +811,7 @@
 - (BOOL)bind:(NSError * _Nullable __autoreleasing *)error {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     __block BOOL result = NO;
-    dispatch_barrier_sync(_syncQueue, ^{
+    dispatch_barrier_sync(_coordinator, ^{
         result = [self bindObjects:error];
     });
     dispatch_semaphore_signal(_syncCoordinator);
@@ -824,7 +824,7 @@
     NSMutableArray *underlyingErrorsArray = [NSMutableArray array];
     NSError * internalError;
     
-    dispatch_assert_queue_debug(_syncQueue);
+    dispatch_assert_queue_debug(_coordinator);
     
     @try {
         if (_isBound == YES && _monitorsObservedObject == YES) {
@@ -897,7 +897,7 @@
 
 - (void)unbind {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
-    dispatch_barrier_sync(_syncQueue, ^{
+    dispatch_barrier_sync(_coordinator, ^{
         [self unbindObjects:NULL];
     });
     dispatch_semaphore_signal(_syncCoordinator);
@@ -906,7 +906,7 @@
 - (BOOL)unbind:(NSError * _Nullable __autoreleasing *)error {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     __block BOOL result = NO;
-    dispatch_barrier_sync(_syncQueue, ^{
+    dispatch_barrier_sync(_coordinator, ^{
         result = [self unbindObjects:error];
     });
     dispatch_semaphore_signal(_syncCoordinator);

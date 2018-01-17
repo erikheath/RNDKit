@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "NSObject+RNDObjectBinding.h"
+#import "RNDBinder.h"
 
 /*
  TODO: Figure this out
@@ -28,16 +28,35 @@
 
 @interface RNDBinderSet: NSObject <NSCoding>
 
-@property(nonnull, readonly) NSString *binderSetIdentifier;
-@property(nonnull, readonly) NSDictionary *binders;
-@property(weak, readwrite, nullable) NSObject<RNDBindableObject> *observer;
+@property(nullable, readwrite) NSString *binderSetIdentifier;
+@property(nullable, readwrite) NSString *binderSetNamespace;
+@property(nonnull, readonly) NSMutableDictionary<NSString *, RNDBinder *> *binders;
 
+#pragma mark - Object Lifecycle
 - (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;
+
 - (instancetype _Nullable)initWithCoder:(NSCoder * _Nonnull)aCoder NS_DESIGNATED_INITIALIZER;
+
++ (instancetype _Nullable)unarchiveBinderSetAtURL:(NSURL * _Nonnull)url
+                                            error:(NSError * __autoreleasing _Nullable * _Nullable)error;
+
++ (instancetype _Nullable)unarchiveBinderSetWithID:(NSString * _Nonnull)binderSetIdentifier
+                                         namespace:(NSString * _Nullable)binderSetNamespace
+                                             error:(NSError * __autoreleasing _Nullable * _Nullable)error;
+
 - (void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
 
-- (BOOL)bind:(NSError * _Nullable __autoreleasing * _Nullable)error;
-- (BOOL)unbind:(NSError * _Nullable __autoreleasing * _Nullable)error;
+- (BOOL)archiveBinderSetToURL:(NSURL * _Nonnull)directory
+                        error:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
+- (BOOL)archiveBinderSet:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
 @end
+
+
+@interface RNDBinderSet(RNDWorkbench)
++ (instancetype _Nullable)binderSetWithName:(NSString * _Nonnull)binderSetName;
+@end
+
+
+

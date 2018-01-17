@@ -24,6 +24,12 @@ RNDKitErrorKey RNDUnbindingExceptionRecoverySuggestionErrorKey = @"RNDUnbindingE
 RNDKitErrorKey RNDUnderlyingErrorsArrayKey = @"RNDUnderlyingErrorsArrayKey";
 RNDKitErrorKey RNDObjectIsBoundErrorKey = @"RNDObjectIsBoundErrorKey";
 RNDKitErrorKey RNDObjectIsBoundRecoverySuggestionErrorKey = @"RNDObjectIsBoundRecoverySuggestionErrorKey";
+RNDKitErrorKey RNDBinderSetCreationErrorKey = @"RNDBinderSetCreationErrorKey";
+RNDKitErrorKey RNDBinderSetArchiveNotFoundErrorKey = @"RNDBinderSetArchiveNotFoundErrorKey";
+RNDKitErrorKey RNDBinderSetCreationFailureRecoverySuggestionErrorKey = @"RNDBinderSetCreationFailureRecoverySuggestionErrorKey";
+RNDKitErrorKey RNDBinderSetArchiveCreationErrorKey = @"RNDBinderSetArchiveCreationErrorKey";
+RNDKitErrorKey RNDBinderSetArchiveDataIsNilErrorKey = @"RNDBinderSetArchiveDataIsNilErrorKey";
+RNDKitErrorKey RNDBinderSetArchiveCreationFailureRecoverySuggestionErrorKey = @"RNDBinderSetArchiveCreationFailureRecoverySuggestionErrorKey";
 
 #pragma mark - RNDBinderManifestKeys
 RNDBinderManifestKey RNDBinderManifestNamespaceKey = @"RNDBinderManifestNamespaceKey";

@@ -6,13 +6,13 @@
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "NSObject+RNDObjectBinding.h"
+#import "NSObject+RNDBindableObject.h"
 #import "RNDBinder.h"
 #import "RNDEditor.h"
 #import "RNDEditorDelegate.h"
 #import <objc/runtime.h>
 
-@implementation NSObject (RNDObjectBinding)
+@implementation NSObject (RNDBindableObject)
 
 #pragma mark - Properties
 

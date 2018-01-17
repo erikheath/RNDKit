@@ -16,7 +16,7 @@
 @synthesize patternTemplate = _patternTemplate;
 
 - (void)setPatternTemplate:(NSString * _Nullable)patternTemplate {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _patternTemplate = patternTemplate;
     });
@@ -24,7 +24,7 @@
 
 - (NSString * _Nullable)patternTemplate {
     id __block localObject = nil;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _patternTemplate;
     });
     return localObject;
@@ -33,7 +33,7 @@
 - (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         
         if (self.isBound == NO) {
             objectValue = nil;

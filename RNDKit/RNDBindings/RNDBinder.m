@@ -238,9 +238,10 @@
     });
 }
 
+// TODO: Rewrite to account for editing, sync and async
 - (BOOL)updateObservedObjectValue:(NSError * __autoreleasing _Nullable * _Nullable)error {
-    NSError * __block internalError;
-    NSMutableArray * __block internalErrorArray = [NSMutableArray new];
+//    NSError * __block internalError;
+//    NSMutableArray * __block internalErrorArray = [NSMutableArray new];
     dispatch_barrier_async(_coordinator, ^{
         // Get the current value of the bindingObject
         __block id bindingObjectValue = nil;
@@ -296,6 +297,7 @@
 
 #pragma mark RNDEditor
 
+// TODO: Fix this up
 - (void)discardBoundEdit {
     // If the observer (binding object) maintains an in process edit, call the discardBoundEdit method.
     // Otherwise, simply reset the value to the model value.
@@ -493,7 +495,7 @@
 - (BOOL)bind:(NSError * _Nullable __autoreleasing * _Nullable)error {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     __block BOOL result = NO;
-    dispatch_barrier_sync(_coordinator, ^{
+    dispatch_sync(_coordinator, ^{
         result = [self bindCoordinatedObjects:error];
     });
     dispatch_semaphore_signal(_syncCoordinator);
@@ -567,7 +569,7 @@
 
 - (void)unbind {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
-    dispatch_barrier_sync(_coordinator, ^{
+    dispatch_sync(_coordinator, ^{
         [self unbindCoordinatedObjects:nil];
     });
     dispatch_semaphore_signal(_syncCoordinator);
@@ -576,7 +578,7 @@
 - (BOOL)unbind:(NSError * _Nullable __autoreleasing * _Nullable)error {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     __block BOOL result = NO;
-    dispatch_barrier_sync(_coordinator, ^{
+    dispatch_sync(_coordinator, ^{
         result = [self unbindCoordinatedObjects:error];
     });
     dispatch_semaphore_signal(_syncCoordinator);

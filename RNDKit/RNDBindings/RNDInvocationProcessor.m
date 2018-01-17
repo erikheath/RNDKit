@@ -9,7 +9,7 @@
 #import "RNDInvocationProcessor.h"
 #import "RNDBinder.h"
 #import "RNDPredicateProcessor.h"
-#import "NSObject+RNDObjectBinding.h"
+#import "NSObject+RNDBindableObject.h"
 #import <objc/runtime.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <AVKit/AVKit.h>
@@ -25,7 +25,7 @@
 @synthesize bindingSelectorString = _bindingSelectorString;
 
 - (void)setBindingSelectorString:(NSString * _Nullable)bindingSelectorString {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _bindingSelectorString = bindingSelectorString;
     });
@@ -33,7 +33,7 @@
 
 - (NSString * _Nullable)bindingSelectorString {
     NSString __block *localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _bindingSelectorString;
     });
     return localObject;
@@ -42,7 +42,7 @@
 - (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         
         if (self.isBound == NO) {
             objectValue = nil;

@@ -13,7 +13,7 @@
 @synthesize predicateFormatString = _predicateFormatString;
 
 - (void)setPredicateFormatString:(NSString * _Nullable)predicateFormatString {
-    dispatch_barrier_sync(self.syncQueue, ^{
+    dispatch_barrier_sync(self.coordinator, ^{
         if (self.isBound == YES) { return; }
         _predicateFormatString = predicateFormatString;
     });
@@ -21,7 +21,7 @@
 
 - (NSString * _Nullable)predicateFormatString {
     NSString __block *localObject;
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         localObject = _predicateFormatString;
     });
     return localObject;
@@ -30,7 +30,7 @@
 - (id _Nullable)bindingValue {
     id __block objectValue = nil;
     
-    dispatch_sync(self.syncQueue, ^{
+    dispatch_sync(self.coordinator, ^{
         
         if (self.isBound == NO) {
             objectValue = nil;
