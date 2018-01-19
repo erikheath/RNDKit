@@ -224,24 +224,125 @@
     
 }
 
-- (void)updateBindingObjectValue {
+- (void)bindingObjectValueNeedsUpdate {
+    dispatch_barrier_async(_coordinator, ^{
+        [self updateCoordinatedBindingObjectValue:[self coordinatedBindingValue]];
+    });
+}
+
+- (id)updateBindingObjectValue {
+    id __block coordinatedValue = nil;
+    dispatch_barrier_sync(_coordinator, ^{
+        coordinatedValue = [self coordinatedBindingValue];
+        [self updateCoordinatedBindingObjectValue:coordinatedValue];
+    });
+    return coordinatedValue;
+}
+
+- (void)updateCoordinatedBindingObjectValue:(id)coordinatedValue {
     // Because this may be a UI object, this last unit of work must be performed on the main queue.
     // This will serialize the work which removes the need for a barrier
-    dispatch_barrier_async(_coordinator, ^{
-        id observedObjectValue = [self coordinatedBindingValue];
-        if (_bindingObjectKeyPath != nil && [observedObjectValue isEqual:[_bindingObject valueForKey:_bindingObjectKeyPath]] == NO) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [_bindingObject setValue:observedObjectValue forKeyPath:_bindingObjectKeyPath];
-            });
-            return;
-        }
+    if (_bindingObjectKeyPath != nil && [coordinatedValue isEqual:[_bindingObject valueForKey:_bindingObjectKeyPath]] == NO) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_bindingObject setValue:coordinatedValue forKeyPath:_bindingObjectKeyPath];
+        });
+    }
+    
+    return;
+}
+
+#pragma mark RNDEditor
+
+@synthesize requiresConfirmationOnLockingFailure = _requiresConfirmationOnLockingFailure;
+
+- (void)setRequiresConfirmationOnLockingFailure:(BOOL)requiresConfirmationOnLockingFailure {
+    dispatch_barrier_sync(self.coordinator, ^{
+        if (self.isBound == YES) { return; }
+        _requiresConfirmationOnLockingFailure = requiresConfirmationOnLockingFailure;
     });
+}
+
+- (BOOL)requiresConfirmationOnLockingFailure {
+    BOOL __block localObject;
+    dispatch_sync(self.coordinator, ^{
+        localObject = _requiresConfirmationOnLockingFailure;
+    });
+    return localObject;
+}
+
+
+@synthesize registersAsEditor = _registersAsEditor;
+
+- (void)setRegistersAsEditor:(BOOL)registersAsEditor {
+    dispatch_barrier_sync(self.coordinator, ^{
+        if (self.isBound == YES) { return; }
+        _registersAsEditor = registersAsEditor;
+    });
+}
+
+- (BOOL)registersAsEditor {
+    BOOL __block localObject;
+    dispatch_sync(self.coordinator, ^{
+        localObject = _registersAsEditor;
+    });
+    return localObject;
+}
+
+@synthesize validatesImmediately = _validatesImmediately;
+
+- (void)setValidatesImmediately:(BOOL)validatesImmediately {
+    dispatch_barrier_sync(self.coordinator, ^{
+        if (self.isBound == YES) { return; }
+        _validatesImmediately = validatesImmediately;
+    });
+}
+
+- (BOOL)validatesImmediately {
+    BOOL __block localObject;
+    dispatch_sync(self.coordinator, ^{
+        localObject = _validatesImmediately;
+    });
+    return localObject;
+}
+
+@synthesize bindingObjectValueIsValid = _bindingObjectValueIsValid; // Observable
+
+- (void)setBindingObjectValueIsValid:(BOOL)bindingObjectValueIsValid {
+    dispatch_barrier_sync(self.coordinator, ^{
+        if (self.isBound == YES) { return; }
+        _bindingObjectValueIsValid = bindingObjectValueIsValid;
+    });
+}
+
+- (BOOL)bindingObjectValueIsValid {
+    BOOL __block localObject;
+    dispatch_sync(self.coordinator, ^{
+        localObject = _bindingObjectValueIsValid;
+    });
+    return localObject;
+}
+
+@synthesize bindingObjectValueValidationError = _bindingObjectValueValidationError; // Observable
+
+- (void)setBindingObjectValidationError:(NSError *)bindingObjectValueValidationError {
+    dispatch_barrier_sync(self.coordinator, ^{
+        if (self.isBound == YES) { return; }
+        _bindingObjectValueValidationError = bindingObjectValueValidationError;
+    });
+}
+
+- (NSError *)bindingObjectValidationError {
+    NSError * __block localObject;
+    dispatch_sync(self.coordinator, ^{
+        localObject = _bindingObjectValueValidationError;
+    });
+    return localObject;
 }
 
 // TODO: Rewrite to account for editing, sync and async
 - (BOOL)updateObservedObjectValue:(NSError * __autoreleasing _Nullable * _Nullable)error {
-//    NSError * __block internalError;
-//    NSMutableArray * __block internalErrorArray = [NSMutableArray new];
+    //    NSError * __block internalError;
+    //    NSMutableArray * __block internalErrorArray = [NSMutableArray new];
     dispatch_barrier_async(_coordinator, ^{
         // Get the current value of the bindingObject
         __block id bindingObjectValue = nil;
@@ -295,8 +396,6 @@
     return NO; // TODO: Fix
 }
 
-#pragma mark RNDEditor
-
 // TODO: Fix this up
 - (void)discardBoundEdit {
     // If the observer (binding object) maintains an in process edit, call the discardBoundEdit method.
@@ -309,7 +408,7 @@
         dispatch_async(dispatch_get_main_queue(), block);
         dispatch_block_wait(block, DISPATCH_TIME_FOREVER);
     }
-    [self updateBindingObjectValue];
+    [self bindingObjectValueNeedsUpdate];
 }
 - (BOOL)commitBoundEdit {
     return [self commitBoundEditAndReturnError:NULL];
@@ -319,6 +418,11 @@
     return [self updateObservedObjectValue:error];
     
 }
+
+- (void)commitBoundEditWithDelegate:(nullable id<RNDEditorDelegate>)delegate contextInfo:(nullable void *)contextInfo {
+    
+}
+
 
 #pragma mark - Object Lifecycle
 

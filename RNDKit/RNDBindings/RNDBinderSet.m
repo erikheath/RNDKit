@@ -37,6 +37,7 @@
                                             error:(NSError * __autoreleasing _Nullable * _Nullable)error {
     NSData * data;
     RNDBinderSet * binderSet;
+    NSString * failureErrorMessage;
     
     data = [NSData dataWithContentsOfURL:url options:0 error:error];
     if (data == nil) { return nil; }
@@ -45,7 +46,7 @@
     } @catch (NSException *exception) {
         if (error != NULL) {
             NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
-            NSString * failureErrorMessage = [NSString stringWithFormat:@"Unable to locate: %@", [url absoluteString]];
+            failureErrorMessage = [NSString stringWithFormat:@"Unable to locate: %@", [url absoluteString]];
             *error = [NSError errorWithDomain:RNDKitErrorDomain
                                          code:RNDExceptionAsError
                                      userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBinderSetCreationErrorKey, nil, errorBundle, @"Binder Set Creation Failed", @"BinderSet Creation Failed"),
@@ -68,6 +69,7 @@
     NSURL *url;
     NSArray *bundles;
     NSString *binderSetFileName;
+    NSString * failureErrorMessage;
     
     binderSetFileName = binderSetNamespace == nil ? binderSetIdentifier : [binderSetNamespace stringByAppendingFormat:@"-%@", binderSetIdentifier];
     bundles = [NSBundle allBundles];
@@ -78,7 +80,7 @@
     if (url == nil) {
         if (error != NULL) {
             NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
-            NSString * failureErrorMessage = [NSString stringWithFormat:@"Unable to locate: %@", binderSetFileName];
+            failureErrorMessage = [NSString stringWithFormat:@"Unable to locate: %@", binderSetFileName];
             *error = [NSError errorWithDomain:RNDKitErrorDomain
                                          code:RNDResourceNotFound
                                      userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBinderSetCreationErrorKey, nil, errorBundle, @"Binder Set Creation Failed", @"BinderSet Creation Failed"),
@@ -97,7 +99,7 @@
     } @catch (NSException *exception) {
         if (error != NULL) {
             NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
-            NSString * failureErrorMessage = [NSString stringWithFormat:@"Unable to locate: %@", binderSetFileName];
+            failureErrorMessage = [NSString stringWithFormat:@"Unable to locate: %@", binderSetFileName];
             *error = [NSError errorWithDomain:RNDKitErrorDomain
                                          code:RNDExceptionAsError
                                      userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBinderSetCreationErrorKey, nil, errorBundle, @"Binder Set Creation Failed", @"BinderSet Creation Failed"),
@@ -120,10 +122,12 @@
 
 - (BOOL)archiveBinderSetToURL:(NSURL * _Nonnull)directory
                         error:(NSError * __autoreleasing _Nullable * _Nullable)error {
+    NSString * failureErrorMessage;
+
     if (_binderSetIdentifier == nil) {
         if (error != NULL) {
             NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
-            NSString * failureErrorMessage = [NSString stringWithFormat:@"Unable to create archive."];
+            failureErrorMessage = [NSString stringWithFormat:@"Unable to create archive."];
             *error = [NSError errorWithDomain:RNDKitErrorDomain
                                          code:RNDResourceCreationError
                                      userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBinderSetArchiveCreationErrorKey, nil, errorBundle, @"Binder Set Archive Creation Failed", @"Binder Set Archive Creation Failed"),
@@ -137,7 +141,7 @@
     if (data == nil) {
         if (error != NULL) {
             NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
-            NSString * failureErrorMessage = [NSString stringWithFormat:@"Unable to create: %@", _binderSetIdentifier];
+            failureErrorMessage = [NSString stringWithFormat:@"Unable to create: %@", _binderSetIdentifier];
             *error = [NSError errorWithDomain:RNDKitErrorDomain
                                          code:RNDResourceCreationError
                                      userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBinderSetArchiveCreationErrorKey, nil, errorBundle, @"Binder Set Archive Creation Failed", @"Binder Set Archive Creation Failed"),

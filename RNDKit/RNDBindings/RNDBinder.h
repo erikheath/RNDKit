@@ -26,7 +26,9 @@
 @property (weak, readwrite, nullable) NSObject<RNDBindableObject> *bindingObject;
 @property (strong, nonnull, readwrite) NSString *bindingObjectKeyPath;
 @property (readwrite) BOOL monitorsBindingObject;
-- (void)updateBindingObjectValue; // Called when a change occurs in one of the processors that should trigger synchronization.
+- (void)bindingObjectValueNeedsUpdate; // Called when a change occurs in one of the processors that should trigger synchronization.
+- (id _Nullable)updateBindingObjectValue;
+- (void)updateCoordinatedBindingObjectValue:(id _Nullable)coordinatedValue;
 
 #pragma mark - Processors
 @property (strong, nullable, readwrite) RNDBindingProcessor *inflowProcessor;
@@ -39,13 +41,13 @@
 - (void)encodeWithCoder:(NSCoder * _Nullable)aCoder;
 
 #pragma mark - Editor Management
-@property BOOL requiresConfirmationOnLockingFailure;
-@property BOOL registersAsEditor;
-@property BOOL validatesImmediately;
-@property BOOL editedValueIsValid; // Observable
-@property (strong, readwrite, nullable) NSError *editedValueError; // Observable
+@property (readwrite) BOOL requiresConfirmationOnLockingFailure;
+@property (readwrite) BOOL registersAsEditor;
+@property (readwrite) BOOL validatesImmediately;
+@property (readwrite) BOOL bindingObjectValueIsValid; // Observable
+@property (strong, readwrite, nullable) NSError *bindingObjectValueValidationError; // Observable
 
-- (BOOL)updateObservedObjectValue:(NSError * __autoreleasing _Nullable * _Nullable)error; // Expand to deal with sync and async and errors. Also, move into editing.
+- (BOOL)updateObservedObjectValue:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
 // These are the methods that editors (views) should call on their binders when changes occur? Or, these are the methods that a binder implements when it is observing changes in a view.
 - (void)editorDidBeginEditingBoundValue:(id _Nullable)value; // Editor (view) notifies binder of a pending value change.

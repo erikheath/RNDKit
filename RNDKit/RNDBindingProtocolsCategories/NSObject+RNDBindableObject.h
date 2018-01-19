@@ -16,8 +16,8 @@
 
 #pragma mark - Properties
 @property (strong, readwrite, nullable) NSString *bindingIdentifier;
-@property (strong, readwrite, nullable) NSArray * bindingDestinations;
-@property (strong, readwrite, nullable) RNDBinderSet *bindings;
+@property (strong, readonly, nullable) NSMutableArray * bindingDestinations;
+@property (strong, readonly, nullable) NSMutableDictionary *bindings;
 
 #pragma mark - Object Lifecycle
 - (instancetype _Nullable)initWithCoder:(NSCoder * _Nonnull)aDecoder;

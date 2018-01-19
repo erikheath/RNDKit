@@ -27,31 +27,31 @@
     });
 }
 
-- (NSArray *)bindingDestinations {
+- (NSMutableArray *)bindingDestinations {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSMutableArray *array = [NSMutableArray array];
+        objc_setAssociatedObject(self, @selector(bindingDestinations), array, OBJC_ASSOCIATION_RETAIN);
+    });
     return objc_getAssociatedObject(self, @selector(bindingDestinations));
 }
 
-- (void)setBindingDestinations:(NSArray *)bindingDestinations {
-    objc_setAssociatedObject(self, @selector(bindingDestinations), bindingDestinations, OBJC_ASSOCIATION_RETAIN);
-}
-
-- (RNDBinderSet *)bindings {
+- (NSMutableDictionary *)bindings {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        objc_setAssociatedObject(self, @selector(bindings), dictionary, OBJC_ASSOCIATION_RETAIN);
+    });
     return objc_getAssociatedObject(self, @selector(bindings));
-}
-
-- (void)setBindings:(RNDBinderSet *)bindings {
-    objc_setAssociatedObject(self, @selector(bindings), bindings, OBJC_ASSOCIATION_RETAIN);
 }
 
 #pragma mark - Object Lifecycle
 
 - (instancetype _Nullable)initWithCoder:(NSCoder *)aDecoder {
-    
-    
     if ((self = [self init]) != nil) {
         self.bindingIdentifier = [aDecoder decodeObjectForKey:@"bindingIdentifier"];
-        self.bindingDestinations = [aDecoder decodeObjectForKey:@"bindingDestinations"];
-        self.bindings = [aDecoder decodeObjectForKey:@"bindings"];
+        [self.bindingDestinations addObjectsFromArray:[aDecoder decodeObjectForKey:@"bindingDestinations"]];
+        [self.bindings addEntriesFromDictionary:[aDecoder decodeObjectForKey:@"bindings"]];
     }
     return self;
 }

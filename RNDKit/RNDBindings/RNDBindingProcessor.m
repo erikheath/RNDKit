@@ -930,7 +930,7 @@
         // TODO: Delegate calls?
     } else {
         if ([change[NSKeyValueChangeOldKey] isEqual:change[NSKeyValueChangeNewKey]] == YES) { return; }
-        [self.binder updateBindingObjectValue];
+        [self.binder bindingObjectValueNeedsUpdate];
     }
 }
 

@@ -13,7 +13,7 @@
 @protocol RNDBindableObject <NSObject>
 
 @property (strong, readwrite, nullable) NSString *bindingIdentifier;
-@property (strong, readwrite, nullable) NSArray * bindingDestinations;
-@property (strong, readwrite, nullable) RNDBinderSet *bindings;
+@property (strong, readonly, nullable) NSMutableArray * bindingDestinations;
+@property (strong, readonly, nullable) NSMutableDictionary *bindings;
 
 @end
