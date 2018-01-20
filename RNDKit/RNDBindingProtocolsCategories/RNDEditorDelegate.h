@@ -18,5 +18,7 @@
 @optional
 
 - (BOOL)editedValue:(id _Nullable)editedValue shouldChangeToValue:(id _Nullable)newValue fromDataSourceValue:(id _Nullable)dataSourceValue;
+
+
 @end
 

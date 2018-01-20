@@ -32,6 +32,8 @@
 @property(nullable, readwrite) NSString *binderSetNamespace;
 @property(nonnull, readonly) NSMutableDictionary<NSString *, RNDBinder *> *binders;
 
+@property (strong, readonly, nonnull) NSMutableArray<NSString *> *protocolIdentifiers;
+
 #pragma mark - Object Lifecycle
 - (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;
 
@@ -44,6 +46,8 @@
                                          namespace:(NSString * _Nullable)binderSetNamespace
                                              error:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
++ (instancetype _Nullable)binderSetWithName:(NSString * _Nonnull)binderSetName;
+
 - (void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
 
 - (BOOL)archiveBinderSetToURL:(NSURL * _Nonnull)directory
@@ -52,11 +56,4 @@
 - (BOOL)archiveBinderSet:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
 @end
-
-
-@interface RNDBinderSet(RNDWorkbench)
-+ (instancetype _Nullable)binderSetWithName:(NSString * _Nonnull)binderSetName;
-@end
-
-
 

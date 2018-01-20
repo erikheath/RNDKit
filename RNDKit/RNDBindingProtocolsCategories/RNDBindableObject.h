@@ -14,6 +14,6 @@
 
 @property (strong, readwrite, nullable) NSString *bindingIdentifier;
 @property (strong, readonly, nullable) NSMutableArray * bindingDestinations;
-@property (strong, readonly, nullable) NSMutableDictionary *bindings;
+@property (strong, readonly, nullable) RNDBinderSet *bindings;
 
 @end

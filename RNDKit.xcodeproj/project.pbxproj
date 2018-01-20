@@ -53,7 +53,6 @@
 		E48235D11FDB1B150061FDCF /* NSOperation+RNDOperations.h in Headers */ = {isa = PBXBuildFile; fileRef = E48235CF1FDB1B150061FDCF /* NSOperation+RNDOperations.h */; };
 		E48235D51FDB1B320061FDCF /* NSLock+RNDOperations.h in Headers */ = {isa = PBXBuildFile; fileRef = E48235D31FDB1B320061FDCF /* NSLock+RNDOperations.h */; };
 		E48235E51FDF5B3A0061FDCF /* RNDPatternedStringProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = E48235E41FDF5B3A0061FDCF /* RNDPatternedStringProcessor.m */; };
-		E4944EC020112B3900079C0B /* RNDDynamicBindingObject.m in Sources */ = {isa = PBXBuildFile; fileRef = E4944EBF20112B3900079C0B /* RNDDynamicBindingObject.m */; };
 		E495ADF51FF2CF550040F65E /* RNDAggregationProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = E495ADF41FF2CF550040F65E /* RNDAggregationProcessor.m */; };
 		E49CFBB31F7EC17900CDFF29 /* RNDKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E49CFBA91F7EC17900CDFF29 /* RNDKit.framework */; };
 		E49CFBBA1F7EC17900CDFF29 /* RNDKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E49CFBAC1F7EC17900CDFF29 /* RNDKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -232,8 +231,6 @@
 		E48235E21FDB3F000061FDCF /* RNDCoreDataRequestTranslator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDCoreDataRequestTranslator.h; sourceTree = "<group>"; };
 		E48235E31FDB635B0061FDCF /* RNDCoreDataSynchronization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDCoreDataSynchronization.h; sourceTree = "<group>"; };
 		E48235E41FDF5B3A0061FDCF /* RNDPatternedStringProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDPatternedStringProcessor.m; sourceTree = "<group>"; };
-		E4944EBE20112B1800079C0B /* RNDDynamicBindingObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDDynamicBindingObject.h; sourceTree = "<group>"; };
-		E4944EBF20112B3900079C0B /* RNDDynamicBindingObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDDynamicBindingObject.m; sourceTree = "<group>"; };
 		E495ADF41FF2CF550040F65E /* RNDAggregationProcessor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDAggregationProcessor.m; sourceTree = "<group>"; };
 		E495ADF61FF2CF900040F65E /* RNDAggregationProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDAggregationProcessor.h; sourceTree = "<group>"; };
 		E49CFBA91F7EC17900CDFF29 /* RNDKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RNDKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -460,8 +457,6 @@
 			isa = PBXGroup;
 			children = (
 				E43C3F561F9A87B300F4D1B5 /* RNDBindings.h */,
-				E4944EBE20112B1800079C0B /* RNDDynamicBindingObject.h */,
-				E4944EBF20112B3900079C0B /* RNDDynamicBindingObject.m */,
 				E438AF5B1FA408CB00C856A5 /* RNDBindingManifest.h */,
 				E438AF5C1FA408E400C856A5 /* RNDBindingManifest.m */,
 				E438AF501FA4014A00C856A5 /* RNDBinderSet.h */,
@@ -928,7 +923,6 @@
 				E495ADF51FF2CF550040F65E /* RNDAggregationProcessor.m in Sources */,
 				E43C3F251F9A77C300F4D1B5 /* RNDBinder.m in Sources */,
 				E446D4EB1FB676D70078346D /* RNDBindingManifest.m in Sources */,
-				E4944EC020112B3900079C0B /* RNDDynamicBindingObject.m in Sources */,
 				E446D4E71FB511570078346D /* RNDExpressionProcessor.m in Sources */,
 				E49D5F731FB39D6A00604372 /* RNDRegExProcessor.m in Sources */,
 				E43C3F101F8F0CDB00F4D1B5 /* RNDBindingConstants.m in Sources */,

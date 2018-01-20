@@ -397,6 +397,32 @@
 }
 
 // TODO: Fix this up
+
+// These are the methods that editors (views) should call on their binders when changes occur? Or, these are the methods that a binder implements when it is observing changes in a view.
+- (void)editorDidBeginEditingBoundValue:(id _Nullable)value {
+    
+} // Editor (view) notifies binder of a pending value change.
+
+- (void)editorDidEndEditingBoundValue:(id _Nullable)value {
+    
+} // Editor (view) notifies binder that a value change happened.
+
+// These are the methods that datasources should call on their editors when specific key paths change.
+- (void)dataSourceWillChangeEditedValue:(id _Nullable)value forKeyPath:(NSString * _Nonnull)keyPath {
+    
+} // Tells the editor that the value in the model will change while an edit in is progress.
+
+- (void)dataSourceDidChangeEditedValue:(id _Nullable)value forKeyPath:(NSString * _Nonnull)keyPath {
+    
+} // Tells the editor that the value in the model will change while an edit is in progress.
+
+// This is the method that a binder will call on a delegate or itself to determine how to behave in this situation. This is particularly useful when commitBoundEditWithDelegate is called because the delegate can intervene and determine the outcome.
+- (BOOL)editedValue:(id _Nullable)editedValue shouldChangeToValue:(id _Nullable)newValue fromDataSourceValue:(id _Nullable)dataSourceValue {
+    return NO;
+} // If an optimistic locking failure has occurred where the current model value does not match the edited value, provides the binder with an opportunity to confirm that the change should occur.
+
+
+
 - (void)discardBoundEdit {
     // If the observer (binding object) maintains an in process edit, call the discardBoundEdit method.
     // Otherwise, simply reset the value to the model value.

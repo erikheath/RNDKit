@@ -36,13 +36,12 @@
     return objc_getAssociatedObject(self, @selector(bindingDestinations));
 }
 
-- (NSMutableDictionary *)bindings {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-        objc_setAssociatedObject(self, @selector(bindings), dictionary, OBJC_ASSOCIATION_RETAIN);
-    });
+- (RNDBinderSet *)bindings {
     return objc_getAssociatedObject(self, @selector(bindings));
+}
+
+- (void)setBindings:(RNDBinderSet *)bindings {
+    objc_setAssociatedObject(self, @selector(bindings), bindings, OBJC_ASSOCIATION_RETAIN);
 }
 
 #pragma mark - Object Lifecycle
@@ -51,7 +50,7 @@
     if ((self = [self init]) != nil) {
         self.bindingIdentifier = [aDecoder decodeObjectForKey:@"bindingIdentifier"];
         [self.bindingDestinations addObjectsFromArray:[aDecoder decodeObjectForKey:@"bindingDestinations"]];
-        [self.bindings addEntriesFromDictionary:[aDecoder decodeObjectForKey:@"bindings"]];
+        self.bindings = [aDecoder decodeObjectForKey:@"bindings"];
     }
     return self;
 }
