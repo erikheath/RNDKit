@@ -674,7 +674,7 @@
 
 #pragma mark - Binding Management
 
-- (BOOL)bindObjects:(NSError * _Nonnull __autoreleasing *)error {
+- (BOOL)bindCoordinatedObjects:(NSError * _Nonnull __autoreleasing *)error {
     BOOL result = YES;
     NSError *internalError = nil;
     
@@ -803,7 +803,7 @@
 - (void)bind {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     dispatch_sync(_coordinator, ^{
-        [self bindObjects:NULL];
+        [self bindCoordinatedObjects:NULL];
     });
     dispatch_semaphore_signal(_syncCoordinator);
 }
@@ -812,13 +812,13 @@
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     __block BOOL result = NO;
     dispatch_barrier_sync(_coordinator, ^{
-        result = [self bindObjects:error];
+        result = [self bindCoordinatedObjects:error];
     });
     dispatch_semaphore_signal(_syncCoordinator);
     return result;
 }
 
-- (BOOL)unbindObjects:(NSError * _Nullable __autoreleasing *)error {
+- (BOOL)unbindCoordinatedObjects:(NSError * _Nullable __autoreleasing *)error {
     BOOL result = YES;
     id underlyingError;
     NSMutableArray *underlyingErrorsArray = [NSMutableArray array];
@@ -898,7 +898,7 @@
 - (void)unbind {
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     dispatch_barrier_sync(_coordinator, ^{
-        [self unbindObjects:NULL];
+        [self unbindCoordinatedObjects:NULL];
     });
     dispatch_semaphore_signal(_syncCoordinator);
 }
@@ -907,11 +907,12 @@
     dispatch_semaphore_wait(_syncCoordinator, DISPATCH_TIME_FOREVER);
     __block BOOL result = NO;
     dispatch_barrier_sync(_coordinator, ^{
-        result = [self unbindObjects:error];
+        result = [self unbindCoordinatedObjects:error];
     });
     dispatch_semaphore_signal(_syncCoordinator);
     return result;
 }
+
 
 
 #pragma mark - Key Value Observation

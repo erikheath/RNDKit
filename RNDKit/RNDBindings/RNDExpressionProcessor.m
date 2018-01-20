@@ -117,11 +117,11 @@
 }
 
 #pragma mark - Binding Management
--(BOOL)bindObjects:(NSError * _Nullable __autoreleasing *)error {
+-(BOOL)bindCoordinatedObjects:(NSError * _Nullable __autoreleasing *)error {
     if (_expressionTemplate == nil) {
         return NO;
     }
-    return [super bindObjects:error];
+    return [super bindCoordinatedObjects:error];
 }
 
 @end

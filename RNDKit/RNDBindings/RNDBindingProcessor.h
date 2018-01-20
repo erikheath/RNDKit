@@ -70,9 +70,9 @@ typedef NS_ENUM(NSUInteger, RNDValueMode) {
  
  @remark All RNDBindingProcessor properties are fully synchronized, and any subclasses should use the syncQueue or coordinate with it when introducing new properties. The syncQueue is a concurrent queue supporting a multi-read/single-write access model. Internally, the class implements this behavior using a dispatch barrier for writes. All property access (including writes) are synchronous which ensures that any calls after a property is written to will reflect the new (or any subsequent) value.
  
- In addition, all RNDBindingProcessor properties are readonly when a class instance has been bound by calling either the bind or bind:error methods. This ensures that information necessary for unbinding and removing KVO from observered objects is not prematurely deleted before that process is completed. To enable this, both the bind/bind:error methods and the unbind/unbind:error methods execute the bindObjects:error and unbindObjects:error methods respectively on the synchQueue using an exclusion barrier that prevents other objects from reading/writing while the bindng/unbinding process takes place.
+ In addition, all RNDBindingProcessor properties are readonly when a class instance has been bound by calling either the bind or bind:error methods. This ensures that information necessary for unbinding and removing KVO from observered objects is not prematurely deleted before that process is completed. To enable this, both the bind/bind:error methods and the unbind/unbind:error methods execute the bindCoordinatedObjects:error and unbindCoordinatedObjects:error methods respectively on the synchQueue using an exclusion barrier that prevents other objects from reading/writing while the bindng/unbinding process takes place.
  
- @note When subclassing RNDBindingProcessor, it may be necessary to add functionality to the binding and unbinding process, for example to initialize properties added by the subclass or to perform additional checks relevant to the subclass. To accomplish this, subclasses should override the bindObjects and unbindObjects methods, calling the super class's implementation at the beginning of the method and exiting if the super class's binding operation is unsuccessful. In addition, if the subclass's custom binding process is not successful, the subclass should call the super class's unbindObjects implementation to return the instance to an unbound state. It is also good practice to call the subclasses implementation of unbindObjects to clean up any changed state. Doing this should return the object to a pristine state ready to attempt binding again. By overriding the bindObjects:error and unbindObjects:error methods, you will not need to override the bind/bind:error methods and the unbind/unbind:error methods as they are used as the public interface to call the bindObjects and unbindObjects methods on the syncQueue.
+ @note When subclassing RNDBindingProcessor, it may be necessary to add functionality to the binding and unbinding process, for example to initialize properties added by the subclass or to perform additional checks relevant to the subclass. To accomplish this, subclasses should override the bindCoordinatedObjects and unbindCoordinatedObjects methods, calling the super class's implementation at the beginning of the method and exiting if the super class's binding operation is unsuccessful. In addition, if the subclass's custom binding process is not successful, the subclass should call the super class's unbindCoordinatedObjects implementation to return the instance to an unbound state. It is also good practice to call the subclasses implementation of unbindCoordinatedObjects to clean up any changed state. Doing this should return the object to a pristine state ready to attempt binding again. By overriding the bindCoordinatedObjects:error and unbindCoordinatedObjects:error methods, you will not need to override the bind/bind:error methods and the unbind/unbind:error methods as they are used as the public interface to call the bindCoordinatedObjects and unbindCoordinatedObjects methods on the syncQueue.
  
  
  */
@@ -190,7 +190,7 @@ typedef NS_ENUM(NSUInteger, RNDValueMode) {
 /**
  @abstract Determines if the observed object's property will be monitored using Key-Value Observing.
  
- @discussion A processor processor can optionally monitor an observed object's KVC-compliant and KVO-compliant property specified by the observed object keypath. Setting monitorsObservedObject to true will cause the processor to register as a Key-Value Observer for the observed object property when the processor receives a bindObjects message, and to unregister as an observer when it receives an unbindObjects message.
+ @discussion A processor processor can optionally monitor an observed object's KVC-compliant and KVO-compliant property specified by the observed object keypath. Setting monitorsObservedObject to true will cause the processor to register as a Key-Value Observer for the observed object property when the processor receives a bindCoordinatedObjects message, and to unregister as an observer when it receives an unbindCoordinatedObjects message.
  
  Because many objects are not KVC and KVO compliant, care should be taken when enabling monitoring. In general, it is best to only monitor objects that are known to be compliant with the two protocols, or to perform  testing to ensure that objects behave in a compliant manner.
  
@@ -259,7 +259,7 @@ typedef NS_ENUM(NSUInteger, RNDValueMode) {
  
  @return YES is the binding was successful, NO otherwise.
  
- @discussion This method calls the bindObjects:error method using a dispatch barrier on the synch queue.
+ @discussion This method calls the bindCoordinatedObjects:error method using a dispatch barrier on the synch queue.
  
  */
 - (BOOL)bind:(NSError * __autoreleasing _Nullable * _Nullable)error;
@@ -279,7 +279,7 @@ typedef NS_ENUM(NSUInteger, RNDValueMode) {
  
  @return YES if the unbinding occurs without error, NO otherwise.
  
- @discussion This method calls the unbindObjects:error method using a dispatch barrier on the synch queue.
+ @discussion This method calls the unbindCoordinatedObjects:error method using a dispatch barrier on the synch queue.
  
  */
 - (BOOL)unbind:(NSError * __autoreleasing _Nullable * _Nullable)error;
@@ -296,7 +296,7 @@ typedef NS_ENUM(NSUInteger, RNDValueMode) {
  If an error occurs at any of these steps, the binding processor will revert to its unbound state and request that its processor nodes do the same. It will then set the error and return a NO value.
 
  */
-- (BOOL)bindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
+- (BOOL)bindCoordinatedObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
 /**
  @abstract Causes the binding processor to exit the bound state.
@@ -312,7 +312,7 @@ typedef NS_ENUM(NSUInteger, RNDValueMode) {
  In either case, the binding processor will exit the bound state.
 
  */
-- (BOOL)unbindObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
+- (BOOL)unbindCoordinatedObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
 
 #pragma mark - Value Management
