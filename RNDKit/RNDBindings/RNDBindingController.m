@@ -8,7 +8,7 @@
 
 // TODO: Define Implementation
 
-#import "RNDBinderSet.h"
+#import "RNDBindingController.h"
 #import "RNDBindings.h"
 #import <objc/runtime.h>
 #import <CoreGraphics/CoreGraphics.h>
@@ -18,7 +18,7 @@
 #import <UIKit/UIKit.h>
 #import <SceneKit/SceneKit.h>
 
-@implementation RNDBinderSet
+@implementation RNDBindingController
 
 @synthesize binderSetIdentifier = _binderSetIdentifier;
 @synthesize binders = _binders;

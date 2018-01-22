@@ -43,7 +43,7 @@
 		E43C3F501F9A81EE00F4D1B5 /* RNDPlaceholders.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F4F1F9A81EE00F4D1B5 /* RNDPlaceholders.h */; };
 		E43C3F521F9A822E00F4D1B5 /* RNDUserInterfaceValidation.h in Headers */ = {isa = PBXBuildFile; fileRef = E43C3F511F9A822E00F4D1B5 /* RNDUserInterfaceValidation.h */; };
 		E446D4E71FB511570078346D /* RNDExpressionProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = E446D4E61FB511570078346D /* RNDExpressionProcessor.m */; };
-		E446D4EA1FB6763B0078346D /* RNDBinderSet.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF4E1FA4013400C856A5 /* RNDBinderSet.m */; };
+		E446D4EA1FB6763B0078346D /* RNDBindingController.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF4E1FA4013400C856A5 /* RNDBindingController.m */; };
 		E446D4EB1FB676D70078346D /* RNDBindingManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF5C1FA408E400C856A5 /* RNDBindingManifest.m */; };
 		E454B00E1FD8A74A00C59FB3 /* NSObject+RNDBindableObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E454B00C1FD8A74A00C59FB3 /* NSObject+RNDBindableObject.h */; };
 		E454B00F1FD8A74A00C59FB3 /* NSObject+RNDBindableObject.m in Sources */ = {isa = PBXBuildFile; fileRef = E454B00D1FD8A74A00C59FB3 /* NSObject+RNDBindableObject.m */; };
@@ -136,8 +136,8 @@
 		E438AF461FA25F7C00C856A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E438AF481FA25F7C00C856A5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E438AF491FA25F7C00C856A5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		E438AF4E1FA4013400C856A5 /* RNDBinderSet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDBinderSet.m; sourceTree = "<group>"; };
-		E438AF501FA4014A00C856A5 /* RNDBinderSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDBinderSet.h; sourceTree = "<group>"; };
+		E438AF4E1FA4013400C856A5 /* RNDBindingController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDBindingController.m; sourceTree = "<group>"; };
+		E438AF501FA4014A00C856A5 /* RNDBindingController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDBindingController.h; sourceTree = "<group>"; };
 		E438AF511FA4063700C856A5 /* RNDBinderInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNDBinderInfo.h; sourceTree = "<group>"; };
 		E438AF531FA4065900C856A5 /* RNDBinderInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDBinderInfo.m; sourceTree = "<group>"; };
 		E438AF551FA406A400C856A5 /* RNDBinderSetInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDBinderSetInfo.m; sourceTree = "<group>"; };
@@ -459,8 +459,8 @@
 				E43C3F561F9A87B300F4D1B5 /* RNDBindings.h */,
 				E438AF5B1FA408CB00C856A5 /* RNDBindingManifest.h */,
 				E438AF5C1FA408E400C856A5 /* RNDBindingManifest.m */,
-				E438AF501FA4014A00C856A5 /* RNDBinderSet.h */,
-				E438AF4E1FA4013400C856A5 /* RNDBinderSet.m */,
+				E438AF501FA4014A00C856A5 /* RNDBindingController.h */,
+				E438AF4E1FA4013400C856A5 /* RNDBindingController.m */,
 				E43C3F221F9A77C200F4D1B5 /* RNDBinder.h */,
 				E43C3F231F9A77C300F4D1B5 /* RNDBinder.m */,
 				E43C3F361F9A79FC00F4D1B5 /* RNDTargetActionBinder.h */,
@@ -927,7 +927,7 @@
 				E49D5F731FB39D6A00604372 /* RNDRegExProcessor.m in Sources */,
 				E43C3F101F8F0CDB00F4D1B5 /* RNDBindingConstants.m in Sources */,
 				E454B00F1FD8A74A00C59FB3 /* NSObject+RNDBindableObject.m in Sources */,
-				E446D4EA1FB6763B0078346D /* RNDBinderSet.m in Sources */,
+				E446D4EA1FB6763B0078346D /* RNDBindingController.m in Sources */,
 				E43C3F2D1F9A78B000F4D1B5 /* RNDBindingProcessor.m in Sources */,
 				E49D5F761FB4D25B00604372 /* RNDPredicateProcessor.m in Sources */,
 				E464A9ED1FEC9CB700F2D4AE /* RNDInvocationProcessor.m in Sources */,

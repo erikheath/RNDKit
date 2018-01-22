@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-@class RNDBinderSet;
+@class RNDBindingController;
 
 @protocol RNDBindableObject <NSObject>
 
 @property (strong, readwrite, nullable) NSString *bindingIdentifier;
 @property (strong, readonly, nullable) NSMutableArray * bindingDestinations;
-@property (strong, readonly, nullable) RNDBinderSet *bindings;
+@property (strong, readonly, nullable) RNDBindingController *bindings;
 
 @end

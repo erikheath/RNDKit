@@ -36,11 +36,11 @@
     return objc_getAssociatedObject(self, @selector(bindingDestinations));
 }
 
-- (RNDBinderSet *)bindings {
+- (RNDBindingController *)bindings {
     return objc_getAssociatedObject(self, @selector(bindings));
 }
 
-- (void)setBindings:(RNDBinderSet *)bindings {
+- (void)setBindings:(RNDBindingController *)bindings {
     objc_setAssociatedObject(self, @selector(bindings), bindings, OBJC_ASSOCIATION_RETAIN);
 }
 
