@@ -9,27 +9,13 @@
 #import <Foundation/Foundation.h>
 #import "RNDBinder.h"
 
-/*
- TODO: Figure this out
- 
- 
- The basic idea is:
- 1. Return the requested archive to the sender if available.
- 2. Get binder manifest if not already loaded
- 3. Find the binding set with the VC ID.
- 4. Load the set if not already loaded.
- 5. Return the requested archive to the sender if available.
- 
- Should the binder set class store the archives (loaded) and manifests? In the event of low memory, it should purge the archives which can be reconstituted on demand.
- 
- When initialized at runtime, the class will load a default set. As there can be multiple manifest, each one is namespaced, as are all binding ids
- */
-
-@interface RNDBindingController: NSObject <NSCoding>
+@interface RNDBindingController: NSObject <NSCoding, RNDBindingObject>
 
 @property(nullable, readwrite) NSString *binderSetIdentifier;
 @property(nullable, readwrite) NSString *binderSetNamespace;
-@property(nonnull, readonly) NSMutableDictionary<NSString *, RNDBinder *> *binders;
+
+@property(nonnull, readonly) NSDictionary<NSString *, RNDBinder *> *binders;
+- (NSError * _Nullable)setBinder:(RNDBinder * _Nonnull)binder forKey:(NSString * _Nonnull)key withBehavior:(NSString * _Nullable)behavior;
 
 @property (strong, readonly, nonnull) NSMutableArray<NSString *> *protocolIdentifiers;
 
@@ -55,13 +41,13 @@
 - (BOOL)archiveBinderSet:(NSError * __autoreleasing _Nullable * _Nullable)error;
 
 #pragma mark - Editing Support
-// While bindin controllers support many binders, they only support ONE binder designated as the editor value. All editing support provided by a binding controller is used in relation to the editorValue.
+// While binding controllers support many binders, they only support ONE binder designated as the editor value. All editing support provided by a binding controller is used in relation to the editorValue.
 
 // Value Binder
 @property (weak, readwrite, nullable) RNDBinder *editorValue;
 @property (readwrite) BOOL registersAsEditor; // The controller uses the editor Value Binder to register as an editor for the data controller.
 
-// Editor Registration Support
+#pragma mark - Editor Registration Support
 @property (weak, readwrite, nullable) RNDBinder *shouldBeginEditingEditorValue;
 @property (weak, readwrite, nullable) RNDBinder *willBeginEditingEditorValue;
 @property (weak, readwrite, nullable) RNDBinder *didBeginEditingEditorValue;
@@ -77,7 +63,7 @@
 - (void)editorWillEndEditingEditorValue:(id _Nullable)value;
 - (void)editorDidEndEditingEditorValue:(id _Nullable)value;
 
-// Value Update Support
+#pragma mark - Value Update Support
 @property (readwrite) BOOL validatesEditorValueUpdateImmediately; // The controller will use it's shouldUpdateEditorValue binder to validate any update to the editor value made during and editor session.
 @property (readwrite) BOOL editorValueIsValid; // Observable enumeration
 @property (strong, readwrite, nullable) NSError *editorValueValidationError; // Observable
@@ -90,7 +76,7 @@
 - (void)editorWillUpdateEditorValue:(id _Nullable)value;
 - (void)editorDidUpdatedEditorValue:(id _Nullable)value;
 
-// Value Replacement Support
+#pragma mark - Value Replacement Support
 @property (weak, readwrite, nullable) RNDBinder *shouldReplaceEditorValue; // When underlying data changes during an edit session. The binder calls set value for keypath on the controller (as the editor proxy).
 @property (weak, readwrite, nullable) RNDBinder *willReplaceEditorValue; // When underlying data changes during an edit session. The binder calls set value for keypath on the controller (as the editor proxy).
 @property (weak, readwrite, nullable) RNDBinder *didReplaceEditorValue; // When underlying data changes during an edit session. The binder calls set value for keypath on the controller (as the editor proxy).

@@ -18,17 +18,12 @@
 - (BOOL)bind:(NSError * _Nullable __autoreleasing * _Nullable)error;
 - (BOOL)unbind:(NSError * _Nullable __autoreleasing * _Nullable)error;
 
+@optional
+@property (strong, nullable, readonly) dispatch_queue_t coordinator;
+@property (strong, nullable, readonly) NSUUID *coordinatorQueueIdentifier;
+@property (nonnull, strong, readonly) dispatch_semaphore_t syncCoordinator;
+
 - (BOOL)bindCoordinatedObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
 - (BOOL)unbindCoordinatedObjects:(NSError * __autoreleasing _Nullable * _Nullable)error;
-
-#pragma mark - Binding Value Construction
-@property (strong, readonly, nullable) id bindingValue;
-
-- (id _Nullable)coordinatedBindingValue;
-- (id _Nullable)rawBindingValue;
-- (id _Nullable)calculatedBindingValue:(id _Nullable)bindingValue;
-- (id _Nullable)filteredBindingValue:(id _Nullable)bindingValue;
-- (id _Nullable)transformedBindingValue:(id _Nullable)bindingValue;
-- (id _Nullable)wrappedBindingValue:(id _Nullable)bindingValue;
 
 @end

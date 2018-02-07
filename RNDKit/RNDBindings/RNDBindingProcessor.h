@@ -10,6 +10,8 @@
 #import "../RNDBindingConstants.h"
 #import "../RNDBindingProtocolsCategories/NSObject+RNDBindableObject.h"
 #import "../RNDBindingProtocolsCategories/RNDBindingObject.h"
+#import "../RNDBindingProtocolsCategories/RNDBindingObjectValue.h"
+
 
 /**
  @abstract The RNDValueType determines the value semantics of the processorValue property.
@@ -76,7 +78,7 @@ typedef NS_ENUM(NSUInteger, RNDValueMode) {
  
  
  */
-@interface RNDBindingProcessor : NSObject <NSCoding, RNDBindingObject>
+@interface RNDBindingProcessor : NSObject <NSCoding, RNDBindingObject, RNDBindingObjectValue>
 
 /**
  @abstract The synchronization queue used to coordinate reads/writes for instance properties.

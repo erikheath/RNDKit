@@ -10,12 +10,13 @@
 #import "../RNDBindingProtocolsCategories/RNDEditorRegistration.h"
 #import "../RNDBindingProtocolsCategories/RNDEditorDelegate.h"
 #import "../RNDBindingProtocolsCategories/RNDBindingObject.h"
+#import "../RNDBindingProtocolsCategories/RNDBindingObjectValue.h"
 
 @class RNDBindingProcessor;
 
 @protocol RNDBindableObject;
 
-@interface RNDBinder : NSObject <NSCoding, RNDEditor, RNDBindingObject>
+@interface RNDBinder : NSObject <NSCoding, RNDEditor, RNDBindingObject, RNDBindingObjectValue>
 
 @property (strong, nullable, readonly) dispatch_queue_t coordinator;
 @property (nonnull, strong, readonly) dispatch_semaphore_t syncCoordinator;
