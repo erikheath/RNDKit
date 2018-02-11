@@ -16,7 +16,10 @@
 
 @protocol RNDBindableObject;
 
-@interface RNDBinder : NSObject <NSCoding, RNDEditor, RNDBindingObject, RNDBindingObjectValue>
+@interface RNDBinder : NSObject <NSCoding, RNDEditor, RNDBindingObject, RNDBindingObjectValue> {
+    @protected
+    dispatch_queue_t _coordinator;
+}
 
 @property (strong, nullable, readonly) dispatch_queue_t coordinator;
 @property (nonnull, strong, readonly) dispatch_semaphore_t syncCoordinator;

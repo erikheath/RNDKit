@@ -11,7 +11,7 @@
 @protocol RNDBindingObject <NSObject>
 
 #pragma mark - Binding Management
-@property (readonly, getter=isBound) BOOL bound;
+@property (readonly) BOOL bound;
 
 - (void)bind;
 - (void)unbind;

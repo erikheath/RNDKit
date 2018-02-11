@@ -11,6 +11,7 @@
 #import "RNDEditor.h"
 #import "RNDEditorDelegate.h"
 #import <objc/runtime.h>
+#import "../RNDBindings/RNDBindingController.h"
 
 @implementation NSObject (RNDBindableObject)
 

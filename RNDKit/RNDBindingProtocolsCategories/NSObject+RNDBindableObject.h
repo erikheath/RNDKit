@@ -10,7 +10,7 @@
 #import "RNDBindingConstants.h"
 #import "RNDBindableObject.h"
 
-@class RNDBinderSet;
+@class RNDBindingController;
 
 @interface NSObject (RNDBindableObject) <RNDBindableObject>
 

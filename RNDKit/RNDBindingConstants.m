@@ -20,6 +20,7 @@ RNDKitErrorKey RNDBindingNameIsNilErrorKey = @"RNDBindingNameIsNilErrorKey";
 RNDKitErrorKey RNDKeyPathIsNilErrorKey = @"RNDKeyPathIsNilErrorKey";
 RNDKitErrorKey RNDUnbindingErrorKey = @"RNDUnbindingErrorKey";
 RNDKitErrorKey RNDUnbindingUnregistrationErrorKey = @"RNDUnbindingUnregistrationErrorKey";
+RNDKitErrorKey RNDUnbindingGenericRecoverySuggestionErrorKey = @"RNDUnbindingGenericRecoverySuggestionErrorKey";
 RNDKitErrorKey RNDUnbindingExceptionRecoverySuggestionErrorKey = @"RNDUnbindingExceptionRecoverySuggestionErrorKey";
 RNDKitErrorKey RNDUnderlyingErrorsArrayKey = @"RNDUnderlyingErrorsArrayKey";
 RNDKitErrorKey RNDObjectIsBoundErrorKey = @"RNDObjectIsBoundErrorKey";

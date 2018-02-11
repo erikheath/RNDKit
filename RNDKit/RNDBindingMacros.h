@@ -12,21 +12,20 @@
 
 #endif /* RNDBindingMacros_h */
 
-#define RNDCoordinatedProperty(propertyType, propertyName) @synthesize propertyName = _ ## propertyName; \
+#define RNDCoordinatedProperty(propertyType, getterName, setterName) @synthesize getterName = _ ## getterName; \
   \
-- ( propertyType ) propertyName {  \
-propertyType __block localObject;  \
-dispatch_sync(self.coordinator, ^{  \
-localObject = _ ## propertyName;  \
-});  \
+- ( propertyType ) getterName {  \
+[_coordinatorLock lock];  \
+propertyType localObject = _ ## getterName;  \
+[_coordinatorLock unlock];  \
 return localObject;  \
 }  \
   \
-- (void)set ## propertyName:( propertyType ) propertyName {  \
-dispatch_barrier_sync(self.coordinator, ^{  \
-if (self.isBound == YES) { return; }  \
-_ ## propertyName = propertyName;  \
-    });  \
+- (void)set ## setterName:( propertyType ) getterName {  \
+[_coordinatorLock lock];  \
+if (self.bound == YES) { return; }  \
+_ ## getterName = getterName;  \
+[_coordinatorLock unlock];  \
 }  \
 
 

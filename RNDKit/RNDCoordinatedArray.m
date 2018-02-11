@@ -1,74 +1,25 @@
 //
-//  RNDCoordinatedDictionary.m
+//  RNDCoordinatedArray.m
 //  RNDKit
 //
-//  Created by Erikheath Thomas on 2/6/18.
+//  Created by Erikheath Thomas on 2/8/18.
 //  Copyright © 2018 Curated Cocoa LLC. All rights reserved.
 //
 
-#import "RNDCoordinatedDictionary.h"
+#import "RNDCoordinatedArray.h"
 #import "RNDBindingMacros.h"
 #import "RNDBindingConstants.h"
 
-@interface RNDCoordinatedDictionary ()
+@interface RNDCoordinatedArray ()
 
 @property (readwrite) BOOL bound;
 
 @end
 
-@implementation RNDCoordinatedDictionary
+
+@implementation RNDCoordinatedArray
 
 #pragma mark - Subclass Overrides
-- (instancetype)initWithObjects:(id  _Nonnull const [])objects forKeys:(id<NSCopying>  _Nonnull const [])keys count:(NSUInteger)cnt {
-    if ((self = [super initWithObjects:objects forKeys:keys count:cnt]) != nil) {
-        _syncCoordinator = dispatch_semaphore_create(1);
-        _coordinatorLock = [NSRecursiveLock new];
-    }
-    return self;
-}
-
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if ((self = [super initWithCoder:aDecoder]) != nil) {
-        _syncCoordinator = dispatch_semaphore_create(1);
-        _coordinatorLock = [NSRecursiveLock new];
-    }
-    return self;
-}
-
-- (NSUInteger)count {
-    [_coordinatorLock lock];
-    NSUInteger localObject = [super count];
-    [_coordinatorLock unlock];
-    return localObject;
-}
-
-- (id)objectForKey:(id)aKey {
-    [_coordinatorLock lock];
-    id  localObject = [super objectForKey:aKey];
-    [_coordinatorLock unlock];
-    return localObject;
-}
-
-- (NSEnumerator *)keyEnumerator {
-    [_coordinatorLock lock];
-    id localObject = [super keyEnumerator];
-    [_coordinatorLock unlock];
-    return localObject;
-}
-
-- (void)setObject:(id)anObject forKey:(id<NSCopying>)aKey {
-    [_coordinatorLock lock];
-    if (self.bound == YES) { return; }
-    [super setObject:anObject forKey:aKey];
-    [_coordinatorLock unlock];
-}
-
-- (void)removeObjectForKey:(id)aKey {
-    [_coordinatorLock lock];
-    if (self.bound == YES) { return; }
-    [super removeObjectForKey:aKey];
-    [_coordinatorLock unlock];
-}
 
 
 #pragma mark - RNDBindingObject Protocol
@@ -124,15 +75,15 @@ RNDCoordinatedProperty(BOOL, bound, Bound);
             internalError = [NSError errorWithDomain:RNDKitErrorDomain
                                                 code:RNDObjectIsBoundError
                                             userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBindingFailedErrorKey, nil, errorBundle, @"Binding Failed", @"Binding Failed"),
-                                                       NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundErrorKey, nil, errorBundle, @"The coordinated dictionary is already bound.", @"The coordinated dictionary is already bound."),
-                                                       NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundRecoverySuggestionErrorKey, nil, errorBundle, @"The coordinated dictionary is already bound. To rebind, call unbind first.", @"Attempted to rebind the coordinated dictionary.")
+                                                       NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundErrorKey, nil, errorBundle, @"The coordinated array is already bound.", @"The coordinated array is already bound."),
+                                                       NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundRecoverySuggestionErrorKey, nil, errorBundle, @"The coordinated array is already bound. To rebind, call unbind first.", @"Attempted to rebind the coordinated array.")
                                                        }];
             *error = internalError;
         }
         return result;
     }
     
-    for (id<RNDBindingObject> bindingObject in self.allValues) {
+    for (id<RNDBindingObject> bindingObject in self) {
         if ((result = [bindingObject bind:&internalError]) == YES) { continue; }
         [self unbind:NULL];
         if (error != NULL) { *error = internalError; }
@@ -149,8 +100,8 @@ RNDCoordinatedProperty(BOOL, bound, Bound);
     id underlyingError;
     NSMutableArray *underlyingErrorsArray = [NSMutableArray array];
     NSError * internalError;
-        
-    for (id<RNDBindingObject> bindingObject in self.allValues) {
+    
+    for (id<RNDBindingObject> bindingObject in self) {
         NSError *passedInError;
         BOOL unbindingResult = [bindingObject unbind:&passedInError];
         if (unbindingResult == NO) {

@@ -8,16 +8,28 @@
 
 #import <Foundation/Foundation.h>
 #import "RNDBinder.h"
+#import "../RNDCoordinatedDictionary.h"
+#import "../RNDCoordinatedArray.h"
 
-@interface RNDBindingController: NSObject <NSCoding, RNDBindingObject>
+@interface RNDBindingController: NSObject <NSCoding, RNDBindingObject> {
+    @protected
+    NSRecursiveLock * _coordinatorLock;
+    dispatch_semaphore_t _syncCoordinator;
+}
 
-@property(nullable, readwrite) NSString *binderSetIdentifier;
-@property(nullable, readwrite) NSString *binderSetNamespace;
+@property(readwrite, nullable) NSString *binderSetIdentifier;
 
-@property(nonnull, readonly) NSDictionary<NSString *, RNDBinder *> *binders;
-- (NSError * _Nullable)setBinder:(RNDBinder * _Nonnull)binder forKey:(NSString * _Nonnull)key withBehavior:(NSString * _Nullable)behavior;
+@property(readwrite, nullable) NSString *binderSetNamespace;
 
-@property (strong, readonly, nonnull) NSMutableArray<NSString *> *protocolIdentifiers;
+@property (strong, readonly, nonnull) NSRecursiveLock *coordinatorLock;
+
+@property(strong, readonly, nonnull) RNDCoordinatedDictionary<NSString *, RNDBinder *> *binders;
+
+- (NSError * _Nullable)setBinder:(RNDBinder * _Nonnull)binder
+                          forBehavior:(NSString * _Nonnull)behavior
+                    withSelectorString:(NSString * _Nullable)selectorString;
+
+@property (strong, readonly, nonnull) RNDCoordinatedArray<NSString *> *protocolIdentifiers;
 
 #pragma mark - Object Lifecycle
 - (instancetype _Nullable)init NS_DESIGNATED_INITIALIZER;
@@ -30,8 +42,6 @@
 + (instancetype _Nullable)unarchiveBinderSetWithID:(NSString * _Nonnull)binderSetIdentifier
                                          namespace:(NSString * _Nullable)binderSetNamespace
                                              error:(NSError * __autoreleasing _Nullable * _Nullable)error;
-
-+ (instancetype _Nullable)binderSetWithName:(NSString * _Nonnull)binderSetName;
 
 - (void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
 
@@ -48,12 +58,12 @@
 @property (readwrite) BOOL registersAsEditor; // The controller uses the editor Value Binder to register as an editor for the data controller.
 
 #pragma mark - Editor Registration Support
-@property (weak, readwrite, nullable) RNDBinder *shouldBeginEditingEditorValue;
-@property (weak, readwrite, nullable) RNDBinder *willBeginEditingEditorValue;
-@property (weak, readwrite, nullable) RNDBinder *didBeginEditingEditorValue;
-@property (weak, readwrite, nullable) RNDBinder *shouldEndEditingEditorValue;
-@property (weak, readwrite, nullable) RNDBinder *willEndEditingEditorValue;
-@property (weak, readwrite, nullable) RNDBinder *didEndEditingEditorValue;
+@property (weak, readwrite, nullable) RNDBinder *editorShouldBeginEditingEditorValue;
+@property (weak, readwrite, nullable) RNDBinder *editorWillBeginEditingEditorValue;
+@property (weak, readwrite, nullable) RNDBinder *editorDidBeginEditingEditorValue;
+@property (weak, readwrite, nullable) RNDBinder *editorShouldEndEditingEditorValue;
+@property (weak, readwrite, nullable) RNDBinder *editorWillEndEditingEditorValue;
+@property (weak, readwrite, nullable) RNDBinder *editorDidEndEditingEditorValue;
 
 // Triggers a call to associated Editor Registration binders
 - (BOOL)editorShouldBeginEditingEditorValue:(id _Nullable)value;
@@ -83,17 +93,22 @@
 @property (readwrite) BOOL editorValueLockingFailure; // Observable - An optimistic locking failure occurs when the should replace editor value returns no, preventing the editor from basing its edit on the datasource value.
 
 
-- (BOOL)editorValue:(id _Nullable)editorValue shouldChangeToNewValue:(id _Nullable)newValue fromPriorValue:(id _Nullable)dataSourceValue; // If an optimistic locking failure has occurred where the current model value does not match the edited value, provides the binder with an opportunity to confirm that the change should occur.
+- (BOOL)editorValue:(id _Nullable)editorValue
+shouldChangeToNewValue:(id _Nullable)newValue
+     fromPriorValue:(id _Nullable)dataSourceValue; // If an optimistic locking failure has occurred where the current model value does not match the edited value, provides the binder with an opportunity to confirm that the change should occur.
 
 // These are the methods that binders call on their binding controllers when specific key paths change. Set value for keypath is used to make the actual change as part of the updateBindingObjectValue method in a binder.
-- (void)dataSourceWillReplaceBoundValue:(id _Nullable)value forKeyPath:(NSString * _Nonnull)keyPath; // Tells the controller that the value in the model will change while an edit in is progress.
-- (void)dataSourceDidReplaceBoundValue:(id _Nullable)value forKeyPath:(NSString * _Nonnull)keyPath; // Tells the controller that the value in the model will change while an edit is in progress.
+- (void)dataSourceWillReplaceBoundValue:(id _Nullable)value
+                             forKeyPath:(NSString * _Nonnull)keyPath; // Tells the controller that the value in the model will change while an edit in is progress.
+- (void)dataSourceDidReplaceBoundValue:(id _Nullable)value
+                            forKeyPath:(NSString * _Nonnull)keyPath; // Tells the controller that the value in the model will change while an edit is in progress.
 
 - (void)discardEditorValue; // Reverts to the current binding value and pushes it to the Editor(view).
 
 - (BOOL)commitEditorValue; // Generally called by a mediating controller that has the binder registered as an editor.
 
-- (void)commitEditorValueWithDelegate:(nullable id<RNDEditorDelegate>)delegate contextInfo:(nullable void *)contextInfo; // Generally called by an external actor that waits for an async result. For example, a save button that triggers a write to a remote database.
+- (void)commitEditorValueWithDelegate:(nullable id<RNDEditorDelegate>)delegate
+                          contextInfo:(nullable void *)contextInfo; // Generally called by an external actor that waits for an async result. For example, a save button that triggers a write to a remote database.
 
 - (BOOL)commitEditorValueAndReturnError:(NSError * _Nullable __autoreleasing * _Nullable)error; // Generally called by the object(editor) associated with the binder. Provide a way to automatically present an eror message.
 

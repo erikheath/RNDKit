@@ -17,8 +17,6 @@
 
 @interface RNDBindingProcessor ()
 
-@property (strong, nullable, readonly) NSUUID *coordinatorQueueIdentifier;
-
 @end
 
 @implementation RNDBindingProcessor

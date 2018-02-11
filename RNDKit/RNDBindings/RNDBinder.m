@@ -12,8 +12,6 @@
 
 @interface RNDBinder()
 
-@property (strong, nullable, readonly) NSUUID *coordinatorQueueIdentifier;
-
 @end
 
 @implementation RNDBinder
@@ -120,7 +118,7 @@
 
 
 #pragma mark - Transient (Calculated) Properties
-@synthesize coordinator = _coordinator;
+//@synthesize coordinator = _coordinator;
 @synthesize coordinatorQueueIdentifier = _coordinatorQueueIdentifier;
 @synthesize syncCoordinator = _syncCoordinator;
 @synthesize bound = _isBound;

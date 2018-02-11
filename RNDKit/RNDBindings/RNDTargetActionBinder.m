@@ -67,7 +67,7 @@
 
 - (BOOL)bindCoordinatedObjects:(NSError * __autoreleasing _Nullable * _Nullable)error {
     __block BOOL result = NO;
-    
+
     if ((result = [super bindCoordinatedObjects:error]) == NO) { return result; }
     
     if ([self.bindingObject respondsToSelector:NSSelectorFromString(_bindingInvocationProcessor.bindingSelectorString)] && [self.bindingObject respondsToSelector:NSSelectorFromString(_unbindingInvocationProcessor.bindingSelectorString)]) {
