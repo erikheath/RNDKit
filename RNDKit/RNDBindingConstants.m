@@ -80,6 +80,9 @@ RNDArgument RNDObserverArgument = @"RNDObserverArgument";
 RNDArgument RNDIterationArgument = @"RNDIterationArgument";
 RNDArgument RNDPositionArgument = @"RNDPositionArgument";
 RNDArgument RNDBinderObjectValue = @"RNDBinderObjectValue";
+RNDArgument RNDPriorValue = @"RNDPriorValue";
+RNDArgument RNDCurrentValue = @"RNDCurrentValue";
+RNDArgument RNDNewValue = @"RNDNewValue";
 
 #pragma mark - RNDNotifications
 RNDBindingNotifications RNDValueOfObserverObjectDidChange = @"RNDValueOfObserverObjectDidChange";

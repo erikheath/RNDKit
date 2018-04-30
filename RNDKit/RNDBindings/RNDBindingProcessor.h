@@ -11,6 +11,8 @@
 #import "../RNDBindingProtocolsCategories/NSObject+RNDBindableObject.h"
 #import "../RNDBindingProtocolsCategories/RNDBindingObject.h"
 #import "../RNDBindingProtocolsCategories/RNDBindingObjectValue.h"
+#import "../RNDCoordinatedArray.h"
+#import "../RNDCoordinatedDictionary.h"
 
 
 /**

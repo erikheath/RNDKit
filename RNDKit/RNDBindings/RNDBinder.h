@@ -16,7 +16,7 @@
 
 @protocol RNDBindableObject;
 
-@interface RNDBinder : NSObject <NSCoding, RNDEditor, RNDBindingObject, RNDBindingObjectValue> {
+@interface RNDBinder : NSObject <NSCoding, RNDEditor, RNDEditorRegistration, RNDBindingObject, RNDBindingObjectValue> {
     @protected
     dispatch_queue_t _coordinator;
 }

@@ -22,7 +22,7 @@
 
 - (void)setInflowProcessor:(RNDBindingProcessor *)inflowProcessor {
     dispatch_barrier_sync(self.coordinator, ^{
-        if (self.isBound == YES) { return; }
+        if (self.bound == YES) { return; }
         _inflowProcessor = inflowProcessor;
     });
 }
@@ -50,7 +50,7 @@
 
 - (void)setBindingName:(NSString * _Nonnull)bindingName {
     dispatch_barrier_sync(self.coordinator, ^{
-        if (self.isBound == YES) { return; }
+        if (self.bound == YES) { return; }
         _bindingName = bindingName;
     });
 }
@@ -68,7 +68,7 @@
 
 - (void)setBindingObject:(NSObject<RNDBindableObject> *)observer {
     dispatch_barrier_sync(self.coordinator, ^{
-        if (self.isBound == YES) { return; }
+        if (self.bound == YES) { return; }
         _bindingObject = observer;
     });
 }
@@ -86,7 +86,7 @@
 
 - (void)setBindingObjectKeyPath:(NSString * _Nonnull)observerKey {
     dispatch_barrier_sync(self.coordinator, ^{
-        if (self.isBound == YES) { return; }
+        if (self.bound == YES) { return; }
         _bindingObjectKeyPath = observerKey;
     });
 }
@@ -103,7 +103,7 @@
 
 - (void)setMonitorsBindingObject:(BOOL)monitorsObserver {
     dispatch_barrier_sync(self.coordinator, ^{
-        if (self.isBound == YES) { return; }
+        if (self.bound == YES) { return; }
         _monitorsBindingObject = monitorsObserver;
     });
 }

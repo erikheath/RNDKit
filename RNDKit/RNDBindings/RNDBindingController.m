@@ -503,7 +503,7 @@ RNDCoordinatedProperty(BOOL, bound, Bound);
 #pragma mark - Value Binder Support
 
 #pragma mark editorValue
-RNDCoordinatedProperty(RNDBinder *, editorValue, EditorValue)
+RNDCoordinatedProperty(RNDBinder *, valueBinder, ValueBinder)
 
 #pragma mark registersAsEditor
 RNDCoordinatedProperty(BOOL, registersAsEditor, RegistersAsEditor)
@@ -511,44 +511,47 @@ RNDCoordinatedProperty(BOOL, registersAsEditor, RegistersAsEditor)
 #pragma mark - Editor Registration Support
 
 #pragma mark shouldBeginEditingEditorValue
-RNDCoordinatedProperty(RNDBinder *, shouldBeginEditingEditorValue, ShouldBeginEditingEditorValue)
+RNDCoordinatedProperty(RNDBinder *, shouldBeginEditBinder, ShouldBeginEditBinder)
 
 #pragma mark willBeginEditingEditorValue
-RNDCoordinatedProperty(RNDBinder *, willBeginEditingEditorValue, WillBeginEditingEditorValue)
+RNDCoordinatedProperty(RNDBinder *, willBeginEditBinder, WillBeginEditBinder)
 
 #pragma mark didBeginEditingEditorValue
-RNDCoordinatedProperty(RNDBinder *, didBeginEditingEditorValue, DidBeginEditingEditorValue)
+RNDCoordinatedProperty(RNDBinder *, didBeginEditBinder, DidBeginEditBinder)
 
 #pragma mark shouldEndEditingEditorValue
-RNDCoordinatedProperty(RNDBinder *, shouldEndEditingEditorValue, ShouldEndEditingEditorValue)
+RNDCoordinatedProperty(RNDBinder *, shouldEndEditBinder, ShouldEndEditBinder)
 
 #pragma mark willEndEditingEditorValue
-RNDCoordinatedProperty(RNDBinder *, willEndEditingEditorValue, WillEndEditingEditorValue)
+RNDCoordinatedProperty(RNDBinder *, willEndEditBinder, WillEndEditBinder)
 
 #pragma mark didEndEditingEditorValue
-RNDCoordinatedProperty(RNDBinder *, didEndEditingEditorValue, DidEndEditingEditorValue)
+RNDCoordinatedProperty(RNDBinder *, didEndEditBinder, DidEndEditBinder)
 
 // Triggers a call to associated Editor Registration binders
 - (BOOL)editorShouldBeginEditingEditorValue:(id _Nullable)value {
-    return _shouldBeginEditingEditorValue.bindingValue;
+    return _shouldBeginEditBinder.bindingValue;
 }
 - (void)editorWillBeginEditingEditorValue:(id _Nullable)value {
     // Notifies the data controller that an edit is going to occur.
-    
+    // NO-OP
 }
 - (void)editorDidBeginEditingEditorValue:(id _Nullable)value {
-    // Notifies the data controller that an edit is happening
-    
+    // Notifies the data controller that an edit is happening by calling the
+    // editor value binder's register for edit
+    [_valueBinder editorDidBeginEditing:self];
 }
 - (BOOL)editorShouldEndEditingEditorValue:(id _Nullable)value {
-    // Determines if an edit should occur
-    return _shouldEndEditingEditorValue.bindingValue;
+    // Determines if an edit should end
+    return _shouldEndEditBinder.bindingValue;
 }
 - (void)editorWillEndEditingEditorValue:(id _Nullable)value {
-    // Notifies the data controller than an edit is goind to occur.
+    // Notifies the data controller than an edit is goind to end.
+    // NO-OP
 }
 - (void)editorDidEndEditingEditorValue:(id _Nullable)value {
-    // Notifies the data controller than an edit is happening.
+    // Notifies the data controller than an edit is complete and the editor should be unregistered.
+    [_valueBinder editorDidEndEditing:self];
 }
 
 #pragma mark - Value Update Support
@@ -573,14 +576,14 @@ RNDCoordinatedProperty(RNDBinder *, shouldUpdateEditorValue, ShouldUpdateEditorV
 RNDCoordinatedProperty(RNDBinder *, willUpdateEditorValue, WillUpdateEditorValue)
 
 - (void)editorWillUpdateEditorValue:(id _Nullable)value {
-    
+    // NO-OP
 }
 
 #pragma mark didUpdateEditorValue
 RNDCoordinatedProperty(RNDBinder *, didUpdateEditorValue, DidUpdateEditorValue)
 
 - (void)editorDidUpdatedEditorValue:(id _Nullable)value {
-    
+    // NO-OP
 }
 
 #pragma mark - Value Replacement Support
@@ -595,23 +598,45 @@ RNDCoordinatedProperty(RNDBinder *, willReplaceEditorValue, WillReplaceEditorVal
 RNDCoordinatedProperty(RNDBinder *, didReplaceEditorValue, DidReplaceEditorValue)
 
 #pragma mark editorValueLockingFailure
+
 RNDCoordinatedProperty(BOOL, editorValueLockingFailure, EditorValueLockingFailure)
 
-- (BOOL)editorValue:(id _Nullable)editorValue shouldChangeToNewValue:(id _Nullable)newValue fromPriorValue:(id _Nullable)dataSourceValue {
-    
-    return NO;
-}; // If an optimistic locking failure has occurred where the current model value does not match the edited value, provides the binder with an opportunity to confirm that the change should occur.
+- (BOOL)editing {
+    [_coordinatorLock lock];
+    BOOL localObject = _editing;
+    [_coordinatorLock unlock];
+    return localObject;
+}
 
-// These are the methods that binders call on their binding controllers when specific key paths change. Set value for keypath is used to make the actual change as part of the updateBindingObjectValue method in a binder.
-- (void)dataSourceWillReplaceBoundValue:(id _Nullable)value forKeyPath:(NSString * _Nonnull)keyPath {
+- (BOOL)editorValue:(id _Nonnull)editorValue shouldChangeToNewValue:(id _Nonnull)newValue fromPriorValue:(id _Nonnull)dataSourceValue {
+    // If an optimistic locking failure has occurred where the current model value does not match the edited value, provides the binder with an opportunity to confirm that the change should occur.
+    BOOL result = YES;
+    [_coordinatorLock lock];
     
-}; // Tells the controller that the value in the model will change while an edit in is progress.
-- (void)dataSourceDidReplaceBoundValue:(id _Nullable)value forKeyPath:(NSString * _Nonnull)keyPath {
+    if (_editing == YES && _shouldReplaceEditorValue != nil) {
+        // This method should only be called when an edit is in progress and the shouldReplaceEditorValue binder is not nil.
+        id runtimeArgs = [NSMutableDictionary dictionaryWithDictionary:@{RNDPriorValue: dataSourceValue, RNDCurrentValue: editorValue, RNDNewValue:newValue}];
+        if (_shouldReplaceEditorValue.inflowProcessor.runtimeArguments != nil) {
+            [runtimeArgs addEntriesFromDictionary:_shouldReplaceEditorValue.inflowProcessor.runtimeArguments];
+        }
+        _shouldReplaceEditorValue.inflowProcessor.runtimeArguments = [NSDictionary dictionaryWithDictionary:runtimeArgs];
+        result = ((NSNumber *)_shouldReplaceEditorValue.bindingValue).boolValue;
+    }
     
-}; // Tells the controller that the value in the model will change while an edit is in progress.
+    [_coordinatorLock unlock];
+    return result;
+};
+
+
+- (void)dataSourceWillReplaceBoundValue:(id _Nullable)value atKeyPath:(NSString * _Nonnull)keyPath {
+    self.editorValueLockingFailure = YES;
+};
+- (void)dataSourceDidReplaceBoundValue:(id _Nullable)value atKeyPath:(NSString * _Nonnull)keyPath {
+    
+};
 
 - (void)discardEditorValue {
-    
+    // This should call dataSourceWillReplaceBoundValue, should change the value, and then call didreplace.
 }; // Reverts to the current binding value and pushes it to the Editor(view).
 
 - (BOOL)commitEditorValue {
@@ -641,19 +666,18 @@ RNDCoordinatedProperty(BOOL, editorValueLockingFailure, EditorValueLockingFailur
             internalError = [NSError errorWithDomain:RNDKitErrorDomain
                                                 code:RNDObjectIsBoundError
                                             userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBindingFailedErrorKey, nil, errorBundle, @"Binding Failed", @"Binding Failed"),
-                                                       NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundErrorKey, nil, errorBundle, @"The binder is already bound.", @"The binder is already bound."),
-                                                       NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundRecoverySuggestionErrorKey, nil, errorBundle, @"The binder is already bound. To rebind the binder, call unbind on the binder first.", @"Attempted to rebind the binder.")
+                                                       NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundErrorKey, nil, errorBundle, @"The binding controller is already bound.", @"The binding controller is already bound."),
+                                                       NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundRecoverySuggestionErrorKey, nil, errorBundle, @"The binding controller is already bound. To rebind the it, call unbind first.", @"Attempted to rebind the binding controller.")
                                                        }];
             *error = internalError;
         }
         return result;
     }
     
-    // TODO: Who should receive a bind message?
-
-
-_bound = YES;
-return _bound;
+    result = [self.binders bind:&internalError];
+    
+    _bound = result;
+    return result;
 }
 
 - (void)bind {
@@ -679,6 +703,23 @@ return _bound;
     NSMutableArray *underlyingErrorsArray = [NSMutableArray array];
     NSError * internalError;
     
+    if (_bound == NO) {
+        result = NO;
+        if (error != NULL) {
+            NSBundle * errorBundle = [NSBundle bundleForClass:[self class]];
+            internalError = [NSError errorWithDomain:RNDKitErrorDomain
+                                                code:RNDObjectIsBoundError
+                                            userInfo:@{NSLocalizedDescriptionKey:NSLocalizedStringWithDefaultValue(RNDBindingFailedErrorKey, nil, errorBundle, @"Unbinding Error", @"Unbinding Error"),
+                                                       NSLocalizedFailureReasonErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundErrorKey, nil, errorBundle, @"The binding controller is not bound.", @"The binding controller is not bound."),
+                                                       NSLocalizedRecoverySuggestionErrorKey: NSLocalizedStringWithDefaultValue(RNDObjectIsBoundRecoverySuggestionErrorKey, nil, errorBundle, @"The binding controller is not bound. An unbind message has been sent to the controller's binders.", @"Attempted to unbind the binding controller.")
+                                                       }];
+            *error = internalError;
+        }
+        return result;
+    }
+    
+    result = [self.binders unbind:&internalError];
+
     _bound = NO;
     return result;
 }

@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readwrite) BOOL alwaysPresentsApplicationModalAlerts;
 @property (readwrite) BOOL refreshesAllModelKeys;
 @property (readwrite) BOOL multipleObservedModelObjects;
-@property (getter=isEditing, readwrite) BOOL editing;
+@property (readwrite) BOOL editing;
 
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

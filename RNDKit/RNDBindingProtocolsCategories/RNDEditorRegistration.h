@@ -11,6 +11,12 @@
 
 @protocol RNDEditorRegistration <NSObject>
 
+@optional
+
+- (void)editorDidBeginEditing:(id<RNDEditor> _Nonnull)editor;
+
+- (void)editorDidEndEditing:(id<RNDEditor> _Nonnull)editor;
+
 - (void)editor:(id<RNDEditor> _Nonnull)editor didBeginEditingValueAtKeyPath:(NSString * _Nonnull)keyPath;
 
 - (void)editor:(id<RNDEditor> _Nonnull)editor didEndEditingValueAtKeyPath:(NSString * _Nonnull)keyPath;

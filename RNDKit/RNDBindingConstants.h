@@ -76,6 +76,9 @@ FOUNDATION_EXPORT RNDArgument RNDObserverArgument;
 FOUNDATION_EXPORT RNDArgument RNDIterationArgument;
 FOUNDATION_EXPORT RNDArgument RNDPositionArgument;
 FOUNDATION_EXPORT RNDArgument RNDBinderObjectValue;
+FOUNDATION_EXPORT RNDArgument RNDPriorValue;
+FOUNDATION_EXPORT RNDArgument RNDCurrentValue;
+FOUNDATION_EXPORT RNDArgument RNDNewValue;
 
 #pragma mark - RNDNotifications
 typedef NSString * const RNDBindingNotifications NS_STRING_ENUM;

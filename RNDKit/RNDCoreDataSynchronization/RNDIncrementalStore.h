@@ -6,8 +6,9 @@
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#ifndef RNDIncrementalStore_h
-#define RNDIncrementalStore_h
+#import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
+@interface RNDIncrementalStore: NSIncrementalStore
 
-#endif /* RNDIncrementalStore_h */
+@end
