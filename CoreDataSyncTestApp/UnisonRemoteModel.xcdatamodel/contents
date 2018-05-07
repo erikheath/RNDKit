@@ -79,7 +79,8 @@
         <relationship name="searchSets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UNSGeoLocation" inverseName="listings" inverseEntity="UNSGeoLocation" syncable="YES"/>
         <relationship name="videos" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSVideos" inverseName="listing" inverseEntity="UNSVideos" syncable="YES"/>
         <userInfo>
-            <entry key="serverKeyPath" value="status"/>
+            <entry key="serviceRequestTimeout" value="45"/>
+            <entry key="stalenessFactor" value="86400"/>
         </userInfo>
     </entity>
     <entity name="UNSListingOffice" representedClassName="UNSListingOffice" syncable="YES">

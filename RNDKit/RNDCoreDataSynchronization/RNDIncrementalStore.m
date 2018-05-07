@@ -8,23 +8,46 @@
 
 #import "RNDIncrementalStore.h"
 
-// Register in the app - provide a startup routine that can be added to application did finish launching. The store type is RNDIncrementalStoreType. The subclass of this will be the RNDRemoteStoreType.
-
 @implementation RNDIncrementalStore
 
+@synthesize dataRequestDelegateQueue = _dataRequestDelegateQueue;
+
+- (NSURLCache *)dataCache {
+    if (_dataCache == nil) {
+        _dataCache = [NSURLCache sharedURLCache];
+    }
+    return _dataCache;
+}
+
+- (NSOperationQueue *)dataRequestDelegateQueue {
+    if (_dataRequestDelegateQueue == nil) {
+        _dataRequestDelegateQueue = [[NSOperationQueue alloc] init];
+    }
+    return _dataRequestDelegateQueue;
+}
+
+- (NSURLSession *)dataRequestSession {
+    if (_dataRequestSession == nil) {
+        _dataRequestSession = [NSURLSession sessionWithConfiguration:self.dataRequestConfigfuration delegate:self.dataRequestDelegate delegateQueue:self.dataRequestDelegateQueue];
+    }
+    return _dataRequestSession;
+}
+
+- (NSURLSessionConfiguration *)dataRequestConfigfuration {
+    if (_dataRequestConfigfuration == nil) {
+        _dataRequestConfigfuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        // TODO: Configure the session configuration object.
+        _dataRequestConfigfuration.requestCachePolicy = NSURLRequestReturnCacheDataElseLoad;
+    }
+    return _dataRequestConfigfuration;
+}
+
 - (BOOL)loadMetadata:(NSError *__autoreleasing *)error {
-    // For a remote store, verfiying the URL doesn't generally make
-    // sense.
-    //    NSURL *storeURL = [self URL];
-    // ... metadata validation
-    // This UUID is unique for the store type.
+    
     NSMutableDictionary *mutableMetadata = [NSMutableDictionary dictionary];
     [mutableMetadata setValue:[[NSProcessInfo processInfo] globallyUniqueString] forKey:NSStoreUUIDKey];
     [mutableMetadata setValue:NSStringFromClass([self class]) forKey:NSStoreTypeKey];
     [self setMetadata:mutableMetadata];
-//    NSDictionary *metadata = @{NSStoreUUIDKey: @"com.unison.remotestore.porchlight",
-//                               NSStoreTypeKey: @"RNDIncrementalStoreType"};
-//    [self setMetadata:metadata];
     
     return YES;
 }
@@ -42,10 +65,11 @@
         NSData * __block serviceData = nil;
         NSError * __block serviceError = nil;
         
-        // The basic URL pieces needed for any request in the current setup.
-        NSURLComponents *serviceComponents = [NSURLComponents componentsWithString:@"http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&page=1&perPage=200&columns=id&columns=marketId"];
+        // The basic URL pieces needed for any request in the current setup. The service URL can come from the model on a per entity basis or from some configuration file.
+        NSURLComponents *serviceComponents = [NSURLComponents componentsWithString:@"http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&page=1&perPage=200&columns=id&columns=lastUpdatedOn"];
         NSMutableArray *queryItems = [NSMutableArray arrayWithArray:serviceComponents.queryItems];
         
+        // TODO: Replace with a basic predicate parser
         if (([fetchRequest.predicate.predicateFormat containsString:@"city"] || [fetchRequest.predicate.predicateFormat containsString:@"postalCode"] ) && [fetchRequest.predicate isKindOfClass:[NSCompoundPredicate class]]) {
             // This is a request for a city, state based result set.
             for (NSComparisonPredicate *compareObject in ((NSCompoundPredicate *)fetchRequest.predicate).subpredicates) {
@@ -54,38 +78,22 @@
                 [queryItems addObject:[NSURLQueryItem queryItemWithName:constraint value:value]];
             }
         }
-//        } else if ([fetchRequest.predicate.predicateFormat containsString:@"id"]) {
-//            // This is a request for a specific property id.
-//            NSURLQueryItem *idItem = [NSURLQueryItem queryItemWithName:@"id" value:@""];
-//            [queryItems addObject:idItem];
-//        }
-        [serviceComponents setQueryItems: queryItems];
-
-        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-            NSURLSession *session = [NSURLSession sharedSession];
-            NSURLSessionDataTask *task = [session dataTaskWithURL:[serviceComponents URL] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                if (error != nil) {
-                    serviceError = error;
-                    dispatch_semaphore_signal(sema);
-                    return;
-                }
-                serviceData = data;
-                dispatch_semaphore_signal(sema);
-            }];
-            [task resume];
-
-        });
-        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-
+        [serviceComponents setQueryItems: queryItems];
+        NSURL *serviceURL = [serviceComponents URL];
+        if (serviceURL == nil) { return nil; }
+        
+        serviceData = [self responseDataForServiceURL:serviceURL
+                                     requestingEntity:entity
+                                                error:&serviceError];
+        
         if (serviceError != nil) {
             if (error != NULL) {
                 *error = serviceError;
                 return nil;
             }
         }
-        
+
         // Retrieve the primary keys from the data
         id JSONResult = [NSJSONSerialization JSONObjectWithData:serviceData options:0 error:&serviceError];
         if(serviceError != nil) {
@@ -106,7 +114,7 @@
             [primaryKeys addObject: URLString];
         }
         
-         // This is where the count of objects and the identifying keys comes from.
+        // This is where the count of objects and the identifying keys comes from.
         NSMutableArray *fetchedObjects = [NSMutableArray arrayWithCapacity:[primaryKeys count]];
         for (NSString *primaryKey in primaryKeys) {
             NSManagedObjectID *objectID = [self newObjectIDForEntity:entity referenceObject:primaryKey];
@@ -116,17 +124,113 @@
         
         return fetchedObjects;
     } else if ([request requestType] == NSSaveRequestType) {
-//        NSSaveChangesRequest *saveRequest = (NSSaveChangesRequest *)request;
-//        NSSet *insertedObjects = [saveRequest insertedObjects];
-//        NSSet *updatedObjects = [saveRequest updatedObjects];
-//        NSSet *deletedObjects = [saveRequest deletedObjects];
-//        NSSet *optLockObjects = [saveRequest lockedObjects];
+        //        NSSaveChangesRequest *saveRequest = (NSSaveChangesRequest *)request;
+        //        NSSet *insertedObjects = [saveRequest insertedObjects];
+        //        NSSet *updatedObjects = [saveRequest updatedObjects];
+        //        NSSet *deletedObjects = [saveRequest deletedObjects];
+        //        NSSet *optLockObjects = [saveRequest lockedObjects];
         
         // TODO: ... Perform any operations on your backing data store needed to persist the changes. set and increment version numbers.
         
         return @[];
     }
     return nil;
+}
+
+- (NSData *)responseDataForServiceURL:(NSURL *)serviceURL requestingEntity:(NSEntityDescription *)entity error:(NSError * _Nullable *)error {
+    
+    NSURLRequestCachePolicy policy = self.dataRequestSession.configuration.requestCachePolicy;
+    NSURLRequest *serviceRequest = [self serviceRequestForServiceURL:serviceURL requestingEntity:entity];
+    if (serviceRequest == nil) { return nil; }
+    NSCachedURLResponse *cachedResponse = [self cachedResponseForServiceRequest:serviceRequest requestingEntity:entity];
+    
+    if (policy == NSURLRequestReturnCacheDataDontLoad) {
+        return cachedResponse != nil ? cachedResponse.data : nil;
+        
+    } else if (policy == NSURLRequestReloadIgnoringCacheData ||
+               policy == NSURLRequestReloadIgnoringLocalCacheData ||
+               policy == NSURLRequestReloadIgnoringLocalAndRemoteCacheData) {
+        return [self responseForServiceRequest:serviceRequest error:error];
+        
+    } else if (policy == NSURLRequestReturnCacheDataElseLoad ||
+               policy == NSURLRequestReloadRevalidatingCacheData) {
+        return cachedResponse != nil && cachedResponse.data != nil ? cachedResponse.data : [self responseForServiceRequest:serviceRequest error:error];
+    }
+    return nil;
+}
+
+- (NSURLRequest *)serviceRequestForServiceURL:(NSURL *)URL requestingEntity:(NSEntityDescription *)entity {
+    NSTimeInterval serviceRequestTimeout = 20.0; // This is the default timeout.
+    NSNumber *entityTimeout = entity.userInfo[@"serviceRequestTimeout"]; // An entity timeout may be set in the model.
+    if (entityTimeout != nil) { serviceRequestTimeout = entityTimeout.doubleValue; }
+    
+    NSURLRequest *serviceRequest = [NSURLRequest requestWithURL:URL cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:serviceRequestTimeout];
+    
+    return serviceRequest;
+}
+
+- (NSCachedURLResponse *)cachedResponseForServiceRequest:(NSURLRequest *)serviceRequest requestingEntity:(NSEntityDescription *)entity {
+    
+    NSCachedURLResponse *cachedResponse = [self.dataCache cachedResponseForRequest:serviceRequest];
+    if (cachedResponse == nil) { return nil; }
+    
+    NSString *stalenessFactorString = entity.userInfo[@"stalenessFactor"];
+    if (stalenessFactorString == nil) { stalenessFactorString = @"86400"; }
+    
+    NSTimeInterval stalenessInterval = [stalenessFactorString doubleValue] * -1.0;
+    NSDate *stalenessDate = [NSDate dateWithTimeIntervalSinceNow:stalenessInterval];
+    if ([cachedResponse.response isKindOfClass: [NSHTTPURLResponse class]] == NO) { return nil; } // This is it for now.
+    
+    NSDictionary *headers = ((NSHTTPURLResponse *)cachedResponse.response).allHeaderFields;
+    NSString *cachedResponseDateString = headers[@"Date"];
+    if (cachedResponseDateString == nil) { return nil; }
+    
+    NSDateFormatter *cachedResponseDateFormatter = [[NSDateFormatter alloc] init];
+    NSLocale *locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    [cachedResponseDateFormatter setLocale:locale];
+    [cachedResponseDateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    [cachedResponseDateFormatter setDateFormat:@"EEE', 'dd' 'MMM' 'yyyy' 'HH':'mm':'ss' 'zzz"];
+    NSDate *cachedResponseDate = [cachedResponseDateFormatter dateFromString:cachedResponseDateString];
+    if (cachedResponseDate == nil) { return nil; }
+    
+    NSComparisonResult result = [stalenessDate compare:cachedResponseDate];
+    if (result == NSOrderedDescending) {
+        [self.dataCache removeCachedResponseForRequest:serviceRequest];
+        return nil;
+    }
+    
+    return cachedResponse;
+}
+
+- (NSData *)responseForServiceRequest:(NSURLRequest *)serviceRequest error:(NSError * _Nullable *)error {
+    
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    NSData * __block serviceData = nil;
+    NSError * __block serviceError = nil;
+    
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        // TODO: Implement Delegate Branching if needed.
+        NSURLSessionDataTask *task = [self.dataRequestSession dataTaskWithRequest:serviceRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            if (error != nil) {
+                serviceError = error;
+                dispatch_semaphore_signal(sema);
+                return;
+            }
+            serviceData = data;
+            dispatch_semaphore_signal(sema);
+        }];
+        [task resume];
+        
+    });
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    
+    if (serviceError != nil) {
+        if (error != NULL) {
+            *error = serviceError;
+            return nil;
+        }
+    }
+    return serviceData;
 }
 
 - (NSIncrementalStoreNode *)newValuesForObjectWithID:(NSManagedObjectID *)objectID
@@ -145,25 +249,9 @@
     
     // The basic URL pieces needed for any request in the current setup.
     NSURL *serviceURL = [NSURL URLWithString:[self referenceObjectForObjectID:objectID]];
-    
-    // This creates a synchronous workflow which is necessary for the current implementation.
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        NSURLSession *session = [NSURLSession sharedSession];
-        NSURLSessionDataTask *task = [session dataTaskWithURL:serviceURL completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            if (error != nil) {
-                serviceError = error;
-                dispatch_semaphore_signal(sema);
-                return;
-            }
-            serviceData = data;
-            dispatch_semaphore_signal(sema);
-        }];
-        [task resume];
-        
-    });
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    serviceData = [self responseDataForServiceURL:serviceURL
+                                 requestingEntity:entity
+                                            error:&serviceError];
     
     if (serviceError != nil) {
         if (error != NULL) {
@@ -199,7 +287,7 @@
                 }
                 if (serverValue != nil) { [values setObject:serverValue forKey:attribute.name]; }
             }
-
+            
         }
         
         if (values.count < 1) { return nil; }
@@ -225,28 +313,11 @@
         NSError * __block serviceError = nil;
         
         // The basic URL pieces needed for any request in the current setup.
-        NSURL *serviceURL;
-        
         NSString *uniqueIdentifier = [self referenceObjectForObjectID:objectID];
-        serviceURL = [NSURL URLWithString:uniqueIdentifier];
-        
-        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-        
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-            NSURLSession *session = [NSURLSession sharedSession];
-            NSURLSessionDataTask *task = [session dataTaskWithURL:serviceURL completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                if (error != nil) {
-                    serviceError = error;
-                    dispatch_semaphore_signal(sema);
-                    return;
-                }
-                serviceData = data;
-                dispatch_semaphore_signal(sema);
-            }];
-            [task resume];
-            
-        });
-        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+        NSURL *serviceURL = [NSURL URLWithString:uniqueIdentifier];
+        serviceData = [self responseDataForServiceURL:serviceURL
+                                     requestingEntity:entity
+                                                error:&serviceError];
         
         if (serviceError != nil) {
             if (error != NULL) {

@@ -121,10 +121,10 @@
     
     cell.textLabel.text = [NSString stringWithFormat:@"%@",listing.price];
     
-//    NSData *imageData = listing.images.firstObject.image;
-//    cell.imageView.image = [UIImage imageWithData: imageData];
-//    cell.imageView.clipsToBounds = YES;
-//    cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    NSData *imageData = listing.images.firstObject.image;
+    cell.imageView.image = [UIImage imageWithData: imageData];
+    cell.imageView.clipsToBounds = YES;
+    cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
 
