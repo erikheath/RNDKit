@@ -22,14 +22,6 @@
         <attribute name="titleText" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="images" inverseEntity="UNSListing" syncable="YES"/>
     </entity>
-    <entity name="UNSLisingAgent" representedClassName="UNSLisingAgent" syncable="YES">
-        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="externalID" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="licenseNumber" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="phone" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="listingAgent" inverseEntity="UNSListing" syncable="YES"/>
-    </entity>
     <entity name="UNSListing" representedClassName="UNSListing" syncable="YES">
         <attribute name="daysOnMarket" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES">
             <userInfo>
@@ -72,22 +64,24 @@
                 <entry key="serverKeyPath" value="images"/>
             </userInfo>
         </relationship>
-        <relationship name="listingAgent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSLisingAgent" inverseName="listing" inverseEntity="UNSLisingAgent" syncable="YES"/>
-        <relationship name="listingOffice" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListingOffice" inverseName="listing" inverseEntity="UNSListingOffice" syncable="YES"/>
+        <relationship name="listingAdvertisers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UNSListingAdvertiser" inverseName="listing" inverseEntity="UNSListingAdvertiser" syncable="YES"/>
         <relationship name="propertyDescription" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSProperty" inverseName="listing" inverseEntity="UNSProperty" syncable="YES"/>
         <relationship name="savedSets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UNSSavedSet" inverseName="listing" inverseEntity="UNSSavedSet" syncable="YES"/>
+        <relationship name="schools" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSSchool" inverseName="listing" inverseEntity="UNSSchool" syncable="YES"/>
         <relationship name="searchSets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UNSGeoLocation" inverseName="listings" inverseEntity="UNSGeoLocation" syncable="YES"/>
         <relationship name="videos" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSVideos" inverseName="listing" inverseEntity="UNSVideos" syncable="YES"/>
         <userInfo>
-            <entry key="serviceRequestTimeout" value="45"/>
+            <entry key="serviceURL" value="http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&amp;page=1&amp;perPage=200&amp;columns=id&amp;columns=lastUpdatedOn"/>
             <entry key="stalenessFactor" value="86400"/>
         </userInfo>
     </entity>
-    <entity name="UNSListingOffice" representedClassName="UNSListingOffice" syncable="YES">
+    <entity name="UNSListingAdvertiser" representedClassName="UNSListingAdvertiser" syncable="YES">
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="externalID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="licenseNumber" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="phone" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="listingOffice" inverseEntity="UNSListing" syncable="YES"/>
+        <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="listingAdvertisers" inverseEntity="UNSListing" syncable="YES"/>
     </entity>
     <entity name="UNSLocationMatch" representedClassName="UNSLocationMatch" syncable="YES">
         <attribute name="descriptionText" optional="YES" attributeType="String" syncable="YES"/>
@@ -116,12 +110,29 @@
                 <entry key="serverKeyPath" value="address.county"/>
             </userInfo>
         </attribute>
-        <attribute name="dateBuilt" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dateBuilt" optional="YES" attributeType="String" syncable="YES">
+            <userInfo>
+                <entry key="serverKeyPath" value="yearBuilt"/>
+            </userInfo>
+        </attribute>
         <attribute name="floor" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="geoLocation" optional="YES" attributeType="Transformable" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="kind" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="neighborhood" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES">
+            <userInfo>
+                <entry key="serverKeyPath" value="address.coordinates.lat"/>
+            </userInfo>
+        </attribute>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES">
+            <userInfo>
+                <entry key="serverKeyPath" value="address.coordinates.lon"/>
+            </userInfo>
+        </attribute>
+        <attribute name="neighborhood" optional="YES" attributeType="String" syncable="YES">
+            <userInfo>
+                <entry key="serverKeyPath" value="address.neighborhoods.name"/>
+            </userInfo>
+        </attribute>
         <attribute name="parkingSpaces" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
         <attribute name="postalCode" optional="YES" attributeType="String" syncable="YES">
             <userInfo>
@@ -159,6 +170,28 @@
         <attribute name="setName" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="listing" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="UNSListing" inverseName="savedSets" inverseEntity="UNSListing" syncable="YES"/>
     </entity>
+    <entity name="UNSSchool" representedClassName="UNSSchool" syncable="YES">
+        <attribute name="elementarySchool" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="highSchool" optional="YES" attributeType="String" syncable="YES">
+            <userInfo>
+                <entry key="serverKeyPath" value="schools.high"/>
+            </userInfo>
+        </attribute>
+        <attribute name="middleSchool" optional="YES" attributeType="String" syncable="YES">
+            <userInfo>
+                <entry key="serverKeyPath" value="schools.middle"/>
+            </userInfo>
+        </attribute>
+        <attribute name="schoolDistrict" optional="YES" attributeType="String" syncable="YES">
+            <userInfo>
+                <entry key="serverKeyPath" value="schools.district"/>
+            </userInfo>
+        </attribute>
+        <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="schools" inverseEntity="UNSListing" syncable="YES"/>
+        <userInfo>
+            <entry key="serverKeyPath" value="schools.elementary"/>
+        </userInfo>
+    </entity>
     <entity name="UNSSearchProfile" representedClassName="UNSSearchProfile" syncable="YES">
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="downPayment" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
@@ -182,12 +215,12 @@
     <elements>
         <element name="UNSGeoLocation" positionX="160" positionY="-144" width="128" height="240"/>
         <element name="UNSImage" positionX="133" positionY="492" width="128" height="120"/>
-        <element name="UNSLisingAgent" positionX="-182" positionY="126" width="128" height="135"/>
         <element name="UNSListing" positionX="54" positionY="108" width="128" height="270"/>
-        <element name="UNSListingOffice" positionX="-45" positionY="507" width="128" height="105"/>
+        <element name="UNSListingAdvertiser" positionX="-45" positionY="507" width="128" height="135"/>
         <element name="UNSLocationMatch" positionX="-20" positionY="-144" width="128" height="105"/>
-        <element name="UNSProperty" positionX="403" positionY="138" width="128" height="330"/>
+        <element name="UNSProperty" positionX="403" positionY="138" width="128" height="345"/>
         <element name="UNSSavedSet" positionX="-279" positionY="360" width="128" height="75"/>
+        <element name="UNSSchool" positionX="-63" positionY="18" width="128" height="120"/>
         <element name="UNSSearchProfile" positionX="342" positionY="-135" width="128" height="225"/>
         <element name="UNSVideos" positionX="385" positionY="498" width="128" height="105"/>
     </elements>

@@ -1,8 +1,8 @@
 //
-//  UNSListingOffice+CoreDataClass.h
+//  UNSSchool+CoreDataClass.h
 //  CoreDataSyncTestApp
 //
-//  Created by Erikheath Thomas on 5/4/18.
+//  Created by Erikheath Thomas on 5/9/18.
 //  Copyright © 2018 Curated Cocoa LLC. All rights reserved.
 //
 //
@@ -14,10 +14,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UNSListingOffice : NSManagedObject
+@interface UNSSchool : NSManagedObject
 
 @end
 
 NS_ASSUME_NONNULL_END
 
-#import "UNSListingOffice+CoreDataProperties.h"
+#import "UNSSchool+CoreDataProperties.h"

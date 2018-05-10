@@ -2,7 +2,7 @@
 //  UNSProperty+CoreDataProperties.h
 //  CoreDataSyncTestApp
 //
-//  Created by Erikheath Thomas on 5/4/18.
+//  Created by Erikheath Thomas on 5/9/18.
 //  Copyright © 2018 Curated Cocoa LLC. All rights reserved.
 //
 //
@@ -20,11 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) int16_t bedrooms;
 @property (nullable, nonatomic, copy) NSString *city;
 @property (nullable, nonatomic, copy) NSString *county;
-@property (nullable, nonatomic, copy) NSDate *dateBuilt;
+@property (nullable, nonatomic, copy) NSString *dateBuilt;
 @property (nonatomic) int16_t floor;
-@property (nullable, nonatomic, retain) NSObject *geoLocation;
 @property (nullable, nonatomic, copy) NSString *identifier;
 @property (nullable, nonatomic, copy) NSString *kind;
+@property (nonatomic) double latitude;
+@property (nonatomic) double longitude;
 @property (nullable, nonatomic, copy) NSString *neighborhood;
 @property (nullable, nonatomic, copy) NSDecimalNumber *parkingSpaces;
 @property (nullable, nonatomic, copy) NSString *postalCode;

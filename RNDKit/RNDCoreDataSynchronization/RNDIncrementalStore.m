@@ -10,7 +10,16 @@
 
 @implementation RNDIncrementalStore
 
+@synthesize rowCache = _rowCache;
+
 @synthesize dataRequestDelegateQueue = _dataRequestDelegateQueue;
+
+- (RNDRowCache *)rowCache {
+    if (_rowCache == nil) {
+        _rowCache = [RNDRowCache new];
+    }
+    return _rowCache;
+}
 
 - (NSURLCache *)dataCache {
     if (_dataCache == nil) {
@@ -42,6 +51,13 @@
     return _dataRequestConfigfuration;
 }
 
+- (RNDQueryItemPredicateParser *)dataRequestQueryItemPredicateParser {
+    if (_dataRequestQueryItemPredicateParser == nil) {
+        _dataRequestQueryItemPredicateParser = [RNDQueryItemPredicateParser new];
+    }
+    return _dataRequestQueryItemPredicateParser;
+}
+
 - (BOOL)loadMetadata:(NSError *__autoreleasing *)error {
     
     NSMutableDictionary *mutableMetadata = [NSMutableDictionary dictionary];
@@ -56,45 +72,142 @@
          withContext:(NSManagedObjectContext *)context
                error:(NSError * _Nullable *)error {
     
-    // TODO: Handle basic fetch request.
     if ([request requestType] == NSFetchRequestType) {
         NSFetchRequest *fetchRequest = (NSFetchRequest *)request;
         NSEntityDescription *entity = [fetchRequest entity];
+        NSURL *serviceURL = nil;
+        NSString *serviceURLString = nil;
+        NSURLComponents *serviceComponents = nil;
         
-        // TODO: The request must include the sort which will order the primary keys and thus the returned objects. Also, it should support scope modifiers like max results, etc.
-        NSData * __block serviceData = nil;
-        NSError * __block serviceError = nil;
         
-        // The basic URL pieces needed for any request in the current setup. The service URL can come from the model on a per entity basis or from some configuration file.
-        NSURLComponents *serviceComponents = [NSURLComponents componentsWithString:@"http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&page=1&perPage=200&columns=id&columns=lastUpdatedOn"];
-        NSMutableArray *queryItems = [NSMutableArray arrayWithArray:serviceComponents.queryItems];
-        
-        // TODO: Replace with a basic predicate parser
-        if (([fetchRequest.predicate.predicateFormat containsString:@"city"] || [fetchRequest.predicate.predicateFormat containsString:@"postalCode"] ) && [fetchRequest.predicate isKindOfClass:[NSCompoundPredicate class]]) {
-            // This is a request for a city, state based result set.
-            for (NSComparisonPredicate *compareObject in ((NSCompoundPredicate *)fetchRequest.predicate).subpredicates) {
-                NSString *constraint = compareObject.leftExpression.keyPath;
-                NSString *value = compareObject.rightExpression.constantValue;
-                [queryItems addObject:[NSURLQueryItem queryItemWithName:constraint value:value]];
+        //****************** BEGIN DELEGATE URL PROCESSING ******************//
+        if (self.dataRequestDelegate != nil) {
+            if ([self.dataRequestDelegate respondsToSelector:@selector(storeShouldDelegateURLComponentConstructionForRequest:)] == YES && [self.dataRequestDelegate storeShouldDelegateURLComponentConstructionForRequest:fetchRequest] == YES) {
+                serviceComponents = [self.dataRequestDelegate URLComponentsForRequest:fetchRequest];
+            } else if ([self.dataRequestDelegate respondsToSelector:@selector(storeShouldDelegateURLTemplateConstructionForRequest:)] == YES && [self.dataRequestDelegate storeShouldDelegateURLTemplateConstructionForRequest:fetchRequest] == YES) {
+                serviceURLString = [self.dataRequestDelegate URLTempateForRequest:fetchRequest];
             }
         }
+        //****************** END DELEGATE URL PROCESSING ******************//
+
+        
+        //****************** BEGIN MODEL URL PROCESSING ******************//
+        if (serviceComponents == nil && serviceURLString == nil) {
+            serviceURLString = entity.userInfo[@"serviceURL"];
+        }
+        //****************** END MODEL URL PROCESSING ******************//
+
+        
+        //****************** BEGIN STORE URL PROCESSING ******************//
+        if (serviceComponents == nil && serviceURLString == nil) {
+            serviceURLString = [self.URL absoluteString];
+        }
+        //****************** END STORE URL PROCESSING ******************//
+
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+        
+        if (serviceComponents == nil && serviceURLString == nil) { return nil; }
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+
+        
+        //****************** BEGIN SUBSTITUTION VARIABLE PROCESSING ******************//
+        // TODO: Add Default Substitutions
+        if (serviceURLString != nil) {
+            if (self.dataRequestDelegate != nil && [self.dataRequestDelegate respondsToSelector:@selector(storeShouldSubstituteVariablesForRequest:)] == YES && [self.dataRequestDelegate storeShouldSubstituteVariablesForRequest:fetchRequest] == YES) {
+                NSDictionary *substitutionDictionary = [self.dataRequestDelegate substitutionDictionaryForRequest:fetchRequest defaultSubstitutions:@{}];
+                for (NSString *variableName in substitutionDictionary) {
+                    serviceURLString = [serviceURLString stringByReplacingOccurrencesOfString:variableName
+                                                                                   withString:substitutionDictionary[variableName]];
+                }
+            }
+        }
+        //****************** END SUBSTITUTION VARIABLE PROCESSING ******************//
+
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+
+        if (serviceComponents == nil && serviceURLString == nil) { return nil; }
+        
+        if (serviceComponents == nil && serviceURLString != nil) {
+            serviceComponents = [NSURLComponents componentsWithString:serviceURLString];
+        }
+        
+        if (serviceComponents == nil) { return nil; }
+        
+        // TODO: Error Reporting
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+
+        
+        //****************** BEGIN QUERY ITEM PROCESSING ******************//
+
+        NSMutableArray *queryItems = [NSMutableArray arrayWithArray:serviceComponents.queryItems];
+        [queryItems addObjectsFromArray:[self.dataRequestQueryItemPredicateParser queryItemsForPredicateRepresentation:fetchRequest.predicate]];
+        //****************** END QUERY ITEM PROCESSING ******************//
+
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
         
         [serviceComponents setQueryItems: queryItems];
-        NSURL *serviceURL = [serviceComponents URL];
+        serviceURL = [serviceComponents URL];
         if (serviceURL == nil) { return nil; }
         
-        serviceData = [self responseDataForServiceURL:serviceURL
+        // TODO: Error Reporting
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+
+        
+        //****************** BEGIN REQUEST DATA PROCESSING ******************//
+        // In this initial processing, it's necessary to get the file
+        // with the keys, whether that's from the cache or the server.
+        NSError *serviceError = nil;
+        NSData *serviceData = [self responseDataForServiceURL:serviceURL
                                      requestingEntity:entity
                                                 error:&serviceError];
+        //****************** END REQUEST DATA PROCESSING ******************//
+
         
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+
         if (serviceError != nil) {
             if (error != NULL) {
                 *error = serviceError;
                 return nil;
             }
         }
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+
+        
+        //*********************************************************
 
         // Retrieve the primary keys from the data
+        // This makes the assumption that the data is returned in a JSON format
+        // TODO: Create separate error declarations
+        // TODO: Enable branching to different processors - XML, JSON, Plist, etc.
+        // In the case of the JSON, it should return JSON, then process based on
+        // some processing template. The template should enable the return of
+        // an array of unique identifiers for the fetched entity. This will be useful
+        // because it means that you could reroot the processor and have it process
+        // other parts of the JSON for other purposes.
         id JSONResult = [NSJSONSerialization JSONObjectWithData:serviceData options:0 error:&serviceError];
         if(serviceError != nil) {
             if (error != NULL) {
@@ -113,8 +226,12 @@
             if (serviceURL == nil) { continue; }
             [primaryKeys addObject: URLString];
         }
+        //*********************************************************
+
+        //*********************************************************
+        // It will be necessary to insert row cache logic in here.
+        // When the context requests an object,
         
-        // This is where the count of objects and the identifying keys comes from.
         NSMutableArray *fetchedObjects = [NSMutableArray arrayWithCapacity:[primaryKeys count]];
         for (NSString *primaryKey in primaryKeys) {
             NSManagedObjectID *objectID = [self newObjectIDForEntity:entity referenceObject:primaryKey];
@@ -137,7 +254,9 @@
     return nil;
 }
 
-- (NSData *)responseDataForServiceURL:(NSURL *)serviceURL requestingEntity:(NSEntityDescription *)entity error:(NSError * _Nullable *)error {
+- (NSData *)responseDataForServiceURL:(NSURL *)serviceURL
+                     requestingEntity:(NSEntityDescription *)entity
+                                error:(NSError * _Nullable *)error {
     
     NSURLRequestCachePolicy policy = self.dataRequestSession.configuration.requestCachePolicy;
     NSURLRequest *serviceRequest = [self serviceRequestForServiceURL:serviceURL requestingEntity:entity];
@@ -159,7 +278,8 @@
     return nil;
 }
 
-- (NSURLRequest *)serviceRequestForServiceURL:(NSURL *)URL requestingEntity:(NSEntityDescription *)entity {
+- (NSURLRequest *)serviceRequestForServiceURL:(NSURL *)URL
+                             requestingEntity:(NSEntityDescription *)entity {
     NSTimeInterval serviceRequestTimeout = 20.0; // This is the default timeout.
     NSNumber *entityTimeout = entity.userInfo[@"serviceRequestTimeout"]; // An entity timeout may be set in the model.
     if (entityTimeout != nil) { serviceRequestTimeout = entityTimeout.doubleValue; }
@@ -169,7 +289,8 @@
     return serviceRequest;
 }
 
-- (NSCachedURLResponse *)cachedResponseForServiceRequest:(NSURLRequest *)serviceRequest requestingEntity:(NSEntityDescription *)entity {
+- (NSCachedURLResponse *)cachedResponseForServiceRequest:(NSURLRequest *)serviceRequest
+                                        requestingEntity:(NSEntityDescription *)entity {
     
     NSCachedURLResponse *cachedResponse = [self.dataCache cachedResponseForRequest:serviceRequest];
     if (cachedResponse == nil) { return nil; }
@@ -202,7 +323,8 @@
     return cachedResponse;
 }
 
-- (NSData *)responseForServiceRequest:(NSURLRequest *)serviceRequest error:(NSError * _Nullable *)error {
+- (NSData *)responseForServiceRequest:(NSURLRequest *)serviceRequest
+                                error:(NSError * _Nullable *)error {
     
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     NSData * __block serviceData = nil;

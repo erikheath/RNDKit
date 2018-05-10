@@ -1,5 +1,5 @@
 //
-//  UNSListing+CoreDataClass.m
+//  UNSListingAdvertiser+CoreDataClass.m
 //  CoreDataSyncTestApp
 //
 //  Created by Erikheath Thomas on 5/9/18.
@@ -7,8 +7,8 @@
 //
 //
 
-#import "UNSListing+CoreDataClass.h"
+#import "UNSListingAdvertiser+CoreDataClass.h"
 
-@implementation UNSListing
+@implementation UNSListingAdvertiser
 
 @end

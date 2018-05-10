@@ -1,5 +1,5 @@
 //
-//  UNSListing+CoreDataClass.m
+//  UNSSchool+CoreDataClass.m
 //  CoreDataSyncTestApp
 //
 //  Created by Erikheath Thomas on 5/9/18.
@@ -7,8 +7,8 @@
 //
 //
 
-#import "UNSListing+CoreDataClass.h"
+#import "UNSSchool+CoreDataClass.h"
 
-@implementation UNSListing
+@implementation UNSSchool
 
 @end

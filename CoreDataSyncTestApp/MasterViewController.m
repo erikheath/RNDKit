@@ -113,10 +113,14 @@
 
 
 - (void)configureCell:(UITableViewCell *)cell withUNSListing:(UNSListing *)listing {
-    NSMutableString *detailText = [NSMutableString stringWithString:[NSString stringWithFormat:@"%hd",listing.propertyDescription.bedrooms]];
-    [detailText appendString:@" bedrooms / "];
-    [detailText appendString:[NSString stringWithFormat:@"%@",listing.propertyDescription.bathrooms]];
-    [detailText appendString:@" bathrooms"];
+//    NSMutableString *detailText = [NSMutableString stringWithString:[NSString stringWithFormat:@"%hd",listing.propertyDescription.bedrooms]];
+//    [detailText appendString:@" bedrooms / "];
+//    [detailText appendString:[NSString stringWithFormat:@"%@",listing.propertyDescription.bathrooms]];
+    
+    NSMutableString *detailText = [NSMutableString stringWithString:[NSString stringWithFormat:@"latitude: %f", listing.propertyDescription.latitude]];
+    [detailText appendString:@" / longitude: "];
+    [detailText appendString:[NSString stringWithFormat:@"%f", listing.propertyDescription.longitude]];
+
     cell.detailTextLabel.text = detailText;
     
     cell.textLabel.text = [NSString stringWithFormat:@"%@",listing.price];

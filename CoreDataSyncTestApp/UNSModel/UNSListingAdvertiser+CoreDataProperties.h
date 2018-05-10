@@ -1,22 +1,24 @@
 //
-//  UNSListingOffice+CoreDataProperties.h
+//  UNSListingAdvertiser+CoreDataProperties.h
 //  CoreDataSyncTestApp
 //
-//  Created by Erikheath Thomas on 5/4/18.
+//  Created by Erikheath Thomas on 5/9/18.
 //  Copyright © 2018 Curated Cocoa LLC. All rights reserved.
 //
 //
 
-#import "UNSListingOffice+CoreDataClass.h"
+#import "UNSListingAdvertiser+CoreDataClass.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UNSListingOffice (CoreDataProperties)
+@interface UNSListingAdvertiser (CoreDataProperties)
 
-+ (NSFetchRequest<UNSListingOffice *> *)fetchRequest;
++ (NSFetchRequest<UNSListingAdvertiser *> *)fetchRequest;
 
+@property (nullable, nonatomic, copy) NSString *email;
 @property (nullable, nonatomic, copy) NSString *externalID;
+@property (nullable, nonatomic, copy) NSString *licenseNumber;
 @property (nullable, nonatomic, copy) NSString *name;
 @property (nullable, nonatomic, copy) NSString *phone;
 @property (nullable, nonatomic, retain) UNSListing *listing;
