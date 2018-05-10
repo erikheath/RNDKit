@@ -71,6 +71,8 @@
         <relationship name="searchSets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UNSGeoLocation" inverseName="listings" inverseEntity="UNSGeoLocation" syncable="YES"/>
         <relationship name="videos" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSVideos" inverseName="listing" inverseEntity="UNSVideos" syncable="YES"/>
         <userInfo>
+            <entry key="identifierKeyPath" value="data.@unionOfObjects.id"/>
+            <entry key="identifierTemplate" value="http://listi-LoadB-RYEUA1CVJ3N5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings/$IDENTIFIER"/>
             <entry key="serviceURL" value="http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&amp;page=1&amp;perPage=200&amp;columns=id&amp;columns=lastUpdatedOn"/>
             <entry key="stalenessFactor" value="86400"/>
         </userInfo>

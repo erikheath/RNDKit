@@ -7,3 +7,10 @@
 //
 
 
+#import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
+#import "RNDResponseProcessor.h"
+
+@interface RNDJSONResponseProcessor: RNDResponseProcessor
+
+@end

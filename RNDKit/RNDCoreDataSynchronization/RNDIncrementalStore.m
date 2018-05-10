@@ -7,12 +7,17 @@
 //
 
 #import "RNDIncrementalStore.h"
+#import "RNDJSONResponseProcessor.h"
 
 @implementation RNDIncrementalStore
+
+
+#pragma mark - Property Definitions
 
 @synthesize rowCache = _rowCache;
 
 @synthesize dataRequestDelegateQueue = _dataRequestDelegateQueue;
+@synthesize dataResponseProcessors = _dataResponseProcessors;
 
 - (RNDRowCache *)rowCache {
     if (_rowCache == nil) {
@@ -58,12 +63,32 @@
     return _dataRequestQueryItemPredicateParser;
 }
 
+- (NSOperationQueue *)dataResponseDelegateQueue {
+    if (_dataRequestDelegateQueue == nil) {
+        _dataRequestDelegateQueue = [[NSOperationQueue alloc] init];
+    }
+    return _dataRequestDelegateQueue;
+}
+
+- (NSMutableDictionary *)dataResponseProcessors {
+    if (_dataResponseProcessors == nil) {
+        _dataResponseProcessors = [NSMutableDictionary new];
+    }
+    return _dataResponseProcessors;
+}
+
+
+#pragma mark - Core Data Override Definitions
+
 - (BOOL)loadMetadata:(NSError *__autoreleasing *)error {
     
     NSMutableDictionary *mutableMetadata = [NSMutableDictionary dictionary];
     [mutableMetadata setValue:[[NSProcessInfo processInfo] globallyUniqueString] forKey:NSStoreUUIDKey];
     [mutableMetadata setValue:NSStringFromClass([self class]) forKey:NSStoreTypeKey];
     [self setMetadata:mutableMetadata];
+    
+    //TODO: Enable external configuration from model
+    [self.dataResponseProcessors setObject:[RNDJSONResponseProcessor new] forKey:@"UNSListing"];
     
     return YES;
 }
@@ -102,8 +127,6 @@
         if (serviceComponents == nil && serviceURLString == nil) {
             serviceURLString = [self.URL absoluteString];
         }
-        //****************** END STORE URL PROCESSING ******************//
-
         
         //////////////////////////////////////////////////////
         ///////////////////// CHECKPOINT /////////////////////
@@ -114,6 +137,8 @@
         /////////////////////////////////////////////////////
         //////////////////////////////////////////////////////
         //////////////////////////////////////////////////////
+
+        //****************** END STORE URL PROCESSING ******************//
 
         
         //****************** BEGIN SUBSTITUTION VARIABLE PROCESSING ******************//
@@ -127,8 +152,6 @@
                 }
             }
         }
-        //****************** END SUBSTITUTION VARIABLE PROCESSING ******************//
-
         
         //////////////////////////////////////////////////////
         ///////////////////// CHECKPOINT /////////////////////
@@ -148,13 +171,13 @@
         //////////////////////////////////////////////////////
         //////////////////////////////////////////////////////
 
+        //****************** END SUBSTITUTION VARIABLE PROCESSING ******************//
+
         
         //****************** BEGIN QUERY ITEM PROCESSING ******************//
 
         NSMutableArray *queryItems = [NSMutableArray arrayWithArray:serviceComponents.queryItems];
         [queryItems addObjectsFromArray:[self.dataRequestQueryItemPredicateParser queryItemsForPredicateRepresentation:fetchRequest.predicate]];
-        //****************** END QUERY ITEM PROCESSING ******************//
-
         
         //////////////////////////////////////////////////////
         ///////////////////// CHECKPOINT /////////////////////
@@ -170,6 +193,8 @@
         //////////////////////////////////////////////////////
         //////////////////////////////////////////////////////
 
+        //****************** END QUERY ITEM PROCESSING ******************//
+
         
         //****************** BEGIN REQUEST DATA PROCESSING ******************//
         // In this initial processing, it's necessary to get the file
@@ -178,8 +203,6 @@
         NSData *serviceData = [self responseDataForServiceURL:serviceURL
                                      requestingEntity:entity
                                                 error:&serviceError];
-        //****************** END REQUEST DATA PROCESSING ******************//
-
         
         //////////////////////////////////////////////////////
         ///////////////////// CHECKPOINT /////////////////////
@@ -196,37 +219,30 @@
         //////////////////////////////////////////////////////
         //////////////////////////////////////////////////////
 
-        
-        //*********************************************************
+        //****************** END REQUEST DATA PROCESSING ******************//
 
-        // Retrieve the primary keys from the data
-        // This makes the assumption that the data is returned in a JSON format
-        // TODO: Create separate error declarations
-        // TODO: Enable branching to different processors - XML, JSON, Plist, etc.
-        // In the case of the JSON, it should return JSON, then process based on
-        // some processing template. The template should enable the return of
-        // an array of unique identifiers for the fetched entity. This will be useful
-        // because it means that you could reroot the processor and have it process
-        // other parts of the JSON for other purposes.
-        id JSONResult = [NSJSONSerialization JSONObjectWithData:serviceData options:0 error:&serviceError];
-        if(serviceError != nil) {
+        
+        //****************** BEGIN RESPONSE DATA PROCESSING ******************//
+        NSError *dataProcessorError = nil;
+
+        NSArray *primaryKeys = [self.dataResponseProcessors[entity.name] uniqueIdentifiersForEntity:entity responseData:serviceData error:&dataProcessorError];
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+        
+        if (dataProcessorError != nil) {
             if (error != NULL) {
-                *error = serviceError;
+                *error = dataProcessorError;
                 return nil;
             }
         }
         
-        NSMutableArray *primaryKeys = [NSMutableArray array];
-        NSArray *listingIdentifiers = [JSONResult objectForKey:@"data"];
-        for (NSDictionary *listing in listingIdentifiers) {
-            NSString *listingID = listing[@"id"];
-            NSMutableString *URLString = [NSMutableString stringWithString:@"http://listi-LoadB-RYEUA1CVJ3N5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings/"];
-            [URLString appendString:listingID];
-            NSURL *serviceURL = [NSURL URLWithString: URLString]; // Validate that the URL works.
-            if (serviceURL == nil) { continue; }
-            [primaryKeys addObject: URLString];
-        }
-        //*********************************************************
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+
+
 
         //*********************************************************
         // It will be necessary to insert row cache logic in here.
@@ -254,106 +270,6 @@
     return nil;
 }
 
-- (NSData *)responseDataForServiceURL:(NSURL *)serviceURL
-                     requestingEntity:(NSEntityDescription *)entity
-                                error:(NSError * _Nullable *)error {
-    
-    NSURLRequestCachePolicy policy = self.dataRequestSession.configuration.requestCachePolicy;
-    NSURLRequest *serviceRequest = [self serviceRequestForServiceURL:serviceURL requestingEntity:entity];
-    if (serviceRequest == nil) { return nil; }
-    NSCachedURLResponse *cachedResponse = [self cachedResponseForServiceRequest:serviceRequest requestingEntity:entity];
-    
-    if (policy == NSURLRequestReturnCacheDataDontLoad) {
-        return cachedResponse != nil ? cachedResponse.data : nil;
-        
-    } else if (policy == NSURLRequestReloadIgnoringCacheData ||
-               policy == NSURLRequestReloadIgnoringLocalCacheData ||
-               policy == NSURLRequestReloadIgnoringLocalAndRemoteCacheData) {
-        return [self responseForServiceRequest:serviceRequest error:error];
-        
-    } else if (policy == NSURLRequestReturnCacheDataElseLoad ||
-               policy == NSURLRequestReloadRevalidatingCacheData) {
-        return cachedResponse != nil && cachedResponse.data != nil ? cachedResponse.data : [self responseForServiceRequest:serviceRequest error:error];
-    }
-    return nil;
-}
-
-- (NSURLRequest *)serviceRequestForServiceURL:(NSURL *)URL
-                             requestingEntity:(NSEntityDescription *)entity {
-    NSTimeInterval serviceRequestTimeout = 20.0; // This is the default timeout.
-    NSNumber *entityTimeout = entity.userInfo[@"serviceRequestTimeout"]; // An entity timeout may be set in the model.
-    if (entityTimeout != nil) { serviceRequestTimeout = entityTimeout.doubleValue; }
-    
-    NSURLRequest *serviceRequest = [NSURLRequest requestWithURL:URL cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:serviceRequestTimeout];
-    
-    return serviceRequest;
-}
-
-- (NSCachedURLResponse *)cachedResponseForServiceRequest:(NSURLRequest *)serviceRequest
-                                        requestingEntity:(NSEntityDescription *)entity {
-    
-    NSCachedURLResponse *cachedResponse = [self.dataCache cachedResponseForRequest:serviceRequest];
-    if (cachedResponse == nil) { return nil; }
-    
-    NSString *stalenessFactorString = entity.userInfo[@"stalenessFactor"];
-    if (stalenessFactorString == nil) { stalenessFactorString = @"86400"; }
-    
-    NSTimeInterval stalenessInterval = [stalenessFactorString doubleValue] * -1.0;
-    NSDate *stalenessDate = [NSDate dateWithTimeIntervalSinceNow:stalenessInterval];
-    if ([cachedResponse.response isKindOfClass: [NSHTTPURLResponse class]] == NO) { return nil; } // This is it for now.
-    
-    NSDictionary *headers = ((NSHTTPURLResponse *)cachedResponse.response).allHeaderFields;
-    NSString *cachedResponseDateString = headers[@"Date"];
-    if (cachedResponseDateString == nil) { return nil; }
-    
-    NSDateFormatter *cachedResponseDateFormatter = [[NSDateFormatter alloc] init];
-    NSLocale *locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    [cachedResponseDateFormatter setLocale:locale];
-    [cachedResponseDateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-    [cachedResponseDateFormatter setDateFormat:@"EEE', 'dd' 'MMM' 'yyyy' 'HH':'mm':'ss' 'zzz"];
-    NSDate *cachedResponseDate = [cachedResponseDateFormatter dateFromString:cachedResponseDateString];
-    if (cachedResponseDate == nil) { return nil; }
-    
-    NSComparisonResult result = [stalenessDate compare:cachedResponseDate];
-    if (result == NSOrderedDescending) {
-        [self.dataCache removeCachedResponseForRequest:serviceRequest];
-        return nil;
-    }
-    
-    return cachedResponse;
-}
-
-- (NSData *)responseForServiceRequest:(NSURLRequest *)serviceRequest
-                                error:(NSError * _Nullable *)error {
-    
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    NSData * __block serviceData = nil;
-    NSError * __block serviceError = nil;
-    
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        // TODO: Implement Delegate Branching if needed.
-        NSURLSessionDataTask *task = [self.dataRequestSession dataTaskWithRequest:serviceRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-            if (error != nil) {
-                serviceError = error;
-                dispatch_semaphore_signal(sema);
-                return;
-            }
-            serviceData = data;
-            dispatch_semaphore_signal(sema);
-        }];
-        [task resume];
-        
-    });
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    
-    if (serviceError != nil) {
-        if (error != NULL) {
-            *error = serviceError;
-            return nil;
-        }
-    }
-    return serviceData;
-}
 
 - (NSIncrementalStoreNode *)newValuesForObjectWithID:(NSManagedObjectID *)objectID
                                          withContext:(NSManagedObjectContext *)context
@@ -520,6 +436,110 @@
 
 - (void)managedObjectContextDidUnregisterObjectsWithIDs:(NSArray<NSManagedObjectID *> *)objectIDs {
     
+}
+
+
+#pragma mark - Extended Methods
+
+- (NSData *)responseDataForServiceURL:(NSURL *)serviceURL
+                     requestingEntity:(NSEntityDescription *)entity
+                                error:(NSError * _Nullable *)error {
+    
+    NSURLRequestCachePolicy policy = self.dataRequestSession.configuration.requestCachePolicy;
+    NSURLRequest *serviceRequest = [self serviceRequestForServiceURL:serviceURL requestingEntity:entity];
+    if (serviceRequest == nil) { return nil; }
+    NSCachedURLResponse *cachedResponse = [self cachedResponseForServiceRequest:serviceRequest requestingEntity:entity];
+    
+    if (policy == NSURLRequestReturnCacheDataDontLoad) {
+        return cachedResponse != nil ? cachedResponse.data : nil;
+        
+    } else if (policy == NSURLRequestReloadIgnoringCacheData ||
+               policy == NSURLRequestReloadIgnoringLocalCacheData ||
+               policy == NSURLRequestReloadIgnoringLocalAndRemoteCacheData) {
+        return [self responseForServiceRequest:serviceRequest error:error];
+        
+    } else if (policy == NSURLRequestReturnCacheDataElseLoad ||
+               policy == NSURLRequestReloadRevalidatingCacheData) {
+        return cachedResponse != nil && cachedResponse.data != nil ? cachedResponse.data : [self responseForServiceRequest:serviceRequest error:error];
+    }
+    return nil;
+}
+
+- (NSURLRequest *)serviceRequestForServiceURL:(NSURL *)URL
+                             requestingEntity:(NSEntityDescription *)entity {
+    NSTimeInterval serviceRequestTimeout = 20.0; // This is the default timeout.
+    NSNumber *entityTimeout = entity.userInfo[@"serviceRequestTimeout"]; // An entity timeout may be set in the model.
+    if (entityTimeout != nil) { serviceRequestTimeout = entityTimeout.doubleValue; }
+    
+    NSURLRequest *serviceRequest = [NSURLRequest requestWithURL:URL cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:serviceRequestTimeout];
+    
+    return serviceRequest;
+}
+
+- (NSCachedURLResponse *)cachedResponseForServiceRequest:(NSURLRequest *)serviceRequest
+                                        requestingEntity:(NSEntityDescription *)entity {
+    
+    NSCachedURLResponse *cachedResponse = [self.dataCache cachedResponseForRequest:serviceRequest];
+    if (cachedResponse == nil) { return nil; }
+    
+    NSString *stalenessFactorString = entity.userInfo[@"stalenessFactor"];
+    if (stalenessFactorString == nil) { stalenessFactorString = @"86400"; }
+    
+    NSTimeInterval stalenessInterval = [stalenessFactorString doubleValue] * -1.0;
+    NSDate *stalenessDate = [NSDate dateWithTimeIntervalSinceNow:stalenessInterval];
+    if ([cachedResponse.response isKindOfClass: [NSHTTPURLResponse class]] == NO) { return nil; } // This is it for now.
+    
+    NSDictionary *headers = ((NSHTTPURLResponse *)cachedResponse.response).allHeaderFields;
+    NSString *cachedResponseDateString = headers[@"Date"];
+    if (cachedResponseDateString == nil) { return nil; }
+    
+    NSDateFormatter *cachedResponseDateFormatter = [[NSDateFormatter alloc] init];
+    NSLocale *locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    [cachedResponseDateFormatter setLocale:locale];
+    [cachedResponseDateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    [cachedResponseDateFormatter setDateFormat:@"EEE', 'dd' 'MMM' 'yyyy' 'HH':'mm':'ss' 'zzz"];
+    NSDate *cachedResponseDate = [cachedResponseDateFormatter dateFromString:cachedResponseDateString];
+    if (cachedResponseDate == nil) { return nil; }
+    
+    NSComparisonResult result = [stalenessDate compare:cachedResponseDate];
+    if (result == NSOrderedDescending) {
+        [self.dataCache removeCachedResponseForRequest:serviceRequest];
+        return nil;
+    }
+    
+    return cachedResponse;
+}
+
+- (NSData *)responseForServiceRequest:(NSURLRequest *)serviceRequest
+                                error:(NSError * _Nullable *)error {
+    
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    NSData * __block serviceData = nil;
+    NSError * __block serviceError = nil;
+    
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        // TODO: Implement Delegate Branching if needed.
+        NSURLSessionDataTask *task = [self.dataRequestSession dataTaskWithRequest:serviceRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            if (error != nil) {
+                serviceError = error;
+                dispatch_semaphore_signal(sema);
+                return;
+            }
+            serviceData = data;
+            dispatch_semaphore_signal(sema);
+        }];
+        [task resume];
+        
+    });
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    
+    if (serviceError != nil) {
+        if (error != NULL) {
+            *error = serviceError;
+            return nil;
+        }
+    }
+    return serviceData;
 }
 
 

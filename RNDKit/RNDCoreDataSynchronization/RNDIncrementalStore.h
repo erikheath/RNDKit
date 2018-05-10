@@ -10,6 +10,7 @@
 #import <CoreData/CoreData.h>
 #import "RNDRowCache.h"
 #import "RNDQueryItemPredicateParser.h"
+#import "RNDResponseProcessor.h"
 
 
 @protocol RNDIncrementalStoreDataRequestDelegate <NSURLSessionDelegate>
@@ -70,6 +71,8 @@
 @property (weak, nullable, nonatomic, readwrite) id<RNDIncrementalStoreDataResponseDelegate> dataResponseDelegate;
 
 @property (strong, nonnull, nonatomic, readonly) NSOperationQueue *dataResponseDelegateQueue;
+
+@property (strong, nonnull, nonatomic, readonly) NSMutableDictionary <NSString *, RNDResponseProcessor *> *dataResponseProcessors;
 
 
 @end
