@@ -13,9 +13,14 @@
 
 @property (strong, nonnull, nonatomic, readonly) NSDate *expirationDate;
 
+@property (strong, nonnull, nonatomic, readonly) NSDate *lastUpdated;
+
 @property (strong, nonnull, nonatomic, readonly) NSIncrementalStoreNode *node;
 
+@property (readonly) BOOL isExpried;
+
 - (instancetype)initWithNode:(NSIncrementalStoreNode *)node
+                 lastUpdated:(NSDate *)lastUpdated
           expirationInterval:(NSTimeInterval)interval;
 
 @end

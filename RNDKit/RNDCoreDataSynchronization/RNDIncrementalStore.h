@@ -56,6 +56,8 @@
 
 @property (readwrite) NSURLCacheStoragePolicy dataCacheStoragePolicy;
 
+@property (readwrite) NSTimeInterval dataCacheExpirationInterval;
+
 
 @property (strong, nonnull, nonatomic, readwrite) NSURLSession *dataRequestSession;
 
@@ -72,7 +74,7 @@
 
 @property (strong, nonnull, nonatomic, readonly) NSOperationQueue *dataResponseDelegateQueue;
 
-@property (strong, nonnull, nonatomic, readonly) NSMutableDictionary <NSString *, RNDResponseProcessor *> *dataResponseProcessors;
+@property (strong, nonnull, nonatomic, readonly) NSMutableDictionary <NSString *, id<RNDResponseProcessor> > *dataResponseProcessors;
 
 
 @end

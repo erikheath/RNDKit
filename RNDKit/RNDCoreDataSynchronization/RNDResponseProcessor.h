@@ -15,10 +15,13 @@
 
 @end
 
-@interface RNDResponseProcessor: NSObject
-
-@property (strong, nullable, nonatomic, readwrite) id responseProcesorDelegate;
+@protocol RNDResponseProcessor <NSObject>
 
 - (NSArray <NSString *> *)uniqueIdentifiersForEntity:(NSEntityDescription *)entity responseData:(NSData *)data error:(NSError **)error;
+
+- (NSDictionary *)valuesForEntity:(NSEntityDescription *)entity responseData:(NSData *)responseData error:(NSError **)error;
+
+- (NSDictionary <NSManagedObjectID *, NSDate *> *)lastUpdatesForEntity:(NSEntityDescription *)entity objectIDs:(NSArray <NSManagedObjectID *> *)objectIDs responseData:(NSData *)data error:(NSError **)error;
+
 
 @end

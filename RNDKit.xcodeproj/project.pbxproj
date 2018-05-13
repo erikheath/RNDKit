@@ -63,8 +63,6 @@
 		E4AB810020A3B4F100BBCD06 /* RNDQueryItemPredicateParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB80FE20A3B4F100BBCD06 /* RNDQueryItemPredicateParser.m */; };
 		E4AB810320A3F03800BBCD06 /* RNDJSONResponseProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB810220A3F03800BBCD06 /* RNDJSONResponseProcessor.m */; };
 		E4AB810420A3F03800BBCD06 /* RNDJSONResponseProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB810220A3F03800BBCD06 /* RNDJSONResponseProcessor.m */; };
-		E4AB810A20A3F25100BBCD06 /* RNDResponseProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB810920A3F25100BBCD06 /* RNDResponseProcessor.m */; };
-		E4AB810B20A3F25100BBCD06 /* RNDResponseProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB810920A3F25100BBCD06 /* RNDResponseProcessor.m */; };
 		E4AB810F20A4B91600BBCD06 /* RNDJSONParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB810E20A4B91600BBCD06 /* RNDJSONParser.m */; };
 		E4AB811020A4B91600BBCD06 /* RNDJSONParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB810E20A4B91600BBCD06 /* RNDJSONParser.m */; };
 		E4E95CF12096B471004CED34 /* RNDCLLocationFromCoordinateStringTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E4E95CF02096B471004CED34 /* RNDCLLocationFromCoordinateStringTransformer.m */; };
@@ -326,7 +324,6 @@
 		E4AB810120A3B51100BBCD06 /* RNDQueryItemPredicateParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDQueryItemPredicateParser.h; sourceTree = "<group>"; };
 		E4AB810220A3F03800BBCD06 /* RNDJSONResponseProcessor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDJSONResponseProcessor.m; sourceTree = "<group>"; };
 		E4AB810820A3F0EC00BBCD06 /* RNDJSONResponseProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDJSONResponseProcessor.h; sourceTree = "<group>"; };
-		E4AB810920A3F25100BBCD06 /* RNDResponseProcessor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDResponseProcessor.m; sourceTree = "<group>"; };
 		E4AB810C20A3F26900BBCD06 /* RNDResponseProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDResponseProcessor.h; sourceTree = "<group>"; };
 		E4AB810D20A4B8FF00BBCD06 /* RNDJSONParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDJSONParser.h; sourceTree = "<group>"; };
 		E4AB810E20A4B91600BBCD06 /* RNDJSONParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDJSONParser.m; sourceTree = "<group>"; };
@@ -674,7 +671,6 @@
 				E48235D91FDB1C9F0061FDCF /* RNDIncrementalStore.h */,
 				E4C59E962092BCE800884AEE /* RNDIncrementalStore.m */,
 				E4AB810C20A3F26900BBCD06 /* RNDResponseProcessor.h */,
-				E4AB810920A3F25100BBCD06 /* RNDResponseProcessor.m */,
 				E4AB810820A3F0EC00BBCD06 /* RNDJSONResponseProcessor.h */,
 				E4AB810220A3F03800BBCD06 /* RNDJSONResponseProcessor.m */,
 				E4AB810D20A4B8FF00BBCD06 /* RNDJSONParser.h */,
@@ -1138,7 +1134,6 @@
 				E4AB811020A4B91600BBCD06 /* RNDJSONParser.m in Sources */,
 				E4AB80E520A3797200BBCD06 /* UNSSearchProfile+CoreDataProperties.m in Sources */,
 				E4AB80E020A3797200BBCD06 /* UNSLocationMatch+CoreDataClass.m in Sources */,
-				E4AB810B20A3F25100BBCD06 /* RNDResponseProcessor.m in Sources */,
 				E4AB80ED20A3797200BBCD06 /* UNSVideos+CoreDataProperties.m in Sources */,
 				E4AB80FC20A37D9200BBCD06 /* UNSProperty+CoreDataClass.m in Sources */,
 				E4AB80EE20A3797200BBCD06 /* UNSImage+CoreDataClass.m in Sources */,
@@ -1157,7 +1152,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4AB810A20A3F25100BBCD06 /* RNDResponseProcessor.m in Sources */,
 				E4E95CF12096B471004CED34 /* RNDCLLocationFromCoordinateStringTransformer.m in Sources */,
 				E4AB807620A214F300BBCD06 /* RNDRowCache.m in Sources */,
 				E46A6FEE209A5EE800605A98 /* RNDIncrementalStore.m in Sources */,

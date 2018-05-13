@@ -11,6 +11,6 @@
 #import <CoreData/CoreData.h>
 #import "RNDResponseProcessor.h"
 
-@interface RNDJSONResponseProcessor: RNDResponseProcessor
+@interface RNDJSONResponseProcessor: NSObject <RNDResponseProcessor>
 
 @end

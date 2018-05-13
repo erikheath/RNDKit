@@ -20,11 +20,9 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
 
-    if(JSONError != nil) {
-        if (error != NULL) {
+    if(JSONError != nil && error != NULL) {
             *error = JSONError;
             return nil;
-        }
     }
     
     /////////////////////////////////////////////////////
@@ -43,11 +41,9 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
 
-    if (identifierRootObject == nil) {
-        if (error != NULL) {
+    if (identifierRootObject == nil && error != NULL) {
             *error = nil; // TODO: Return error
             return nil;
-        }
     }
     
     /////////////////////////////////////////////////////
@@ -74,11 +70,9 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
 
-    if (identifierArray == nil) {
-        if (error != NULL) {
+    if (identifierArray == nil && error != NULL) {
             *error = nil; // TODO: Return error
             return nil;
-        }
     }
     
     /////////////////////////////////////////////////////
@@ -119,6 +113,237 @@
     
     //****************** END RESPONSE DATA IDENTIFIER PROCESSING ******************//
 
+}
+
+- (NSDictionary *)valuesForEntity:(NSEntityDescription *)entity responseData:(NSData *)responseData error:(NSError **)error {
+    
+    //****************** BEGIN RESPONSE DATA PROCESSING ******************//
+    NSError *dataProcessingError = nil;
+    NSString *dataContainerType = entity.userInfo[@"dataContainerType"];
+    
+    NSDictionary *values = nil;
+    
+    if (dataContainerType == nil || [dataContainerType isEqualToString:@"JSON"] == YES) {
+        values = [self valuesForEntity:entity JSONData:responseData error:&dataProcessingError];
+    } else if ([dataContainerType isEqualToString:@"IMAGE"]) {
+        values = [self valueForEntity:entity archivedData:responseData error:&dataProcessingError];
+    }
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (dataProcessingError != nil && error != NULL) {
+        *error = dataProcessingError;
+        return nil;
+    }
+
+    if (values.count < 1) { return nil; }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+
+    return values;
+    
+    //****************** END RESPONSE DATA PROCESSING ******************//
+
+}
+
+- (NSDictionary *)valuesForEntity:(NSEntityDescription *)entity JSONData:(NSData *)JSONData error:(NSError **)error {
+    //****************** BEGIN JSON TO OBJECT CONVERSION ******************//
+    NSError *JSONError = nil;
+    id JSONResult = [NSJSONSerialization JSONObjectWithData:JSONData options:0 error:&JSONError];
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (JSONError != nil && error != NULL) {
+            *error = JSONError;
+            return nil;
+    }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    //****************** END JSON TO OBJECT CONVERSION ******************//
+    
+    
+    //****************** BEGIN RESPONSE DATA ROOT PROCESSING ******************//
+    NSString *dataRootKeyPath = entity.userInfo[@"dataRootKeyPath"];
+    id dataRootObject = [JSONResult valueForKeyPath:dataRootKeyPath];
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (dataRootObject == nil && error != NULL) {
+            *error = nil; // TODO: Return error
+            return nil;
+    }
+    
+    if ([dataRootObject isKindOfClass:[NSArray class]]) {
+        dataRootObject = ((NSArray *)dataRootObject).firstObject;
+    }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    //****************** END RESPONSE DATA ROOT PROCESSING ******************//
+    
+    
+    //****************** BEGIN RESPONSE DATA OBJECT PROCESSING ******************//
+    NSMutableDictionary *values = [NSMutableDictionary new];
+    
+    for (NSAttributeDescription *attribute in entity) {
+        id objectValue = nil;
+        NSString *serverKeyPath = attribute.userInfo[@"serverKeyPath"];
+        if (serverKeyPath != nil) { objectValue = [dataRootObject valueForKeyPath:serverKeyPath]; }
+        if (objectValue != nil) { [values setObject:objectValue forKey:attribute.name]; }
+    }
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (values.count < 1) { return nil; }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    return values;
+    
+    //****************** END RESPONSE DATA OBJECT PROCESSING ******************//
+}
+
+- (NSDictionary *)valueForEntity:(NSEntityDescription *)entity archivedData:(NSData *)data error:(NSError **)error {
+    
+    //****************** BEGIN RESPONSE DATA OBJECT PROCESSING ******************//
+    NSMutableDictionary *values = [NSMutableDictionary new];
+    
+    for (NSAttributeDescription *attribute in entity) {
+        id objectValue = nil;
+        NSString *serverKeyPath = attribute.userInfo[@"serverKeyPath"];
+        if (serverKeyPath != nil) { objectValue = data; }
+        if (objectValue != nil) { [values setObject:objectValue forKey:attribute.name]; }
+    }
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (values.count < 1) { return nil; }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    return values;
+    
+    //****************** END RESPONSE DATA OBJECT PROCESSING ******************//
+}
+
+
+- (NSDictionary <NSManagedObjectID *, NSDate *> *)lastUpdatesForEntity:(NSEntityDescription *)entity
+                                                             objectIDs:(NSArray <NSManagedObjectID *> *)objectIDs
+                                                          responseData:(NSData *)data
+                                                                 error:(NSError **)error {
+    
+    //****************** BEGIN JSON TO OBJECT CONVERSION ******************//
+    NSError *JSONError = nil;
+    id JSONResult = [NSJSONSerialization JSONObjectWithData:data options:0 error:&JSONError];
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (JSONError != nil && error != NULL) {
+            *error = JSONError;
+            return nil;
+    }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    //****************** END JSON TO OBJECT CONVERSION ******************//
+    
+    
+    //****************** BEGIN RESPONSE DATA ROOT PROCESSING ******************//
+    NSString *lastUpdateKeyPath = entity.userInfo[@"lastUpdateKeyPath"];
+    id lastUpdates = [JSONResult valueForKeyPath:lastUpdateKeyPath];
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (lastUpdates == nil && error != NULL) {
+            *error = nil; // TODO: Return error
+            return nil;
+    }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    //****************** END RESPONSE DATA ROOT PROCESSING ******************//
+    
+    
+    //****************** BEGIN RESPONSE DATA OBJECT PROCESSING ******************//
+    NSArray *updatesArray = nil;
+    
+    if ([lastUpdates isKindOfClass:[NSString class]] == YES) {
+        updatesArray = @[lastUpdates];
+        
+    } else if ([lastUpdates isKindOfClass:[NSNumber class]] == YES) {
+        updatesArray = @[lastUpdates];
+        
+    } else if ([lastUpdates isKindOfClass:[NSArray class]] == YES) {
+        updatesArray = (NSArray *)lastUpdates;
+    }
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (updatesArray == nil && error != NULL) {
+            *error = nil; // TODO: Return error
+            return nil;
+    }
+    
+    if (updatesArray.count != objectIDs.count) {
+        *error = nil; // TODO: Return error
+        return nil;
+    }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    //****************** END RESPONSE DATA OBJECT PROCESSING ******************//
+
+    
+    //****************** BEGIN VALUES OBJECT PROCESSING ******************//
+    NSDictionary *updateDictionary = [NSDictionary dictionaryWithObjects:updatesArray forKeys:objectIDs];
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (updateDictionary.count < 1) { return nil; }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    return updateDictionary;
+    
+    //****************** END VALUES OBJECT PROCESSING ******************//
+    
 }
 
 @end
