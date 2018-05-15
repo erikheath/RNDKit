@@ -20,9 +20,11 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
 
-    if(JSONError != nil && error != NULL) {
+    if(JSONError != nil) {
+        if (error != NULL) {
             *error = JSONError;
-            return nil;
+        }
+        return nil;
     }
     
     /////////////////////////////////////////////////////
@@ -41,9 +43,11 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
 
-    if (identifierRootObject == nil && error != NULL) {
+    if (identifierRootObject == nil) {
+        if (error != NULL) {
             *error = nil; // TODO: Return error
-            return nil;
+        }
+        return nil;
     }
     
     /////////////////////////////////////////////////////
@@ -70,9 +74,11 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
 
-    if (identifierArray == nil && error != NULL) {
+    if (identifierArray == nil) {
+        if (error != NULL) {
             *error = nil; // TODO: Return error
-            return nil;
+        }
+        return nil;
     }
     
     /////////////////////////////////////////////////////
@@ -133,8 +139,10 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
     
-    if (dataProcessingError != nil && error != NULL) {
-        *error = dataProcessingError;
+    if (dataProcessingError != nil) {
+        if (error != NULL) {
+            *error = dataProcessingError; // TODO: Return error
+        }
         return nil;
     }
 
@@ -152,6 +160,22 @@
 
 - (NSDictionary *)valuesForEntity:(NSEntityDescription *)entity JSONData:(NSData *)JSONData error:(NSError **)error {
     //****************** BEGIN JSON TO OBJECT CONVERSION ******************//
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (JSONData == nil) {
+        if (error != NULL) {
+            *error = nil; // TODO: Return error
+        }
+        return nil;
+    }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
     NSError *JSONError = nil;
     id JSONResult = [NSJSONSerialization JSONObjectWithData:JSONData options:0 error:&JSONError];
     
@@ -159,11 +183,13 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
     
-    if (JSONError != nil && error != NULL) {
+    if(JSONError != nil) {
+        if (error != NULL) {
             *error = JSONError;
-            return nil;
+        }
+        return nil;
     }
-    
+
     /////////////////////////////////////////////////////
     //////////////////////////////////////////////////////
     //////////////////////////////////////////////////////
@@ -179,9 +205,11 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
     
-    if (dataRootObject == nil && error != NULL) {
+    if (dataRootObject == nil) {
+     if (error != NULL) {
             *error = nil; // TODO: Return error
-            return nil;
+     }
+        return nil;
     }
     
     if ([dataRootObject isKindOfClass:[NSArray class]]) {
@@ -261,9 +289,11 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
     
-    if (JSONError != nil && error != NULL) {
-            *error = JSONError;
-            return nil;
+    if (JSONError != nil) {
+        if (error != NULL) {
+            *error = JSONError; // TODO: Return error
+        }
+        return nil;
     }
     
     /////////////////////////////////////////////////////
@@ -281,9 +311,11 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
     
-    if (lastUpdates == nil && error != NULL) {
+    if (lastUpdates == nil) {
+        if (error != NULL) {
             *error = nil; // TODO: Return error
-            return nil;
+        }
+        return nil;
     }
     
     /////////////////////////////////////////////////////
@@ -310,13 +342,17 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
     
-    if (updatesArray == nil && error != NULL) {
+    if (updatesArray == nil) {
+        if (error != NULL) {
             *error = nil; // TODO: Return error
-            return nil;
+        }
+        return nil;
     }
     
     if (updatesArray.count != objectIDs.count) {
-        *error = nil; // TODO: Return error
+        if (error != NULL) {
+            *error = nil; // TODO: Return error
+        }
         return nil;
     }
     

@@ -87,7 +87,7 @@
             <entry key="prefetch" value="YES"/>
             <entry key="preload" value="YES"/>
             <entry key="requestTimeoutInterval" value="200"/>
-            <entry key="serviceURL" value="http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&amp;page=1&amp;perPage=20&amp;columns=id&amp;columns=lastUpdatedOn"/>
+            <entry key="serviceURL" value="http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&amp;page=1&amp;perPage=50&amp;columns=id&amp;columns=lastUpdatedOn"/>
             <entry key="stalenessFactor" value="86400"/>
         </userInfo>
     </entity>
@@ -233,7 +233,7 @@
     <elements>
         <element name="UNSGeoLocation" positionX="160" positionY="-144" width="128" height="240"/>
         <element name="UNSImage" positionX="133" positionY="492" width="128" height="75"/>
-        <element name="UNSListing" positionX="54" positionY="108" width="128" height="270"/>
+        <element name="UNSListing" positionX="54" positionY="108" width="128" height="30"/>
         <element name="UNSListingAdvertiser" positionX="-45" positionY="507" width="128" height="135"/>
         <element name="UNSLocationMatch" positionX="-20" positionY="-144" width="128" height="105"/>
         <element name="UNSProperty" positionX="403" positionY="138" width="128" height="345"/>

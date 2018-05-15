@@ -76,7 +76,8 @@
 - (NSString *)queryStringForComparisonPredicate:(NSComparisonPredicate *)predicate {
     NSString *constraint = predicate.leftExpression.keyPath;
     NSString *value = predicate.rightExpression.constantValue;
-    return [NSString stringWithFormat:@"%@%@%@", constraint, self.keyValuePairAssigner, value];
+    NSString *queryComponent = [NSString stringWithFormat:@"%@%@%@", constraint, self.keyValuePairAssigner, value];
+    return [queryComponent stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 }
 
 @end
