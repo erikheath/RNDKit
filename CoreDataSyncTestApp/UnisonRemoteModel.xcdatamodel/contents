@@ -23,9 +23,11 @@
         </attribute>
         <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="images" inverseEntity="UNSListing" syncable="YES"/>
         <userInfo>
+            <entry key="cacheExpirationInterval" value="86400"/>
             <entry key="dataContainerType" value="IMAGE"/>
             <entry key="dataRootKeyPath" value="data"/>
             <entry key="identifierKeyPath" value="data.@unionOfArrays.images"/>
+            <entry key="ignoreCache" value="NO"/>
         </userInfo>
     </entity>
     <entity name="UNSListing" representedClassName="UNSListing" syncable="YES">
@@ -77,17 +79,18 @@
         <relationship name="searchSets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UNSGeoLocation" inverseName="listings" inverseEntity="UNSGeoLocation" syncable="YES"/>
         <relationship name="videos" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSVideos" inverseName="listing" inverseEntity="UNSVideos" syncable="YES"/>
         <userInfo>
-            <entry key="cacheExpirationInterval" value="600"/>
+            <entry key="backgroundPrefetchLimit" value="0"/>
+            <entry key="backgroundPreloadLimit" value="0"/>
+            <entry key="cacheExpirationInterval" value="14400"/>
             <entry key="dataContainerType" value="JSON"/>
             <entry key="dataRootKeyPath" value="data"/>
             <entry key="entityExpirationInterval" value="300"/>
             <entry key="identifierKeyPath" value="data.@unionOfObjects.id"/>
             <entry key="identifierTemplate" value="http://listi-LoadB-RYEUA1CVJ3N5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings/$IDENTIFIER"/>
             <entry key="ignoreCache" value="NO"/>
-            <entry key="prefetch" value="YES"/>
-            <entry key="preload" value="YES"/>
+            <entry key="priorityPreloadLimit" value="10"/>
             <entry key="requestTimeoutInterval" value="200"/>
-            <entry key="serviceURL" value="http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&amp;page=1&amp;perPage=50&amp;columns=id&amp;columns=lastUpdatedOn"/>
+            <entry key="serviceURL" value="http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&amp;page=1&amp;perPage=1&amp;columns=id&amp;columns=lastUpdatedOn"/>
             <entry key="stalenessFactor" value="86400"/>
         </userInfo>
     </entity>
@@ -179,9 +182,11 @@
         <attribute name="style" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="propertyDescription" inverseEntity="UNSListing" syncable="YES"/>
         <userInfo>
+            <entry key="cacheExpirationInterval" value="14400"/>
             <entry key="dataRootKeyPath" value="data"/>
             <entry key="identifierKeyPath" value="data.@unionOfObjects.id"/>
             <entry key="identifierTemplate" value="http://listi-LoadB-RYEUA1CVJ3N5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings/$IDENTIFIER"/>
+            <entry key="ignoreCache" value="NO"/>
         </userInfo>
     </entity>
     <entity name="UNSSavedSet" representedClassName="UNSSavedSet" syncable="YES">
@@ -233,7 +238,7 @@
     <elements>
         <element name="UNSGeoLocation" positionX="160" positionY="-144" width="128" height="240"/>
         <element name="UNSImage" positionX="133" positionY="492" width="128" height="75"/>
-        <element name="UNSListing" positionX="54" positionY="108" width="128" height="30"/>
+        <element name="UNSListing" positionX="54" positionY="108" width="128" height="270"/>
         <element name="UNSListingAdvertiser" positionX="-45" positionY="507" width="128" height="135"/>
         <element name="UNSLocationMatch" positionX="-20" positionY="-144" width="128" height="105"/>
         <element name="UNSProperty" positionX="403" positionY="138" width="128" height="345"/>

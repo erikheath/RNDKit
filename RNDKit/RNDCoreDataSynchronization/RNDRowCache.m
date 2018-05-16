@@ -15,7 +15,7 @@
 @synthesize node = _node;
 
 - (BOOL)isExpried {
-    return [self.expirationDate compare:[NSDate date]] != NSOrderedDescending ? NO : YES;
+    return [[NSDate date] compare:self.expirationDate] == NSOrderedDescending ? YES : NO;
 }
 
 - (instancetype)init {
@@ -32,6 +32,10 @@
         _expirationDate = [NSDate dateWithTimeIntervalSinceNow:interval];
     }
     return self;
+}
+
+- (void)updateRowExpiration:(NSTimeInterval)interval {
+    _expirationDate = [NSDate dateWithTimeIntervalSinceNow:interval];
 }
 
 @end
@@ -67,7 +71,7 @@
     return self;
 }
 
-- (RNDRow *)rowForObjectID:(NSManagedObjectID *)objectID {
+- (RNDRow *)rowForObjectID:(NSArray *)objectID {
     RNDRow *row = nil;
     [_lock lock];
     row = self.rowCache[objectID];
@@ -75,33 +79,33 @@
     return row;
 }
 
-- (void)addRow:(RNDRow *)row forObjectID:(NSManagedObjectID *)objectID {
+- (void)addRow:(RNDRow *)row forObjectID:(NSArray *)objectID {
     [_lock lock];
     [self.rowCache setObject:row forKey:objectID];
     [_lock unlock];
 }
 
-- (void)removeRowForObjectID:(NSManagedObjectID *)objectID {
+- (void)removeRowForObjectID:(NSArray *)objectID {
     [_lock lock];
     [self.rowCache removeObjectForKey:objectID];
     [self removeReferenceCountForObjectID:objectID];
     [_lock unlock];
 }
 
-- (void)registerRow:(RNDRow *)row forObjectID:(NSManagedObjectID *)objectID {
+- (void)registerRow:(RNDRow *)row forObjectID:(NSArray *)objectID {
     [_lock lock];
     [self.rowCache setObject:row forKey:objectID];
     [self incrementReferenceCountForObjectID:objectID];
     [_lock unlock];
 }
 
-- (void)incrementReferenceCountForObjectID:(NSManagedObjectID *)objectID {
+- (void)incrementReferenceCountForObjectID:(NSArray *)objectID {
     [_lock lock];
     [self.referenceCounter addObject:objectID];
     [_lock unlock];
 }
 
-- (void)decrementReferenceCountForObjectID:(NSManagedObjectID *)objectID {
+- (void)decrementReferenceCountForObjectID:(NSArray *)objectID {
     [_lock lock];
     [self.referenceCounter removeObject:objectID];
     if ([self.referenceCounter countForObject:objectID] == 0) {
@@ -110,7 +114,7 @@
     [_lock unlock];
 }
 
-- (void)removeReferenceCountForObjectID:(NSManagedObjectID *)objectID {
+- (void)removeReferenceCountForObjectID:(NSArray *)objectID {
     [_lock lock];
     for (NSUInteger count = [self.referenceCounter countForObject:objectID]; count > 0; count--) {
         [self.referenceCounter removeObject:objectID];
@@ -135,7 +139,7 @@
 - (NSDictionary *)pruneExpiredRows {
     [_lock lock];
     NSDictionary *rows = [self expiredRows];
-    for (NSManagedObjectID *objectID in rows) {
+    for (NSArray *objectID in rows) {
         [self removeRowForObjectID:objectID];
     }
     [_lock unlock];

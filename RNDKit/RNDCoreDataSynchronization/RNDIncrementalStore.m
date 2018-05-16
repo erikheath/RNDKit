@@ -250,8 +250,13 @@
         ///////////////////// CHECKPOINT /////////////////////
         //////////////////////////////////////////////////////
         
-        if (((NSString *)entity.userInfo[@"prefetch"]).boolValue == NO &&
-            ((NSString *)entity.userInfo[@"preload"]).boolValue == NO) {
+        NSInteger backgroundPrefetchLimit = MAX(0,((NSString *)entity.userInfo[@"backgroundPrefetchLimit"]).integerValue);
+        NSInteger backgroundPreloadLimit = MAX(0,((NSString *)entity.userInfo[@"backgroundPreloadLimit"]).integerValue);
+        NSInteger priorityPreloadLimit = MAX(0,((NSString *)entity.userInfo[@"priorityPreloadLimit"]).integerValue);
+        
+        if (backgroundPrefetchLimit == 0 &&
+            backgroundPreloadLimit == 0 &&
+            priorityPreloadLimit == 0) {
             return fetchedObjects;
         }
         
@@ -268,10 +273,23 @@
         
         NSMutableArray *errorArray = [NSMutableArray new];
         
-        BOOL shouldPreload = ((NSString *)entity.userInfo[@"preload"]).boolValue;
-        
         dispatch_group_t dispatchGroup = dispatch_group_create();
-        dispatch_queue_t dispatchQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0);
+        
+        NSMutableArray <NSNumber *> *queuePriorityArray = [NSMutableArray arrayWithCapacity:primaryKeys.count];
+        NSInteger preloadCount = priorityPreloadLimit + backgroundPreloadLimit;
+        
+        for (NSInteger count = 0; count < priorityPreloadLimit && count < primaryKeys.count; count++) {
+            [queuePriorityArray addObject:[NSNumber numberWithUnsignedInt:QOS_CLASS_USER_INITIATED]];
+            
+        }
+        for (NSInteger count = queuePriorityArray.count; count < preloadCount && count < primaryKeys.count; count++) {
+            [queuePriorityArray addObject:[NSNumber numberWithUnsignedInt:QOS_CLASS_DEFAULT]];
+        }
+        for (NSInteger count = queuePriorityArray.count; count < backgroundPrefetchLimit && count < primaryKeys.count; count++) {
+            [queuePriorityArray addObject:[NSNumber numberWithUnsignedInt:QOS_CLASS_BACKGROUND]];
+        }
+        
+        primaryKeys = [primaryKeys subarrayWithRange:NSMakeRange(0, queuePriorityArray.count)];
         
         [primaryKeys enumerateObjectsWithOptions:NSEnumerationConcurrent
                                       usingBlock:^(id  _Nonnull primaryKey, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -300,13 +318,14 @@
                                           //////////////////////////////////////////////////////
                                           //////////////////////////////////////////////////////
                                           
-                                          dispatch_group_async(dispatchGroup, dispatchQueue, ^{
+                                          qos_class_t serviceQuality = queuePriorityArray[idx].unsignedIntValue;
+                                          dispatch_group_async(dispatchGroup, dispatch_get_global_queue(serviceQuality, 0), ^{
                                               NSError *prefetchError = nil;
                                               NSURL *serviceURL = [NSURL URLWithString:(NSString *)primaryKey];
                                               NSData *prefetchData = [self responseDataForServiceURL:serviceURL
                                                                                  forRequestingEntity:entity
                                                                                          withContext:context
-                                                                                 withLoadingPriority:QOS_CLASS_BACKGROUND lastUpdate:lastUpdated[primaryKey]
+                                                                                 withLoadingPriority:serviceQuality lastUpdate:lastUpdated[primaryKey]
                                                                                          forceReload:ignoreCache
                                                                                                error:&prefetchError];
                                               
@@ -336,7 +355,7 @@
                                                   return;
                                               }
                                               
-                                              if (shouldPreload == NO) {
+                                              if (idx >= preloadCount) {
                                                   dispatch_sync(self.semaphoreQueue, ^{
                                                       dispatch_semaphore_t sema = self.semaphoreDictionary[@[primaryKey, entity.name]];
                                                       dispatch_semaphore_signal(sema);
@@ -355,7 +374,7 @@
                                                                                           forEntity:entity
                                                                                         withContext:context
                                                                               
-                                                                                     withLoadingPriority:QOS_CLASS_BACKGROUND                     error:&preloadError].node;
+                                                                                withLoadingPriority:QOS_CLASS_BACKGROUND                     error:&preloadError].node;
                                               
                                               //////////////////////////////////////////////////////
                                               ///////////////////// CHECKPOINT /////////////////////
@@ -397,7 +416,7 @@
                                       }];
         
         
-        dispatch_group_notify(dispatchGroup, dispatchQueue, ^{
+        dispatch_group_notify(dispatchGroup, dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
             // TODO: WRITE TO ERROR LOG / DISPATCH NOTIFICATION
             if (errorArray.count > 0) {
                 NSLog(@"%@", errorArray);
@@ -433,7 +452,7 @@
     // 2. Is it unexpired?
     // 3. Has the proxy store acquired newer info?
     // 4. Do I ignore the cache
-    RNDRow *row = [self.rowCache rowForObjectID:objectID];
+    RNDRow *row = [self.rowCache rowForObjectID:@[primaryKey, entity.name]];
     NSDate *lastUpdate = [self lastUpdateForServiceURL:[NSURL URLWithString:primaryKey]
                                    forRequestingEntity:entity
                                            withContext:context];
@@ -523,22 +542,23 @@
     uint64_t version = 0;
     NSIncrementalStoreNode *node = nil;
     
+    NSTimeInterval expirationInterval = context.stalenessInterval < 0 ? 84000 : context.stalenessInterval;
+    NSString *expirationIntervalString = entity.userInfo[@"entityExpirationInterval"];
+    if (expirationIntervalString != nil) { expirationInterval = expirationIntervalString.doubleValue; }
     
     if (row != nil) {
         node = row.node;
         [node updateWithValues:values
                        version:node.version + 1];
+        [row updateRowExpiration:expirationInterval];
     } else {
-        NSTimeInterval expirationInterval = context.stalenessInterval < 0 ? 84000 : context.stalenessInterval;
-        NSString *expirationIntervalString = entity.userInfo[@"entityExpirationInterval"];
-        if (expirationIntervalString != nil) { expirationInterval = expirationIntervalString.doubleValue; }
-        
         node = [[NSIncrementalStoreNode alloc] initWithObjectID:objectID withValues:values version:version];
         row = [[RNDRow alloc] initWithNode:node
                                lastUpdated:[self lastUpdateForServiceURL:serviceURL
                                                      forRequestingEntity:entity
                                                              withContext:context]
                         expirationInterval:expirationInterval];
+        [self.rowCache addRow:row forObjectID:@[primaryKey, entity.name]];
     }
     
     return row;
@@ -552,7 +572,7 @@
     
     NSString *primaryKey = [self referenceObjectForObjectID:objectID];
     NSEntityDescription *entity = [[context objectWithID:objectID] entity];
-
+    
     //////////////////////////////////////////////////////
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
@@ -561,15 +581,15 @@
     
     dispatch_sync(self.semaphoreQueue, ^{
         semaphore = [self.semaphoreDictionary objectForKey:@[primaryKey, entity.name]];
-            });
+    });
     if (semaphore != nil) {
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     }
-
+    
     /////////////////////////////////////////////////////
     //////////////////////////////////////////////////////
     //////////////////////////////////////////////////////
-
+    
     NSIncrementalStoreNode *node = [self rowForPrimaryKey:primaryKey
                                               forObjectID:objectID
                                                 forEntity:entity
@@ -591,7 +611,7 @@
     
     
     if (relationship.isToMany) {
-//        return @[];
+        //        return @[];
         
         //****************** BEGIN DATA REQUEST PROCESSING ******************//
         BOOL ignoreCache = ((NSString *)relationship.entity.userInfo[@"ignoreCache"]).boolValue;
@@ -658,7 +678,7 @@
         //****************** END RESPONSE DATA PROCESSING ******************//
         
     } else {
-//        return nil;
+        //        return nil;
         
         //****************** BEGIN DATA REQUEST PROCESSING ******************//
         BOOL ignoreCache = ((NSString *)relationship.entity.userInfo[@"ignoreCache"]).boolValue;
@@ -892,7 +912,10 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
     
-    if (cachedResponse == nil) { return nil; }
+    if (cachedResponse == nil) {
+        return nil;
+        
+    }
     
     if ([cachedResponse.response isKindOfClass: [NSHTTPURLResponse class]] == NO) { return nil; }
     
@@ -902,8 +925,7 @@
     
     NSString *cacheExpirationIntervalString = entity.userInfo[@"cacheExpirationInterval"];
     NSTimeInterval cacheExpirationInterval = cacheExpirationIntervalString != nil ? [cacheExpirationIntervalString doubleValue] : self.dataCacheExpirationInterval;
-    cacheExpirationInterval = fabs(cacheExpirationInterval) * -1.0;
-    NSDate *cacheExpirationDate = [NSDate dateWithTimeIntervalSinceNow:cacheExpirationInterval];
+    cacheExpirationInterval = fabs(cacheExpirationInterval);
     
     NSDictionary *headers = ((NSHTTPURLResponse *)cachedResponse.response).allHeaderFields;
     NSString *cachedResponseDateString = headers[@"Date"];
@@ -925,6 +947,7 @@
     [cachedResponseDateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     [cachedResponseDateFormatter setDateFormat:@"EEE', 'dd' 'MMM' 'yyyy' 'HH':'mm':'ss' 'zzz"];
     NSDate *cachedResponseDate = [cachedResponseDateFormatter dateFromString:cachedResponseDateString];
+    cachedResponseDate = [cachedResponseDate dateByAddingTimeInterval:cacheExpirationInterval];
     
     //////////////////////////////////////////////////////
     ///////////////////// CHECKPOINT /////////////////////
@@ -936,7 +959,7 @@
     //////////////////////////////////////////////////////
     //////////////////////////////////////////////////////
     
-    NSComparisonResult result = [cacheExpirationDate compare:cachedResponseDate];
+    NSComparisonResult result = [[NSDate date] compare:cachedResponseDate];
     
     //////////////////////////////////////////////////////
     ///////////////////// CHECKPOINT /////////////////////

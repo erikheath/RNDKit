@@ -23,23 +23,25 @@
                  lastUpdated:(NSDate *)lastUpdated
           expirationInterval:(NSTimeInterval)interval;
 
+- (void)updateRowExpiration:(NSTimeInterval)interval;
+
 @end
 
 @interface RNDRowCache: NSObject
 
-- (RNDRow *)rowForObjectID:(NSManagedObjectID *)objectID;
+- (RNDRow *)rowForObjectID:(NSArray *)objectID;
 
-- (void)addRow:(RNDRow *)row forObjectID:(NSManagedObjectID *)objectID;
+- (void)addRow:(RNDRow *)row forObjectID:(NSArray *)objectID;
 
-- (void)removeRowForObjectID:(NSManagedObjectID *)objectID;
+- (void)removeRowForObjectID:(NSArray *)objectID;
 
-- (void)registerRow:(RNDRow *)row forObjectID:(NSManagedObjectID *)objectID;
+- (void)registerRow:(RNDRow *)row forObjectID:(NSArray *)objectID;
 
-- (void)incrementReferenceCountForObjectID:(NSManagedObjectID *)objectID;
+- (void)incrementReferenceCountForObjectID:(NSArray *)objectID;
 
-- (void)decrementReferenceCountForObjectID:(NSManagedObjectID *)objectID;
+- (void)decrementReferenceCountForObjectID:(NSArray *)objectID;
 
-- (void)removeReferenceCountForObjectID:(NSManagedObjectID *)objectID;
+- (void)removeReferenceCountForObjectID:(NSArray *)objectID;
 
 - (NSDictionary *)expiredRows;
 
