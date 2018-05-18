@@ -14,6 +14,10 @@
 
 @synthesize node = _node;
 
+@synthesize primaryKey = _primaryKey;
+
+@synthesize entityName = _entityName;
+
 - (BOOL)isExpried {
     return [[NSDate date] compare:self.expirationDate] == NSOrderedDescending ? YES : NO;
 }
@@ -25,11 +29,15 @@
 
 - (instancetype)initWithNode:(NSIncrementalStoreNode *)node
                  lastUpdated:(NSDate *)lastUpdated
-          expirationInterval:(NSTimeInterval)interval {
+          expirationInterval:(NSTimeInterval)interval
+                  primaryKey:(NSString *)primaryKey
+                  entityName:(NSString *)entityName{
     if ((self = [super init]) != nil) {
         _node = node;
         _lastUpdated = lastUpdated;
         _expirationDate = [NSDate dateWithTimeIntervalSinceNow:interval];
+        _primaryKey = primaryKey;
+        _entityName = entityName;
     }
     return self;
 }
@@ -79,9 +87,9 @@
     return row;
 }
 
-- (void)addRow:(RNDRow *)row forObjectID:(NSArray *)objectID {
+- (void)addRow:(RNDRow *)row {
     [_lock lock];
-    [self.rowCache setObject:row forKey:objectID];
+    [self.rowCache setObject:row forKey:@[row.primaryKey, row.entityName]];
     [_lock unlock];
 }
 
@@ -92,10 +100,10 @@
     [_lock unlock];
 }
 
-- (void)registerRow:(RNDRow *)row forObjectID:(NSArray *)objectID {
+- (void)registerRow:(RNDRow *)row {
     [_lock lock];
-    [self.rowCache setObject:row forKey:objectID];
-    [self incrementReferenceCountForObjectID:objectID];
+    [self.rowCache setObject:row forKey:@[row.primaryKey, row.entityName]];
+    [self incrementReferenceCountForObjectID:@[row.primaryKey, row.entityName]];
     [_lock unlock];
 }
 

@@ -59,9 +59,13 @@
 @property (readwrite) NSTimeInterval dataCacheExpirationInterval;
 
 
-@property (strong, nonnull, nonatomic, readwrite) NSURLSession *dataRequestSession;
+@property (strong, nonnull, nonatomic, readwrite) NSURLSession *backgroundDataRequestSession;
 
-@property (strong, nonnull, nonatomic, readwrite) NSURLSessionConfiguration *dataRequestConfigfuration;
+@property (strong, nonnull, nonatomic, readwrite) NSURLSessionConfiguration *backgroundDataRequestConfigfuration;
+
+@property (strong, nonnull, nonatomic, readwrite) NSURLSession *priorityDataRequestSession;
+
+@property (strong, nonnull, nonatomic, readwrite) NSURLSessionConfiguration *priorityDataRequestConfigfuration;
 
 @property (weak, nullable, nonatomic, readwrite) id<RNDIncrementalStoreDataRequestDelegate> dataRequestDelegate;
 

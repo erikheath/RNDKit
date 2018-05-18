@@ -10,7 +10,9 @@
 
 @implementation RNDJSONResponseProcessor
 
-- (NSArray <NSString *> *)uniqueIdentifiersForEntity:(NSEntityDescription *)entity responseData:(NSData *)responseData error:(NSError **)error {
+- (NSArray <NSString *> *)uniqueIdentifiersForEntity:(NSEntityDescription *)entity
+                                        responseData:(NSData *)responseData
+                                               error:(NSError **)error {
     
     //****************** BEGIN JSON TO OBJECT CONVERSION ******************//
     NSError *JSONError = nil;
@@ -45,7 +47,7 @@
 
     if (identifierRootObject == nil) {
         if (error != NULL) {
-            *error = nil; // TODO: Return error
+            *error = nil;
         }
         return nil;
     }
@@ -76,7 +78,7 @@
 
     if (identifierArray == nil) {
         if (error != NULL) {
-            *error = nil; // TODO: Return error
+            *error = nil;
         }
         return nil;
     }
@@ -126,7 +128,6 @@
     //****************** BEGIN RESPONSE DATA PROCESSING ******************//
     NSError *dataProcessingError = nil;
     NSString *dataContainerType = entity.userInfo[@"dataContainerType"];
-    
     NSDictionary *values = nil;
     
     if (dataContainerType == nil || [dataContainerType isEqualToString:@"JSON"] == YES) {
@@ -153,12 +154,11 @@
     //////////////////////////////////////////////////////
 
     return values;
-    
     //****************** END RESPONSE DATA PROCESSING ******************//
-
 }
 
 - (NSDictionary *)valuesForEntity:(NSEntityDescription *)entity JSONData:(NSData *)JSONData error:(NSError **)error {
+    
     //****************** BEGIN JSON TO OBJECT CONVERSION ******************//
     
     //////////////////////////////////////////////////////
@@ -244,7 +244,6 @@
     //////////////////////////////////////////////////////
     
     return values;
-    
     //****************** END RESPONSE DATA OBJECT PROCESSING ******************//
 }
 
@@ -271,7 +270,6 @@
     //////////////////////////////////////////////////////
     
     return values;
-    
     //****************** END RESPONSE DATA OBJECT PROCESSING ******************//
 }
 
@@ -377,9 +375,7 @@
     //////////////////////////////////////////////////////
     
     return updateDictionary;
-    
     //****************** END VALUES OBJECT PROCESSING ******************//
-    
 }
 
 @end

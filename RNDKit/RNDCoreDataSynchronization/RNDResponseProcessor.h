@@ -11,8 +11,6 @@
 
 @protocol RNDResponseProcessorDelegate <NSObject>
 
-
-
 @end
 
 @protocol RNDResponseProcessor <NSObject>

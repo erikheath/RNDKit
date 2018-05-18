@@ -11,9 +11,11 @@
 
 @interface RNDIncrementalStore()
 
-@property (strong, nonnull, nonatomic, readonly) NSMutableDictionary *semaphoreDictionary;
+@property (strong, nonnull, nonatomic, readonly) NSMutableDictionary *rowSemaphoreDictionary;
+@property (strong, nonnull, nonatomic, readonly) NSCountedSet *rowSemaphoreCounter;
 @property (strong, nonnull, nonatomic, readonly) dispatch_queue_t semaphoreQueue;
 @property (strong, nonnull, nonatomic, readonly) dispatch_queue_t errorQueue;
+@property (strong, nonnull, nonatomic, readonly) dispatch_queue_t serialQueue;
 
 @end
 
@@ -22,14 +24,14 @@
 
 #pragma mark - Property Definitions
 
-@synthesize semaphoreDictionary = _semaphoreDictionary;
+@synthesize rowSemaphoreDictionary = _rowSemaphoreDictionary;
+@synthesize rowSemaphoreCounter = _rowSemaphoreCounter;
 @synthesize semaphoreQueue = _semaphoreQueue;
 @synthesize errorQueue = _errorQueue;
 @synthesize rowCache = _rowCache;
 @synthesize dataRequestDelegateQueue = _dataRequestDelegateQueue;
 @synthesize dataResponseProcessors = _dataResponseProcessors;
-
-// TODO: WRITE BARRIERS AROUND RW PROPERTIES
+@synthesize serialQueue = _serialQueue;
 
 #pragma mark - Core Data Override Definitions
 
@@ -38,7 +40,10 @@
                                         configurationName:name
                                                       URL:url
                                                   options:options]) != nil) {
-        _semaphoreDictionary = [NSMutableDictionary dictionary];
+        
+        _rowSemaphoreDictionary = [NSMutableDictionary dictionary];
+        
+        _rowSemaphoreCounter = [NSCountedSet new];
         
         _semaphoreQueue = dispatch_queue_create("semaphoreQueue", dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL, QOS_CLASS_DEFAULT, QOS_MIN_RELATIVE_PRIORITY));
         
@@ -50,15 +55,23 @@
         
         _dataRequestDelegateQueue = [[NSOperationQueue alloc] init];
         
-        _dataRequestSession = [NSURLSession sessionWithConfiguration:self.dataRequestConfigfuration delegate:self.dataRequestDelegate delegateQueue:self.dataRequestDelegateQueue];
+        _priorityDataRequestConfigfuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         
-        _dataRequestConfigfuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        _priorityDataRequestConfigfuration.requestCachePolicy = NSURLRequestReturnCacheDataElseLoad;
         
-        _dataRequestConfigfuration.requestCachePolicy = NSURLRequestReturnCacheDataElseLoad;
+        _priorityDataRequestSession = [NSURLSession sessionWithConfiguration:self.priorityDataRequestConfigfuration delegate:self.dataRequestDelegate delegateQueue:self.dataRequestDelegateQueue];
         
+        _backgroundDataRequestConfigfuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        
+        _backgroundDataRequestConfigfuration.requestCachePolicy = NSURLRequestReturnCacheDataElseLoad;
+        
+        _backgroundDataRequestSession = [NSURLSession sessionWithConfiguration:_backgroundDataRequestConfigfuration delegate:self.dataRequestDelegate delegateQueue:self.dataRequestDelegateQueue];
+
         _dataResponseProcessors = [NSMutableDictionary new];
         
         _dataRequestQueryItemPredicateParser = [RNDQueryItemPredicateParser new];
+        
+        _serialQueue = dispatch_queue_create("serialQueue", dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL, QOS_CLASS_USER_INITIATED, QOS_MIN_RELATIVE_PRIORITY));
         
     }
     
@@ -67,20 +80,22 @@
 
 - (BOOL)loadMetadata:(NSError *__autoreleasing *)error {
     
+    //****************** BEGIN STANDARD METADATA SETUP ******************//
     NSMutableDictionary *mutableMetadata = [NSMutableDictionary dictionary];
     [mutableMetadata setValue:[[NSProcessInfo processInfo] globallyUniqueString] forKey:NSStoreUUIDKey];
     [mutableMetadata setValue:NSStringFromClass([self class]) forKey:NSStoreTypeKey];
     [self setMetadata:mutableMetadata];
+    //****************** END STANDARD METADATA SETUP ******************//
+
     
+    //****************** BEGIN TEMPORARY CONFIGURATION SETUP ******************//
     //TODO: EXTERNAL CONFIGURATION FROM MODEL
     [self.dataResponseProcessors setObject:[RNDJSONResponseProcessor new] forKey:@"UNSListing"];
     [self.dataResponseProcessors setObject:[RNDJSONResponseProcessor new] forKey:@"UNSImage"];
     [self.dataResponseProcessors setObject:[RNDJSONResponseProcessor new] forKey:@"UNSProperty"];
-    
     self.dataCacheExpirationInterval = 300;
-    
-    // END EXTERNAL CONFIGURATION FROM MODEL
-    
+    //****************** END TEMPORARY CONFIGURATION SETUP ******************//
+
     return YES;
 }
 
@@ -89,12 +104,15 @@
                error:(NSError * _Nullable *)error {
     
     if ([request requestType] == NSFetchRequestType) {
+        
+        //****************** BEGIN FETCH REQUEST PROCESSING SETUP ******************//
         NSFetchRequest *fetchRequest = (NSFetchRequest *)request;
         NSEntityDescription *entity = [fetchRequest entity];
         NSURL *serviceURL = nil;
         NSString *serviceURLString = nil;
         NSURLComponents *serviceComponents = nil;
-        
+        //****************** END FETCH REQUEST PROCESSING SETUP ******************//
+
         
         //****************** BEGIN DELEGATE URL PROCESSING ******************//
         if (self.dataRequestDelegate != nil) {
@@ -133,7 +151,6 @@
         
         
         //****************** BEGIN SUBSTITUTION VARIABLE PROCESSING ******************//
-        // TODO: Add Default Substitutions
         if (serviceURLString != nil) {
             if (self.dataRequestDelegate != nil && [self.dataRequestDelegate respondsToSelector:@selector(storeShouldSubstituteVariablesForRequest:)] == YES && [self.dataRequestDelegate storeShouldSubstituteVariablesForRequest:fetchRequest] == YES) {
                 NSDictionary *substitutionDictionary = [self.dataRequestDelegate substitutionDictionaryForRequest:fetchRequest defaultSubstitutions:@{}];
@@ -156,8 +173,6 @@
         
         if (serviceComponents == nil) { return nil; }
         
-        // TODO: Error Reporting
-        
         /////////////////////////////////////////////////////
         //////////////////////////////////////////////////////
         //////////////////////////////////////////////////////
@@ -166,7 +181,6 @@
         
         
         //****************** BEGIN QUERY ITEM PROCESSING ******************//
-        
         NSMutableArray *queryItems = [NSMutableArray arrayWithArray:serviceComponents.queryItems];
         [queryItems addObjectsFromArray:[self.dataRequestQueryItemPredicateParser queryItemsForPredicateRepresentation:fetchRequest.predicate]];
         
@@ -178,8 +192,6 @@
         serviceURL = [serviceComponents URL];
         if (serviceURL == nil) { return nil; }
         
-        // TODO: Error Reporting
-        
         /////////////////////////////////////////////////////
         //////////////////////////////////////////////////////
         //////////////////////////////////////////////////////
@@ -188,8 +200,6 @@
         
         
         //****************** BEGIN REQUEST DATA PROCESSING ******************//
-        // In this initial processing, it's necessary to get the file
-        // with the keys, whether that's from the cache or the server.
         BOOL ignoreCache = ((NSString *)entity.userInfo[@"ignoreCache"]).boolValue;
         NSError *serviceError = nil;
         NSData *serviceData = [self responseDataForServiceURL:serviceURL
@@ -204,8 +214,10 @@
         ///////////////////// CHECKPOINT /////////////////////
         //////////////////////////////////////////////////////
         
-        if (serviceError != nil && error != NULL) {
-            *error = serviceError;
+        if (serviceError != nil) {
+            if (error != NULL) {
+                *error = serviceError;
+            }
             return nil;
         }
         
@@ -218,15 +230,16 @@
         
         //****************** BEGIN RESPONSE DATA PROCESSING ******************//
         NSError *dataProcessorError = nil;
-        
         NSArray *primaryKeys = [self.dataResponseProcessors[entity.name] uniqueIdentifiersForEntity:entity responseData:serviceData error:&dataProcessorError];
         
         //////////////////////////////////////////////////////
         ///////////////////// CHECKPOINT /////////////////////
         //////////////////////////////////////////////////////
         
-        if (dataProcessorError != nil && error != NULL) {
-            *error = dataProcessorError;
+        if (dataProcessorError != nil) {
+            if (error != NULL) {
+                *error = dataProcessorError;
+            }
             return nil;
         }
         
@@ -267,14 +280,8 @@
         //****************** END RESPONSE DATA PROCESSING ******************//
         
         
-        //****************** BEGIN PREFETCH/PRELOAD PROCESSING ******************//
-        
-        NSDictionary *lastUpdated = [self.dataResponseProcessors[entity.name] lastUpdatesForEntity:entity objectIDs:fetchedObjects responseData:serviceData error:&serviceError];
-        
+        //****************** BEGIN PRELOAD PROCESSING ******************//
         NSMutableArray *errorArray = [NSMutableArray new];
-        
-        dispatch_group_t dispatchGroup = dispatch_group_create();
-        
         NSMutableArray <NSNumber *> *queuePriorityArray = [NSMutableArray arrayWithCapacity:primaryKeys.count];
         NSInteger preloadCount = priorityPreloadLimit + backgroundPreloadLimit;
         
@@ -291,141 +298,106 @@
         
         primaryKeys = [primaryKeys subarrayWithRange:NSMakeRange(0, queuePriorityArray.count)];
         
+        dispatch_group_t dispatch_group = dispatch_group_create();
+        
+        dispatch_group_async(dispatch_group, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+            
         [primaryKeys enumerateObjectsWithOptions:NSEnumerationConcurrent
                                       usingBlock:^(id  _Nonnull primaryKey, NSUInteger idx, BOOL * _Nonnull stop) {
                                           
                                           NSManagedObjectID *objectID = fetchedObjects[idx];
+                                          qos_class_t serviceQuality = queuePriorityArray[idx].unsignedIntValue;
+                                          NSError *preloadError = nil;
+                                          
+                                          NSIncrementalStoreNode *node = [self rowForPrimaryKey:primaryKey
+                                                                                    forObjectID:objectID
+                                                                                      forEntity:entity
+                                                                                    withContext:context
+                                                                          
+                                                                            withLoadingPriority:serviceQuality                     error:&preloadError].node;
                                           
                                           //////////////////////////////////////////////////////
                                           ///////////////////// CHECKPOINT /////////////////////
                                           //////////////////////////////////////////////////////
                                           
-                                          dispatch_semaphore_t __block semaphore = nil;
-                                          BOOL __block shouldExit = NO;
+                                          if (preloadError != nil) {
+                                              dispatch_sync(self.errorQueue, ^{
+                                                  [errorArray addObject:preloadError];
+                                              });
+                                              return;
+                                          }
                                           
-                                          dispatch_sync(self.semaphoreQueue, ^{
-                                              if ([self.semaphoreDictionary objectForKey:@[primaryKey, entity.name]] != nil) {
-                                                  shouldExit = YES;
-                                                  return;
-                                              }
-                                              semaphore = dispatch_semaphore_create(0);
-                                              [self.semaphoreDictionary setObject:semaphore forKey:@[primaryKey, entity.name]];
-                                          });
-                                          
-                                          if (shouldExit == YES) { return; }
+                                          if (node == nil) {
+                                              return;
+                                          }
                                           
                                           /////////////////////////////////////////////////////
                                           //////////////////////////////////////////////////////
                                           //////////////////////////////////////////////////////
                                           
-                                          qos_class_t serviceQuality = queuePriorityArray[idx].unsignedIntValue;
-                                          dispatch_group_async(dispatchGroup, dispatch_get_global_queue(serviceQuality, 0), ^{
-                                              NSError *prefetchError = nil;
-                                              NSURL *serviceURL = [NSURL URLWithString:(NSString *)primaryKey];
-                                              NSData *prefetchData = [self responseDataForServiceURL:serviceURL
-                                                                                 forRequestingEntity:entity
-                                                                                         withContext:context
-                                                                                 withLoadingPriority:serviceQuality lastUpdate:lastUpdated[primaryKey]
-                                                                                         forceReload:ignoreCache
-                                                                                               error:&prefetchError];
+                                          for (NSRelationshipDescription *relationship in entity.relationshipsByName.allValues) {
                                               
-                                              //////////////////////////////////////////////////////
-                                              ///////////////////// CHECKPOINT /////////////////////
-                                              //////////////////////////////////////////////////////
-                                              
-                                              if (prefetchError != nil) {
-                                                  dispatch_sync(self.errorQueue, ^{
-                                                      [errorArray addObject:prefetchError];
-                                                  });
-                                                  dispatch_sync(self.semaphoreQueue, ^{
-                                                      dispatch_semaphore_t sema = self.semaphoreDictionary[@[primaryKey, entity.name]];
-                                                      dispatch_semaphore_signal(sema);
-                                                      [self.semaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
-                                                  });
-                                                  return;
+                                              if (((NSString *)relationship.userInfo[@"preloadRelationship"]).boolValue == YES) {
+                                                  
+                                                  NSArray *relationshipKeys = [self keysFulfillingRelationship:relationship
+                                                                                                 forPrimaryKey:primaryKey forObjectID:objectID withContext:context withLoadingPriority:serviceQuality error:&preloadError];
+                                                  
+                                                  //////////////////////////////////////////////////////
+                                                  ///////////////////// CHECKPOINT /////////////////////
+                                                  //////////////////////////////////////////////////////
+                                                  
+                                                  if (preloadError != nil) {
+                                                      dispatch_sync(self.errorQueue, ^{
+                                                          [errorArray addObject:preloadError];
+                                                      });
+                                                      return;
+                                                  }
+                                                  
+                                                  /////////////////////////////////////////////////////
+                                                  //////////////////////////////////////////////////////
+                                                  //////////////////////////////////////////////////////
+                                                  
+                                                  NSInteger rowLimit = ((NSString *)relationship.userInfo[@"priorityPreloadLimit"]).integerValue;
+                                                  if (rowLimit < relationshipKeys.count) {
+                                                      relationshipKeys = [relationshipKeys subarrayWithRange:NSMakeRange(0, rowLimit)];
+                                                  }
+                                                  
+                                                  [self rowsFulfillingRelationship:relationship
+                                                                   withPrimaryKeys:relationshipKeys
+                                                                 forSourceObjectID:objectID
+                                                                       withContext:context
+                                                               withLoadingPriority:serviceQuality
+                                                                             error:&preloadError];
+                                                  
+                                                  //////////////////////////////////////////////////////
+                                                  ///////////////////// CHECKPOINT /////////////////////
+                                                  //////////////////////////////////////////////////////
+                                                  
+                                                  if (preloadError != nil) {
+                                                      dispatch_sync(self.errorQueue, ^{
+                                                          [errorArray addObject:preloadError];
+                                                      });
+                                                      return;
+                                                  }
+                                                  
+                                                  /////////////////////////////////////////////////////
+                                                  //////////////////////////////////////////////////////
+                                                  //////////////////////////////////////////////////////
+                                                  
                                               }
-                                              
-                                              if (prefetchData == nil) {
-                                                  // TODO: return Error
-                                                  dispatch_sync(self.semaphoreQueue, ^{
-                                                      dispatch_semaphore_t sema = self.semaphoreDictionary[@[primaryKey, entity.name]];
-                                                      dispatch_semaphore_signal(sema);
-                                                      [self.semaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
-                                                  });
-                                                  return;
-                                              }
-                                              
-                                              if (idx >= preloadCount) {
-                                                  dispatch_sync(self.semaphoreQueue, ^{
-                                                      dispatch_semaphore_t sema = self.semaphoreDictionary[@[primaryKey, entity.name]];
-                                                      dispatch_semaphore_signal(sema);
-                                                      [self.semaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
-                                                  });
-                                                  return;
-                                              }
-                                              
-                                              /////////////////////////////////////////////////////
-                                              //////////////////////////////////////////////////////
-                                              //////////////////////////////////////////////////////
-                                              
-                                              NSError *preloadError = nil;
-                                              NSIncrementalStoreNode *node = [self rowForPrimaryKey:primaryKey
-                                                                                        forObjectID:objectID
-                                                                                          forEntity:entity
-                                                                                        withContext:context
-                                                                              
-                                                                                withLoadingPriority:QOS_CLASS_BACKGROUND                     error:&preloadError].node;
-                                              
-                                              //////////////////////////////////////////////////////
-                                              ///////////////////// CHECKPOINT /////////////////////
-                                              //////////////////////////////////////////////////////
-                                              
-                                              if (preloadError != nil) {
-                                                  dispatch_sync(self.errorQueue, ^{
-                                                      [errorArray addObject:preloadError];
-                                                  });
-                                                  dispatch_sync(self.semaphoreQueue, ^{
-                                                      dispatch_semaphore_t sema = self.semaphoreDictionary[@[primaryKey, entity.name]];
-                                                      dispatch_semaphore_signal(sema);
-                                                      [self.semaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
-                                                  });
-                                                  return;
-                                              }
-                                              
-                                              if (node == nil) {
-                                                  // TODO: return Error
-                                                  dispatch_sync(self.semaphoreQueue, ^{
-                                                      dispatch_semaphore_t sema = self.semaphoreDictionary[@[primaryKey, entity.name]];
-                                                      dispatch_semaphore_signal(sema);
-                                                      [self.semaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
-                                                  });
-                                                  return;
-                                              }
-                                              
-                                              /////////////////////////////////////////////////////
-                                              //////////////////////////////////////////////////////
-                                              //////////////////////////////////////////////////////
-                                              
-                                              dispatch_sync(self.semaphoreQueue, ^{
-                                                  dispatch_semaphore_t sema = self.semaphoreDictionary[@[primaryKey, entity.name]];
-                                                  dispatch_semaphore_signal(sema);
-                                                  [self.semaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
-                                              });
-                                          });
+                                          }
                                           
                                       }];
         
+        });
         
-        dispatch_group_notify(dispatchGroup, dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
-            // TODO: WRITE TO ERROR LOG / DISPATCH NOTIFICATION
-            if (errorArray.count > 0) {
-                NSLog(@"%@", errorArray);
-            }
+        dispatch_group_notify(dispatch_group, dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+            if (errorArray.count > 0) { }
         });
         
         return fetchedObjects;
         
-        //****************** END PREFETCH/PRELOAD PROCESSING ******************//
+        //****************** END PRELOAD PROCESSING ******************//
         
     } else if ([request requestType] == NSSaveRequestType) {
         
@@ -446,12 +418,23 @@
                  withContext:(NSManagedObjectContext *)context
          withLoadingPriority:(qos_class_t)loadingPriority
                        error:(NSError * _Nullable *)error {
+    
+    //****************** BEGIN SEMAPHORE COORDINATION SETUP ******************//
+    dispatch_semaphore_t __block semaphore = nil;
+    
+    dispatch_sync(self.semaphoreQueue, ^{
+        if ((semaphore = [self.rowSemaphoreDictionary objectForKey:@[primaryKey, entity.name]]) == nil) {
+            semaphore = dispatch_semaphore_create(1);
+            [self.rowSemaphoreDictionary setObject:semaphore forKey:@[primaryKey, entity.name]];
+        }
+        [self.rowSemaphoreCounter addObject:semaphore];
+    });
+    
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    //****************** END SEMAPHORE COORDINATION SETUP ******************//
+
+    
     //****************** BEGIN EXISTING ROW PROCESSING ******************//
-    // Check for an existing node. If it's valid, return it.
-    // 1. Does it exist?
-    // 2. Is it unexpired?
-    // 3. Has the proxy store acquired newer info?
-    // 4. Do I ignore the cache
     RNDRow *row = [self.rowCache rowForObjectID:@[primaryKey, entity.name]];
     NSDate *lastUpdate = [self lastUpdateForServiceURL:[NSURL URLWithString:primaryKey]
                                    forRequestingEntity:entity
@@ -467,6 +450,13 @@
         row.isExpried == NO &&
         lastUpdate != nil &&
         [lastUpdate compare:row.lastUpdated] != NSOrderedDescending) {
+        dispatch_semaphore_signal(semaphore);
+        dispatch_async(self.semaphoreQueue, ^{
+            [self.rowSemaphoreCounter removeObject:semaphore];
+            if ([self.rowSemaphoreCounter countForObject:semaphore] == 0) {
+                [self.rowSemaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
+            }
+        });
         return row;
     }
     
@@ -476,18 +466,10 @@
     
     //****************** END EXISTING ROW PROCESSING ******************//
     
-    // IGNORE CACHE == YES -> Force Reload
-    // NO ROW == YES -> Retrieve From Store Proxy
-    // ROW EXPIRED == YES -> Retrieve From Store Proxy
-    
-    // If you don't pass in a last updated, then it is the date the file was downloaded.
-    
     
     //****************** BEGIN DATA REQEUST PROCESSING ******************//
-    
     NSData * __block serviceData = nil;
     NSError * __block serviceError = nil;
-    
     NSURL *serviceURL = [NSURL URLWithString:primaryKey];
     
     serviceData = [self responseDataForServiceURL: serviceURL
@@ -502,8 +484,19 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
     
-    if (serviceError != nil && error != NULL) {
-        *error = serviceError;
+    if (serviceError != nil) {
+        if (error != NULL) {
+            *error = serviceError;
+        }
+        
+        dispatch_semaphore_signal(semaphore);
+        dispatch_async(self.semaphoreQueue, ^{
+            [self.rowSemaphoreCounter removeObject:semaphore];
+            if ([self.rowSemaphoreCounter countForObject:semaphore] == 0) {
+                [self.rowSemaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
+            }
+        });
+        
         return nil;
     }
     
@@ -521,13 +514,31 @@
     ///////////////////// CHECKPOINT /////////////////////
     //////////////////////////////////////////////////////
     
-    if (serviceError != nil && error != NULL) {
-        *error = serviceError;
+    if (serviceError != nil) {
+        if (error != NULL) {
+            *error = serviceError;
+        }
+        
+        dispatch_semaphore_signal(semaphore);
+        dispatch_async(self.semaphoreQueue, ^{
+            [self.rowSemaphoreCounter removeObject:semaphore];
+            if ([self.rowSemaphoreCounter countForObject:semaphore] == 0) {
+                [self.rowSemaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
+            }
+        });
+
         return nil;
     }
     
     if (values == nil) {
-        // TODO: return Error
+        dispatch_semaphore_signal(semaphore);
+        dispatch_async(self.semaphoreQueue, ^{
+            [self.rowSemaphoreCounter removeObject:semaphore];
+            if ([self.rowSemaphoreCounter countForObject:semaphore] == 0) {
+                [self.rowSemaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
+            }
+        });
+
         return nil;
     }
     
@@ -541,9 +552,9 @@
     //****************** BEGIN ROW PROCESSING ******************//
     uint64_t version = 0;
     NSIncrementalStoreNode *node = nil;
-    
     NSTimeInterval expirationInterval = context.stalenessInterval < 0 ? 84000 : context.stalenessInterval;
     NSString *expirationIntervalString = entity.userInfo[@"entityExpirationInterval"];
+    
     if (expirationIntervalString != nil) { expirationInterval = expirationIntervalString.doubleValue; }
     
     if (row != nil) {
@@ -551,18 +562,122 @@
         [node updateWithValues:values
                        version:node.version + 1];
         [row updateRowExpiration:expirationInterval];
+        
     } else {
         node = [[NSIncrementalStoreNode alloc] initWithObjectID:objectID withValues:values version:version];
         row = [[RNDRow alloc] initWithNode:node
                                lastUpdated:[self lastUpdateForServiceURL:serviceURL
                                                      forRequestingEntity:entity
                                                              withContext:context]
-                        expirationInterval:expirationInterval];
-        [self.rowCache addRow:row forObjectID:@[primaryKey, entity.name]];
+                        expirationInterval:expirationInterval
+                                primaryKey:primaryKey
+                                entityName:entity.name];
+        [self.rowCache addRow:row];
+        
     }
     
+    dispatch_semaphore_signal(semaphore);
+    dispatch_async(self.semaphoreQueue, ^{
+        [self.rowSemaphoreCounter removeObject:semaphore];
+        if ([self.rowSemaphoreCounter countForObject:semaphore] == 0) {
+            [self.rowSemaphoreDictionary removeObjectForKey:@[primaryKey, entity.name]];
+        }
+    });
+
     return row;
+    //****************** END ROW PROCESSING ******************//
+}
+
+- (NSArray <NSString *> *)keysFulfillingRelationship:(NSRelationshipDescription *)relationship
+                                       forPrimaryKey:(NSString *)primaryKey
+                                         forObjectID:(NSManagedObjectID *)objectID
+                                         withContext:(NSManagedObjectContext *)context
+                                 withLoadingPriority:(qos_class_t)loadingPriority
+                                               error:(NSError * _Nullable *)error {
     
+    //****************** BEGIN DATA REQUEST PROCESSING ******************//
+    BOOL ignoreCache = ((NSString *)relationship.entity.userInfo[@"ignoreCache"]).boolValue;
+    NSError *serviceError = nil;
+    NSURL *serviceURL = [NSURL URLWithString:primaryKey];
+    NSData *serviceData = [self responseDataForServiceURL:serviceURL
+                                      forRequestingEntity:relationship.entity
+                                              withContext:context
+                                      withLoadingPriority:loadingPriority
+                                               lastUpdate:nil
+                                              forceReload:ignoreCache
+                                                    error:&serviceError];
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (serviceError != nil) {
+        if (error != NULL) {
+            *error = serviceError;
+        }
+        return nil;
+    }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    //****************** END DATA REQUEST PROCESSING ******************//
+    
+    
+    //****************** BEGIN RESPONSE DATA PROCESSING ******************//
+    NSError *dataProcessorError = nil;
+    NSArray *relationshipPrimaryKeys = [self.dataResponseProcessors[relationship.destinationEntity.name] uniqueIdentifiersForEntity:relationship.destinationEntity responseData:serviceData error:&dataProcessorError];
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (dataProcessorError != nil) {
+        if (error != NULL) {
+            *error = dataProcessorError;
+        }
+        return nil;
+    }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    return relationshipPrimaryKeys;
+    //****************** END RESPONSE DATA PROCESSING ******************//
+}
+
+- (NSArray <RNDRow *> *)rowsFulfillingRelationship:(NSRelationshipDescription *)relationship
+                                     withPrimaryKeys:(NSArray<NSString *> *)primaryKeys
+                                       forSourceObjectID:(NSManagedObjectID *)objectID
+                                       withContext:(NSManagedObjectContext *)context
+                               withLoadingPriority:(qos_class_t)loadingPriority
+                                             error:(NSError * _Nullable *)error {
+
+    //****************** BEGIN ROW PROCESSING ******************//
+    NSMutableArray *rowArray = [NSMutableArray arrayWithCapacity:primaryKeys.count];
+    NSMutableArray *objectIDArray = [NSMutableArray arrayWithCapacity:primaryKeys.count];
+    
+    for (NSString *primaryKey in primaryKeys) {
+        [objectIDArray addObject:[self newObjectIDForEntity:relationship.destinationEntity referenceObject:primaryKey]];
+    }
+    
+    [primaryKeys enumerateObjectsWithOptions:NSEnumerationConcurrent
+                                              usingBlock:^(id  _Nonnull primaryKey, NSUInteger idx, BOOL * _Nonnull stop) {
+                                                  NSError *rowError = nil;
+                                                  RNDRow *row = [self rowForPrimaryKey:primaryKey
+                                                                           forObjectID:objectIDArray[idx]
+                                                                             forEntity:relationship.destinationEntity
+                                                                           withContext:context
+                                                                   withLoadingPriority:loadingPriority
+                                                                                 error:&rowError];
+                                                  dispatch_sync(self.serialQueue, ^{
+                                                      [rowArray addObject:row];
+                                                  });
+                                              }];
+    
+    return [NSArray arrayWithArray:rowArray];
     //****************** END ROW PROCESSING ******************//
 }
 
@@ -573,32 +688,12 @@
     NSString *primaryKey = [self referenceObjectForObjectID:objectID];
     NSEntityDescription *entity = [[context objectWithID:objectID] entity];
     
-    //////////////////////////////////////////////////////
-    ///////////////////// CHECKPOINT /////////////////////
-    //////////////////////////////////////////////////////
-    
-    dispatch_semaphore_t __block semaphore = nil;
-    
-    dispatch_sync(self.semaphoreQueue, ^{
-        semaphore = [self.semaphoreDictionary objectForKey:@[primaryKey, entity.name]];
-    });
-    if (semaphore != nil) {
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    }
-    
-    /////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////
-    
     NSIncrementalStoreNode *node = [self rowForPrimaryKey:primaryKey
                                               forObjectID:objectID
                                                 forEntity:entity
                                               withContext:context
                                       withLoadingPriority:QOS_CLASS_USER_INITIATED
                                                     error:error].node;
-    if (semaphore != nil) {
-        dispatch_semaphore_signal(semaphore);
-    }
     return node;
     
 }
@@ -609,143 +704,45 @@
                   withContext:(NSManagedObjectContext *)context
                         error:(NSError * _Nullable *)error {
     
+    //****************** BEGIN PRIMARY KEY PROCESSING ******************//
+    NSArray *primaryKeys = [self keysFulfillingRelationship:relationship
+                                              forPrimaryKey:[self referenceObjectForObjectID:objectID]
+                                                forObjectID:objectID
+                                                withContext:context
+                                        withLoadingPriority:QOS_CLASS_USER_INITIATED
+                                                      error:error];
     
-    if (relationship.isToMany) {
-        //        return @[];
-        
-        //****************** BEGIN DATA REQUEST PROCESSING ******************//
-        BOOL ignoreCache = ((NSString *)relationship.entity.userInfo[@"ignoreCache"]).boolValue;
-        NSError *serviceError = nil;
-        NSURL *serviceURL = [NSURL URLWithString:[self referenceObjectForObjectID:objectID]];
-        NSData *serviceData = [self responseDataForServiceURL:serviceURL
-                                          forRequestingEntity:relationship.entity
-                                                  withContext:context
-                                          withLoadingPriority:QOS_CLASS_USER_INITIATED
-                                                   lastUpdate:nil
-                                                  forceReload:ignoreCache
-                                                        error:&serviceError];
-        
-        //////////////////////////////////////////////////////
-        ///////////////////// CHECKPOINT /////////////////////
-        //////////////////////////////////////////////////////
-        
-        if (serviceError != nil && error != NULL) {
-            *error = serviceError;
-            return nil;
-        }
-        
-        /////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////
-        
-        //****************** END DATA REQUEST PROCESSING ******************//
-        
-        
-        
-        //****************** BEGIN RESPONSE DATA PROCESSING ******************//
-        NSError *dataProcessorError = nil;
-        
-        NSArray *primaryKeys = [self.dataResponseProcessors[relationship.destinationEntity.name] uniqueIdentifiersForEntity:relationship.destinationEntity responseData:serviceData error:&dataProcessorError];
-        
-        //////////////////////////////////////////////////////
-        ///////////////////// CHECKPOINT /////////////////////
-        //////////////////////////////////////////////////////
-        
-        if (dataProcessorError != nil && error != NULL) {
-            *error = dataProcessorError;
-            return nil;
-        }
-        
-        if (primaryKeys.count == 0) {
-            return nil;
-        }
-        
-        /////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////
-        
-        NSMutableArray *objectIDArray = [NSMutableArray arrayWithCapacity:[primaryKeys count]];
-        
-        for (NSString *primaryKey in primaryKeys) {
-            NSManagedObjectID *objectID = [self newObjectIDForEntity:relationship.destinationEntity referenceObject:primaryKey];
-            [objectIDArray addObject:objectID];
-        }
-        
-        //TODO: INSERT PREFETCH / PRELOAD LOGIC - perhaps a certain number
-        
-        return objectIDArray;
-        
-        //****************** END RESPONSE DATA PROCESSING ******************//
-        
-    } else {
-        //        return nil;
-        
-        //****************** BEGIN DATA REQUEST PROCESSING ******************//
-        BOOL ignoreCache = ((NSString *)relationship.entity.userInfo[@"ignoreCache"]).boolValue;
-        NSError *serviceError = nil;
-        NSURL *serviceURL = [NSURL URLWithString:[self referenceObjectForObjectID:objectID]];
-        NSData *serviceData = [self responseDataForServiceURL:serviceURL
-                                          forRequestingEntity:relationship.entity
-                                                  withContext:context
-                                          withLoadingPriority:QOS_CLASS_USER_INITIATED
-                                                   lastUpdate:nil
-                                                  forceReload:ignoreCache
-                                                        error:&serviceError];
-        
-        //////////////////////////////////////////////////////
-        ///////////////////// CHECKPOINT /////////////////////
-        //////////////////////////////////////////////////////
-        
-        if (serviceError != nil && error != NULL) {
-            *error = serviceError;
-            return nil;
-        }
-        
-        /////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////
-        
-        //****************** END DATA REQUEST PROCESSING ******************//
-        
-        
-        //****************** BEGIN DATA RESPONSE PROCESSING ******************//
-        NSArray *uniqueIdentifiers = [self.dataResponseProcessors[relationship.destinationEntity.name] uniqueIdentifiersForEntity:relationship.destinationEntity responseData:serviceData error:&serviceError];
-        
-        NSString *identifier = uniqueIdentifiers.firstObject;
-        
-        //////////////////////////////////////////////////////
-        ///////////////////// CHECKPOINT /////////////////////
-        //////////////////////////////////////////////////////
-        
-        if (serviceError != nil && error != NULL) {
-            *error = serviceError;
-            return nil;
-        }
-        
-        if (identifier == nil) {
-            // TODO: Report Error;
-            return nil;
-        }
-        
-        /////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////
-        
-        //****************** END DATA RESPONSE PROCESSING ******************//
-        
-        
-        //****************** BEGIN OBJECT ID PROCESSING ******************//
-        NSManagedObjectID *relationshipObjectID = [self newObjectIDForEntity:relationship.destinationEntity referenceObject:identifier];
-        
-        return relationshipObjectID;
-        //****************** END OBJECT ID PROCESSING ******************//
-        
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (error != NULL && *error != nil) {
+        return nil;
     }
     
-    return nil;
+    if (primaryKeys == nil) {
+        return nil;
+    }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    
+    RNDRow *row = [self.rowCache rowForObjectID:@[[self referenceObjectForObjectID:objectID], relationship.entity]];
+    [row.node setValue:primaryKeys forKey:@"destinationKeys"];
+    //****************** END PRIMARY KEY PROCESSING ******************//
+
+
+    //****************** BEGIN OBJECT ID PROCESSING ******************//
+    NSMutableArray *objectIDs = [NSMutableArray new];
+    for (NSString *primaryKey in primaryKeys) {
+        [objectIDs addObject:[self newObjectIDForEntity:relationship.destinationEntity referenceObject:primaryKey]];
+    }
+
+    return relationship.isToMany == YES ? objectIDs : objectIDs.firstObject;
+    //****************** END OBJECT ID PROCESSING ******************//
 }
 
-//TODO: Is this needed?
 - (NSArray<NSManagedObjectID *> *)obtainPermanentIDsForObjects:(NSArray<NSManagedObject *> *)array
                                                          error:(NSError * _Nullable *)error {
     NSMutableArray *objectIDs = [NSMutableArray arrayWithCapacity:[array count]];
@@ -758,21 +755,20 @@
     
 }
 
-//TODO: Is this needed?
 + (id)identifierForNewStoreAtURL:(NSURL *)storeURL {
     return nil;
 }
 
 - (void)managedObjectContextDidRegisterObjectsWithIDs:(NSArray<NSManagedObjectID *> *)objectIDs {
     for (NSManagedObjectID *objectID in objectIDs) {
-        [self.rowCache incrementReferenceCountForObjectID:objectID];
+        [self.rowCache incrementReferenceCountForObjectID:@[[self referenceObjectForObjectID:objectID], objectID.entity.name]];
     }
     return;
 }
 
 - (void)managedObjectContextDidUnregisterObjectsWithIDs:(NSArray<NSManagedObjectID *> *)objectIDs {
     for (NSManagedObjectID *objectID in objectIDs) {
-        [self.rowCache decrementReferenceCountForObjectID:objectID];
+        [self.rowCache decrementReferenceCountForObjectID:@[[self referenceObjectForObjectID:objectID], objectID.entity.name]];
     }
 }
 
@@ -780,6 +776,7 @@
 #pragma mark - Extended Methods
 
 - (NSDate *)lastUpdateForServiceURL:(NSURL *)serviceURL forRequestingEntity:(NSEntityDescription *)entity withContext:(NSManagedObjectContext *)context {
+    
     //****************** BEGIN LAST UPDATE PROCESSING ******************//
     NSURLRequest *serviceRequest = [self serviceRequestForServiceURL:serviceURL
                                                  forRequestingEntity:entity
@@ -800,7 +797,6 @@
     //////////////////////////////////////////////////////
     //////////////////////////////////////////////////////
     
-    
     NSDateFormatter *cachedResponseDateFormatter = [[NSDateFormatter alloc] init];
     NSLocale *locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
     [cachedResponseDateFormatter setLocale:locale];
@@ -819,7 +815,6 @@
     //////////////////////////////////////////////////////
     
     return cachedResponseDate;
-    
     //****************** END LAST UPDATE PROCESSING ******************//
 }
 
@@ -847,7 +842,6 @@
     NSCachedURLResponse *cachedResponse = [self cachedResponseForServiceRequest:serviceRequest
                                                             forRequestingEntity:entity
                                                                     withContext:context];
-    
     NSURLRequestCachePolicy cachePolicy = serviceRequest.cachePolicy;
     
     if (cachePolicy == NSURLRequestReturnCacheDataDontLoad) {
@@ -864,18 +858,17 @@
     } else {
         return [self responseForServiceRequest:serviceRequest withLoadingPriority:loadingPriority lastUpdate:lastUpdate error:error];
     }
+    
     return nil;
-    
     //****************** END DATA REQUEST PROCESSING ******************//
-    
 }
 
 - (NSURLRequest *)serviceRequestForServiceURL:(NSURL *)URL
                           forRequestingEntity:(NSEntityDescription *)entity
                                   forceReload:(BOOL)reload {
     
-    //****************** BEGIN CACHE REQUEST PROCESSING ******************//
-    NSTimeInterval serviceRequestTimeout = self.dataRequestSession.configuration.timeoutIntervalForRequest;
+    //****************** BEGIN CACHE POLICY PROCESSING ******************//
+    NSTimeInterval serviceRequestTimeout = 120;
     NSNumber *entityTimeout = entity.userInfo[@"requestTimeoutInterval"];
     if (entityTimeout != nil) { serviceRequestTimeout = entityTimeout.doubleValue; }
     
@@ -887,25 +880,20 @@
         BOOL ignoreCache = ((NSString *)entity.userInfo[@"ignoreCache"]).boolValue;
         cachePolicy = ignoreCache == YES ? NSURLRequestReloadIgnoringCacheData : NSURLRequestReturnCacheDataElseLoad;
     } else {
-        cachePolicy = self.dataRequestSession.configuration.requestCachePolicy;
+        cachePolicy = NSURLRequestReturnCacheDataElseLoad;
     }
-    
-    NSURLRequest *serviceRequest = [NSURLRequest requestWithURL:URL
+    //****************** END CACHE POLICY PROCESSING ******************//
+
+    return [NSURLRequest requestWithURL:URL
                                                     cachePolicy:cachePolicy
                                                 timeoutInterval:serviceRequestTimeout];
-    
-    return serviceRequest;
-    
-    //****************** END CACHE REQUEST PROCESSING ******************//
-    
 }
 
 - (NSCachedURLResponse *)cachedResponseForServiceRequest:(NSURLRequest *)serviceRequest
                                      forRequestingEntity:(NSEntityDescription *)entity
                                              withContext:(NSManagedObjectContext *)context {
     
-    //****************** BEGIN CACHE REQUEST PROCESSING ******************//
-    
+    //****************** BEGIN CACHE RESPONSE PROCESSING ******************//
     NSCachedURLResponse *cachedResponse = [self.dataCache cachedResponseForRequest:serviceRequest];
     
     //////////////////////////////////////////////////////
@@ -939,7 +927,6 @@
     //////////////////////////////////////////////////////
     //////////////////////////////////////////////////////
     //////////////////////////////////////////////////////
-    
     
     NSDateFormatter *cachedResponseDateFormatter = [[NSDateFormatter alloc] init];
     NSLocale *locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
@@ -976,7 +963,7 @@
     
     return cachedResponse;
     
-    //****************** END CACHE REQUEST PROCESSING ******************//
+    //****************** END CACHE RESPONSE PROCESSING ******************//
     
 }
 
@@ -992,7 +979,13 @@
     NSError * __block serviceError = nil;
     
     dispatch_sync(dispatch_get_global_queue(loadingPriority, 0), ^{
-        NSURLSessionDataTask *task = [self.dataRequestSession dataTaskWithRequest:serviceRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        NSURLSession *loadingSession = (loadingPriority == QOS_CLASS_USER_INITIATED ||
+                                        loadingPriority == QOS_CLASS_USER_INTERACTIVE ||
+                                        loadingPriority == QOS_CLASS_UNSPECIFIED ||
+                                        loadingPriority == QOS_CLASS_DEFAULT) ?
+                                        self.priorityDataRequestSession :
+                                        self.backgroundDataRequestSession;
+        NSURLSessionDataTask *task = [loadingSession dataTaskWithRequest:serviceRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
             
             //////////////////////////////////////////////////////
             ///////////////////// CHECKPOINT /////////////////////
@@ -1047,24 +1040,21 @@
                                                                       timeZone:[NSTimeZone timeZoneForSecondsFromGMT:0] formatOptions:NSISO8601DateFormatWithInternetDateTime] forKey:@"Last-Modified"];
             httpResponse = [[NSHTTPURLResponse alloc] initWithURL:httpResponse.URL
                                                        statusCode:httpResponse.statusCode
-                                                      HTTPVersion:@"HTTP/1.1" // TODO: Is there a way to read this?
+                                                      HTTPVersion:@"HTTP/1.1"
                                                      headerFields:headerDictionary];
         }
         NSCachedURLResponse *cachedResponse = [[NSCachedURLResponse alloc] initWithResponse:httpResponse
                                                                                        data:serviceData
-                                                                                   userInfo:nil // TODO: MAYBE ENABLE THIS?
+                                                                                   userInfo:nil
                                                                               storagePolicy:NSURLCacheStorageAllowed];
         [[NSURLCache sharedURLCache] storeCachedResponse:cachedResponse
                                               forRequest:serviceRequest];
         
-    } // TODO: WHAT IF IT'S NOT HTTP?
+    }
     
     return serviceData;
-    
     //****************** END DATA RESPONSE PROCESSING ******************//
-    
 }
-
 
 @end
 

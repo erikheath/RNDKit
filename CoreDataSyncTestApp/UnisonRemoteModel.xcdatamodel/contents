@@ -12,7 +12,6 @@
         <attribute name="state" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="titleText" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="topLeftCoordinateBoundary" optional="YES" attributeType="Transformable" syncable="YES"/>
-        <relationship name="listings" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="searchSets" inverseEntity="UNSListing" syncable="YES"/>
         <relationship name="searchProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSSearchProfile" inverseName="locations" inverseEntity="UNSSearchProfile" syncable="YES"/>
     </entity>
     <entity name="UNSImage" representedClassName="UNSImage" syncable="YES">
@@ -21,13 +20,14 @@
                 <entry key="serverKeyPath" value="image"/>
             </userInfo>
         </attribute>
-        <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="images" inverseEntity="UNSListing" syncable="YES"/>
         <userInfo>
-            <entry key="cacheExpirationInterval" value="86400"/>
+            <entry key="cacheExpirationInterval" value="300000"/>
             <entry key="dataContainerType" value="IMAGE"/>
             <entry key="dataRootKeyPath" value="data"/>
             <entry key="identifierKeyPath" value="data.@unionOfArrays.images"/>
             <entry key="ignoreCache" value="NO"/>
+            <entry key="preload" value="NO"/>
+            <entry key="priorityPreloadLimit" value="1"/>
         </userInfo>
     </entity>
     <entity name="UNSListing" representedClassName="UNSListing" syncable="YES">
@@ -67,30 +67,33 @@
             </userInfo>
         </attribute>
         <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="UNSImage" inverseName="listing" inverseEntity="UNSImage" syncable="YES">
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="UNSImage" syncable="YES">
             <userInfo>
+                <entry key="preloadRelationship" value="YES"/>
+                <entry key="priorityPreloadLimit" value="1"/>
                 <entry key="serverKeyPath" value="images"/>
             </userInfo>
         </relationship>
-        <relationship name="listingAdvertisers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UNSListingAdvertiser" inverseName="listing" inverseEntity="UNSListingAdvertiser" syncable="YES"/>
-        <relationship name="propertyDescription" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSProperty" inverseName="listing" inverseEntity="UNSProperty" syncable="YES"/>
-        <relationship name="savedSets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UNSSavedSet" inverseName="listing" inverseEntity="UNSSavedSet" syncable="YES"/>
-        <relationship name="schools" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSSchool" inverseName="listing" inverseEntity="UNSSchool" syncable="YES"/>
-        <relationship name="searchSets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UNSGeoLocation" inverseName="listings" inverseEntity="UNSGeoLocation" syncable="YES"/>
-        <relationship name="videos" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSVideos" inverseName="listing" inverseEntity="UNSVideos" syncable="YES"/>
+        <relationship name="propertyDescription" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSProperty" syncable="YES">
+            <userInfo>
+                <entry key="preloadRelationship" value="YES"/>
+                <entry key="priorityPreloadLimit" value="70"/>
+            </userInfo>
+        </relationship>
         <userInfo>
             <entry key="backgroundPrefetchLimit" value="0"/>
             <entry key="backgroundPreloadLimit" value="0"/>
-            <entry key="cacheExpirationInterval" value="14400"/>
+            <entry key="cacheExpirationInterval" value="300000"/>
             <entry key="dataContainerType" value="JSON"/>
             <entry key="dataRootKeyPath" value="data"/>
             <entry key="entityExpirationInterval" value="300"/>
             <entry key="identifierKeyPath" value="data.@unionOfObjects.id"/>
             <entry key="identifierTemplate" value="http://listi-LoadB-RYEUA1CVJ3N5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings/$IDENTIFIER"/>
             <entry key="ignoreCache" value="NO"/>
-            <entry key="priorityPreloadLimit" value="10"/>
+            <entry key="preload" value="YES"/>
+            <entry key="priorityPreloadLimit" value="100"/>
             <entry key="requestTimeoutInterval" value="200"/>
-            <entry key="serviceURL" value="http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&amp;page=1&amp;perPage=1&amp;columns=id&amp;columns=lastUpdatedOn"/>
+            <entry key="serviceURL" value="http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&amp;page=1&amp;perPage=100&amp;columns=id&amp;columns=lastUpdatedOn"/>
             <entry key="stalenessFactor" value="86400"/>
         </userInfo>
     </entity>
@@ -100,7 +103,6 @@
         <attribute name="licenseNumber" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="phone" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="listingAdvertisers" inverseEntity="UNSListing" syncable="YES"/>
     </entity>
     <entity name="UNSLocationMatch" representedClassName="UNSLocationMatch" syncable="YES">
         <attribute name="descriptionText" optional="YES" attributeType="String" syncable="YES"/>
@@ -180,9 +182,8 @@
             </userInfo>
         </attribute>
         <attribute name="style" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="propertyDescription" inverseEntity="UNSListing" syncable="YES"/>
         <userInfo>
-            <entry key="cacheExpirationInterval" value="14400"/>
+            <entry key="cacheExpirationInterval" value="300000"/>
             <entry key="dataRootKeyPath" value="data"/>
             <entry key="identifierKeyPath" value="data.@unionOfObjects.id"/>
             <entry key="identifierTemplate" value="http://listi-LoadB-RYEUA1CVJ3N5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings/$IDENTIFIER"/>
@@ -191,7 +192,6 @@
     </entity>
     <entity name="UNSSavedSet" representedClassName="UNSSavedSet" syncable="YES">
         <attribute name="setName" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="listing" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="UNSListing" inverseName="savedSets" inverseEntity="UNSListing" syncable="YES"/>
     </entity>
     <entity name="UNSSchool" representedClassName="UNSSchool" syncable="YES">
         <attribute name="elementarySchool" optional="YES" attributeType="String" syncable="YES"/>
@@ -210,7 +210,6 @@
                 <entry key="serverKeyPath" value="schools.district"/>
             </userInfo>
         </attribute>
-        <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="schools" inverseEntity="UNSListing" syncable="YES"/>
         <userInfo>
             <entry key="serverKeyPath" value="schools.elementary"/>
         </userInfo>
@@ -233,18 +232,17 @@
         <attribute name="descriptionText" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="location" optional="YES" attributeType="URI" syncable="YES"/>
         <attribute name="titleText" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="listing" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSListing" inverseName="videos" inverseEntity="UNSListing" syncable="YES"/>
     </entity>
     <elements>
-        <element name="UNSGeoLocation" positionX="160" positionY="-144" width="128" height="240"/>
-        <element name="UNSImage" positionX="133" positionY="492" width="128" height="75"/>
-        <element name="UNSListing" positionX="54" positionY="108" width="128" height="270"/>
-        <element name="UNSListingAdvertiser" positionX="-45" positionY="507" width="128" height="135"/>
+        <element name="UNSGeoLocation" positionX="160" positionY="-144" width="128" height="225"/>
+        <element name="UNSImage" positionX="133" positionY="492" width="128" height="60"/>
+        <element name="UNSListing" positionX="54" positionY="108" width="128" height="195"/>
+        <element name="UNSListingAdvertiser" positionX="-45" positionY="507" width="128" height="120"/>
         <element name="UNSLocationMatch" positionX="-20" positionY="-144" width="128" height="105"/>
-        <element name="UNSProperty" positionX="403" positionY="138" width="128" height="345"/>
-        <element name="UNSSavedSet" positionX="-279" positionY="360" width="128" height="75"/>
-        <element name="UNSSchool" positionX="-63" positionY="18" width="128" height="120"/>
+        <element name="UNSProperty" positionX="403" positionY="138" width="128" height="330"/>
+        <element name="UNSSavedSet" positionX="-279" positionY="360" width="128" height="60"/>
+        <element name="UNSSchool" positionX="-63" positionY="18" width="128" height="105"/>
         <element name="UNSSearchProfile" positionX="342" positionY="-135" width="128" height="225"/>
-        <element name="UNSVideos" positionX="385" positionY="498" width="128" height="105"/>
+        <element name="UNSVideos" positionX="385" positionY="498" width="128" height="90"/>
     </elements>
 </model>

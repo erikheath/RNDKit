@@ -17,11 +17,17 @@
 
 @property (strong, nonnull, nonatomic, readonly) NSIncrementalStoreNode *node;
 
+@property (strong, nonnull, nonatomic, readonly) NSString *primaryKey;
+
+@property (strong, nonnull, nonatomic, readonly) NSString *entityName;
+
 @property (readonly) BOOL isExpried;
 
 - (instancetype)initWithNode:(NSIncrementalStoreNode *)node
                  lastUpdated:(NSDate *)lastUpdated
-          expirationInterval:(NSTimeInterval)interval;
+          expirationInterval:(NSTimeInterval)interval
+                  primaryKey:(NSString *)primaryKey
+                  entityName:(NSString *)entityName;
 
 - (void)updateRowExpiration:(NSTimeInterval)interval;
 
@@ -31,11 +37,11 @@
 
 - (RNDRow *)rowForObjectID:(NSArray *)objectID;
 
-- (void)addRow:(RNDRow *)row forObjectID:(NSArray *)objectID;
+- (void)addRow:(RNDRow *)row;
 
 - (void)removeRowForObjectID:(NSArray *)objectID;
 
-- (void)registerRow:(RNDRow *)row forObjectID:(NSArray *)objectID;
+- (void)registerRow:(RNDRow *)row;
 
 - (void)incrementReferenceCountForObjectID:(NSArray *)objectID;
 
