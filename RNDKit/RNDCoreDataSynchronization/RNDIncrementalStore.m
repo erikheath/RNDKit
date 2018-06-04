@@ -8,6 +8,7 @@
 
 #import "RNDIncrementalStore.h"
 #import "RNDJSONResponseProcessor.h"
+#import "NSString+RNDStringExtensions.h"
 
 @interface RNDIncrementalStore()
 
@@ -29,7 +30,7 @@
 @synthesize semaphoreQueue = _semaphoreQueue;
 @synthesize errorQueue = _errorQueue;
 @synthesize rowCache = _rowCache;
-@synthesize dataRequestDelegateQueue = _dataRequestDelegateQueue;
+@synthesize URLConstructionDelegateQueue = _URLConstructionDelegateQueue;
 @synthesize dataResponseProcessors = _dataResponseProcessors;
 @synthesize serialQueue = _serialQueue;
 
@@ -53,19 +54,19 @@
         
         _dataCache = [NSURLCache sharedURLCache];
         
-        _dataRequestDelegateQueue = [[NSOperationQueue alloc] init];
+        _URLConstructionDelegateQueue = [[NSOperationQueue alloc] init];
         
         _priorityDataRequestConfigfuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         
         _priorityDataRequestConfigfuration.requestCachePolicy = NSURLRequestReturnCacheDataElseLoad;
         
-        _priorityDataRequestSession = [NSURLSession sessionWithConfiguration:self.priorityDataRequestConfigfuration delegate:self.dataRequestDelegate delegateQueue:self.dataRequestDelegateQueue];
+        _priorityDataRequestSession = [NSURLSession sessionWithConfiguration:self.priorityDataRequestConfigfuration delegate:self.dataDelegate delegateQueue:self.dataDelegateQueue];
         
         _backgroundDataRequestConfigfuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         
         _backgroundDataRequestConfigfuration.requestCachePolicy = NSURLRequestReturnCacheDataElseLoad;
         
-        _backgroundDataRequestSession = [NSURLSession sessionWithConfiguration:_backgroundDataRequestConfigfuration delegate:self.dataRequestDelegate delegateQueue:self.dataRequestDelegateQueue];
+        _backgroundDataRequestSession = [NSURLSession sessionWithConfiguration:_backgroundDataRequestConfigfuration delegate:self.dataDelegate delegateQueue:self.dataDelegateQueue];
 
         _dataResponseProcessors = [NSMutableDictionary new];
         
@@ -115,11 +116,11 @@
 
         
         //****************** BEGIN DELEGATE URL PROCESSING ******************//
-        if (self.dataRequestDelegate != nil) {
-            if ([self.dataRequestDelegate respondsToSelector:@selector(storeShouldDelegateURLComponentConstructionForRequest:)] == YES && [self.dataRequestDelegate storeShouldDelegateURLComponentConstructionForRequest:fetchRequest] == YES) {
-                serviceComponents = [self.dataRequestDelegate URLComponentsForRequest:fetchRequest];
-            } else if ([self.dataRequestDelegate respondsToSelector:@selector(storeShouldDelegateURLTemplateConstructionForRequest:)] == YES && [self.dataRequestDelegate storeShouldDelegateURLTemplateConstructionForRequest:fetchRequest] == YES) {
-                serviceURLString = [self.dataRequestDelegate URLTempateForRequest:fetchRequest];
+        if (self.URLConstructionDelegate != nil) {
+            if ([self.URLConstructionDelegate respondsToSelector:@selector(storeShouldDelegateURLComponentConstructionForRequest:)] == YES && [self.URLConstructionDelegate storeShouldDelegateURLComponentConstructionForRequest:fetchRequest] == YES) {
+                serviceComponents = [self.URLConstructionDelegate URLComponentsForRequest:fetchRequest];
+            } else if ([self.URLConstructionDelegate respondsToSelector:@selector(storeShouldDelegateURLTemplateConstructionForRequest:)] == YES && [self.URLConstructionDelegate storeShouldDelegateURLTemplateConstructionForRequest:fetchRequest] == YES) {
+                serviceURLString = [self.URLConstructionDelegate URLTempateForRequest:fetchRequest];
             }
         }
         //****************** END DELEGATE URL PROCESSING ******************//
@@ -152,8 +153,8 @@
         
         //****************** BEGIN SUBSTITUTION VARIABLE PROCESSING ******************//
         if (serviceURLString != nil) {
-            if (self.dataRequestDelegate != nil && [self.dataRequestDelegate respondsToSelector:@selector(storeShouldSubstituteVariablesForRequest:)] == YES && [self.dataRequestDelegate storeShouldSubstituteVariablesForRequest:fetchRequest] == YES) {
-                NSDictionary *substitutionDictionary = [self.dataRequestDelegate substitutionDictionaryForRequest:fetchRequest defaultSubstitutions:@{}];
+            if (self.URLConstructionDelegate != nil && [self.URLConstructionDelegate respondsToSelector:@selector(storeShouldSubstituteVariablesForRequest:)] == YES && [self.URLConstructionDelegate storeShouldSubstituteVariablesForRequest:fetchRequest] == YES) {
+                NSDictionary *substitutionDictionary = [self.URLConstructionDelegate substitutionDictionaryForRequest:fetchRequest defaultSubstitutions:@{}];
                 for (NSString *variableName in substitutionDictionary) {
                     serviceURLString = [serviceURLString stringByReplacingOccurrencesOfString:variableName
                                                                                    withString:substitutionDictionary[variableName]];
@@ -588,6 +589,55 @@
     //****************** END ROW PROCESSING ******************//
 }
 
+- (NSURL *)sourceURLForGeospatialRelationship:(NSRelationshipDescription *)relationship
+                                forPrimaryKey:(NSString *)primaryKey
+                                  withContext:(NSManagedObjectContext *)context
+                   usingSubstitutionVariables:(NSDictionary *)substitutions
+                                        error:(NSError * _Nullable *)error {
+    // 
+    return nil;
+}
+
+- (NSURL *)sourceURLForRelationship:(NSRelationshipDescription *)relationship
+                    forPrimaryKey:(NSString *)primaryKey
+                        withContext:(NSManagedObjectContext *)context
+         usingSubstitutionVariables:(NSDictionary *)substitutions
+                              error:(NSError * _Nullable *)error {
+    // This needs to vary based on the type of relationship -
+    // to many, to one, geospatial, normal, etc.
+    // Relationship Type: GEOSPATIAL,
+    
+    NSMutableDictionary *variables = [NSMutableDictionary dictionaryWithDictionary:substitutions];
+    
+    [variables setObject:primaryKey forKey:@"$SOURCEURL"];
+    
+    NSString *sourceURLString = nil;
+    if ((sourceURLString = relationship.userInfo[@"destinationURL"]) != nil) {
+        return [NSURL URLWithString:[sourceURLString stringWithSubstitutionsVariables:variables]];
+    }
+    
+    NSURLComponents *urlComponents = [NSURLComponents new];
+    urlComponents.host = [relationship.userInfo[@"host"] stringWithSubstitutionsVariables:variables];
+    urlComponents.scheme = [relationship.userInfo[@"scheme"] stringWithSubstitutionsVariables:variables];
+    urlComponents.path = [relationship.userInfo[@"path"] stringWithSubstitutionsVariables:variables];
+    urlComponents.port = @([[relationship.userInfo[@"port"] stringWithSubstitutionsVariables:variables] longValue]);
+    
+    NSString *queryItems = relationship.userInfo[@"queryItems"];
+    NSArray *queryItemStringArray = [queryItems componentsSeparatedByString:@","];
+    NSMutableArray *queryItemArray = [NSMutableArray arrayWithCapacity:queryItemStringArray.count];
+    RNDRow *row = [self.rowCache rowForObjectID:@[primaryKey, relationship.entity]];
+    for (NSString *item in queryItemStringArray) {
+        NSString *trimmedItem = [item stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+        id value = [row.node valueForPropertyDescription:relationship.entity.propertiesByName[trimmedItem]];
+        [queryItemArray addObject:[NSURLQueryItem queryItemWithName:trimmedItem
+                                                              value:[[NSString stringWithFormat:@"%@", value] stringWithSubstitutionsVariables:variables]]];
+    }
+    urlComponents.queryItems = queryItemArray;
+    
+    return [urlComponents URL];
+}
+
+
 - (NSArray <NSString *> *)keysFulfillingRelationship:(NSRelationshipDescription *)relationship
                                        forPrimaryKey:(NSString *)primaryKey
                                          forObjectID:(NSManagedObjectID *)objectID
@@ -596,9 +646,33 @@
                                                error:(NSError * _Nullable *)error {
     
     //****************** BEGIN DATA REQUEST PROCESSING ******************//
+    // This is the point to replace the URL call with the new URL generator.
+    //    NSURL *serviceURL = [NSURL URLWithString:primaryKey];
+    NSError *serviceURLError = nil;
+    NSURL *serviceURL = [self sourceURLForRelationship:relationship
+                                         forPrimaryKey:primaryKey
+                                           withContext:context
+                            usingSubstitutionVariables:nil
+                                                 error:&serviceURLError];
+
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+    
+    if (serviceURLError != nil) {
+        if (error != NULL) {
+            *error = serviceURLError;
+        }
+        return nil;
+    }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+
     BOOL ignoreCache = ((NSString *)relationship.entity.userInfo[@"ignoreCache"]).boolValue;
     NSError *serviceError = nil;
-    NSURL *serviceURL = [NSURL URLWithString:primaryKey];
+
     NSData *serviceData = [self responseDataForServiceURL:serviceURL
                                       forRequestingEntity:relationship.entity
                                               withContext:context

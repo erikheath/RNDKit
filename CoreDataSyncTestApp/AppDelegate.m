@@ -10,6 +10,8 @@
 #import "RNDIncrementalStore.h"
 #import "DetailViewController.h"
 #import "MasterViewController.h"
+#import "RNDCoordinateToGeohashTransformer.h"
+#import "RNDGeohashToCoordinateTransformer.h"
 
 @interface AppDelegate () <UISplitViewControllerDelegate>
 
@@ -20,6 +22,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    [NSValueTransformer setValueTransformer:[RNDCoordinateToGeohashTransformer new]
+                                    forName:NSStringFromClass([RNDCoordinateToGeohashTransformer class])];
+    [NSValueTransformer setValueTransformer:[RNDGeohashToCoordinateTransformer new]
+                                    forName:NSStringFromClass([RNDGeohashToCoordinateTransformer class])];
     
     [NSPersistentStoreCoordinator registerStoreClass:[RNDIncrementalStore class] forStoreType:NSStringFromClass([RNDIncrementalStore class])];
     

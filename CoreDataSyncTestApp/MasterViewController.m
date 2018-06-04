@@ -122,7 +122,6 @@
     [detailText appendString:[NSString stringWithFormat:@"%f", listing.propertyDescription.longitude]];
 
     cell.detailTextLabel.text = detailText;
-    
     cell.textLabel.text = [NSString stringWithFormat:@"%@",listing.price];
     
     NSData *imageData = listing.images.firstObject.image;

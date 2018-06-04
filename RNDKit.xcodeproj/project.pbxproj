@@ -25,12 +25,38 @@
 		E438AF471FA25F7C00C856A5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E438AF451FA25F7C00C856A5 /* LaunchScreen.storyboard */; };
 		E438AF4A1FA25F7C00C856A5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF491FA25F7C00C856A5 /* main.m */; };
 		E43C3F161F97B93500F4D1B5 /* RNDBindingProcessorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E43C3F151F97B93500F4D1B5 /* RNDBindingProcessorTests.m */; };
+		E45F365820B5EEC9001A9B6C /* RNDValuePathExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = E45F365720B5EEC9001A9B6C /* RNDValuePathExtensions.m */; };
+		E45F365D20B77532001A9B6C /* NSString+RNDStringExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = E45F365B20B77532001A9B6C /* NSString+RNDStringExtensions.h */; };
+		E45F365E20B77532001A9B6C /* NSString+RNDStringExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = E45F365C20B77532001A9B6C /* NSString+RNDStringExtensions.m */; };
+		E45F365F20B77532001A9B6C /* NSString+RNDStringExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = E45F365C20B77532001A9B6C /* NSString+RNDStringExtensions.m */; };
+		E45F366320B898F5001A9B6C /* RNDValuePathExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = E45F365720B5EEC9001A9B6C /* RNDValuePathExtensions.m */; };
 		E46A6FEE209A5EE800605A98 /* RNDIncrementalStore.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C59E962092BCE800884AEE /* RNDIncrementalStore.m */; };
 		E46A6FF7209A9E9600605A98 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E46A6FF6209A9E9600605A98 /* AppDelegate.m */; };
 		E46A7002209A9E9700605A98 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E46A7001209A9E9700605A98 /* Assets.xcassets */; };
 		E46A7005209A9E9700605A98 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E46A7003209A9E9700605A98 /* LaunchScreen.storyboard */; };
 		E46A7008209A9E9700605A98 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E46A7007209A9E9700605A98 /* main.m */; };
 		E46A700C209A9EF200605A98 /* RNDIncrementalStore.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C59E962092BCE800884AEE /* RNDIncrementalStore.m */; };
+		E48F7F4C20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F4A20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h */; };
+		E48F7F4D20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */; };
+		E48F7F4E20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */; };
+		E48F7F5120C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F4F20C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h */; };
+		E48F7F5220C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5020C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m */; };
+		E48F7F5320C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5020C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m */; };
+		E48F7F6020C35A9C00FFEF6D /* cgeohash.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F5620C35A9A00FFEF6D /* cgeohash.h */; };
+		E48F7F6120C35A9C00FFEF6D /* GeoHash.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5720C35A9A00FFEF6D /* GeoHash.m */; };
+		E48F7F6220C35A9C00FFEF6D /* GeoHash.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5720C35A9A00FFEF6D /* GeoHash.m */; };
+		E48F7F6320C35A9C00FFEF6D /* GHRange.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5820C35A9B00FFEF6D /* GHRange.m */; };
+		E48F7F6420C35A9C00FFEF6D /* GHRange.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5820C35A9B00FFEF6D /* GHRange.m */; };
+		E48F7F6520C35A9C00FFEF6D /* GHNeighbors.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5920C35A9B00FFEF6D /* GHNeighbors.m */; };
+		E48F7F6620C35A9C00FFEF6D /* GHNeighbors.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5920C35A9B00FFEF6D /* GHNeighbors.m */; };
+		E48F7F6720C35A9C00FFEF6D /* GHArea.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F5A20C35A9B00FFEF6D /* GHArea.h */; };
+		E48F7F6820C35A9C00FFEF6D /* GHRange.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F5B20C35A9B00FFEF6D /* GHRange.h */; };
+		E48F7F6920C35A9C00FFEF6D /* GeoHash.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F5C20C35A9B00FFEF6D /* GeoHash.h */; };
+		E48F7F6A20C35A9C00FFEF6D /* GHArea.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5D20C35A9B00FFEF6D /* GHArea.m */; };
+		E48F7F6B20C35A9C00FFEF6D /* GHArea.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5D20C35A9B00FFEF6D /* GHArea.m */; };
+		E48F7F6C20C35A9C00FFEF6D /* cgeohash.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5E20C35A9C00FFEF6D /* cgeohash.m */; };
+		E48F7F6D20C35A9C00FFEF6D /* cgeohash.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5E20C35A9C00FFEF6D /* cgeohash.m */; };
+		E48F7F6E20C35A9C00FFEF6D /* GHNeighbors.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F5F20C35A9C00FFEF6D /* GHNeighbors.h */; };
 		E49CFBB31F7EC17900CDFF29 /* RNDKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E49CFBA91F7EC17900CDFF29 /* RNDKit.framework */; };
 		E49CFBBA1F7EC17900CDFF29 /* RNDKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E49CFBAC1F7EC17900CDFF29 /* RNDKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E4AB7F02209B9AE200BBCD06 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB7EFF209B9AE200BBCD06 /* DetailViewController.m */; };
@@ -65,6 +91,8 @@
 		E4AB810420A3F03800BBCD06 /* RNDJSONResponseProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB810220A3F03800BBCD06 /* RNDJSONResponseProcessor.m */; };
 		E4AB810F20A4B91600BBCD06 /* RNDJSONParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB810E20A4B91600BBCD06 /* RNDJSONParser.m */; };
 		E4AB811020A4B91600BBCD06 /* RNDJSONParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E4AB810E20A4B91600BBCD06 /* RNDJSONParser.m */; };
+		E4C92BF020AFC753006A3D38 /* RNDWebServicesAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C92BEF20AFC753006A3D38 /* RNDWebServicesAdaptor.m */; };
+		E4C92BF120AFC753006A3D38 /* RNDWebServicesAdaptor.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C92BEF20AFC753006A3D38 /* RNDWebServicesAdaptor.m */; };
 		E4E95CF12096B471004CED34 /* RNDCLLocationFromCoordinateStringTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E4E95CF02096B471004CED34 /* RNDCLLocationFromCoordinateStringTransformer.m */; };
 		E4E95CF32096B52A004CED34 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4E95CF22096B52A004CED34 /* CoreLocation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
@@ -220,6 +248,10 @@
 		E454B0161FD8B1E200C59FB3 /* RNDFontResourceBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDFontResourceBinding.h; sourceTree = "<group>"; };
 		E454B0181FD8B26400C59FB3 /* RNDStylesheetManifest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDStylesheetManifest.h; sourceTree = "<group>"; };
 		E454B0191FD8B27A00C59FB3 /* RNDStylesheetProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDStylesheetProcessor.h; sourceTree = "<group>"; };
+		E45F365720B5EEC9001A9B6C /* RNDValuePathExtensions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDValuePathExtensions.m; sourceTree = "<group>"; };
+		E45F365920B5EED9001A9B6C /* RNDValuePathExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDValuePathExtensions.h; sourceTree = "<group>"; };
+		E45F365B20B77532001A9B6C /* NSString+RNDStringExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+RNDStringExtensions.h"; sourceTree = "<group>"; };
+		E45F365C20B77532001A9B6C /* NSString+RNDStringExtensions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+RNDStringExtensions.m"; sourceTree = "<group>"; };
 		E464A5DB1FC2633C00C1972C /* RNDPatternedStringProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNDPatternedStringProcessor.h; sourceTree = "<group>"; };
 		E464A9EB1FEC9CB700F2D4AE /* RNDInvocationProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDInvocationProcessor.m; sourceTree = "<group>"; };
 		E464A9EC1FEC9CB700F2D4AE /* RNDInvocationProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNDInvocationProcessor.h; sourceTree = "<group>"; };
@@ -252,6 +284,20 @@
 		E48235E21FDB3F000061FDCF /* RNDCoreDataRequestTranslator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDCoreDataRequestTranslator.h; sourceTree = "<group>"; };
 		E48235E31FDB635B0061FDCF /* RNDCoreDataSynchronization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDCoreDataSynchronization.h; sourceTree = "<group>"; };
 		E48235E41FDF5B3A0061FDCF /* RNDPatternedStringProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDPatternedStringProcessor.m; sourceTree = "<group>"; };
+		E48F7F4A20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDCoordinateToGeohashTransformer.h; sourceTree = "<group>"; };
+		E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDCoordinateToGeohashTransformer.m; sourceTree = "<group>"; };
+		E48F7F4F20C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDGeohashToCoordinateTransformer.h; sourceTree = "<group>"; };
+		E48F7F5020C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDGeohashToCoordinateTransformer.m; sourceTree = "<group>"; };
+		E48F7F5620C35A9A00FFEF6D /* cgeohash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cgeohash.h; path = Geohash/cgeohash.h; sourceTree = "<group>"; };
+		E48F7F5720C35A9A00FFEF6D /* GeoHash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GeoHash.m; path = Geohash/GeoHash.m; sourceTree = "<group>"; };
+		E48F7F5820C35A9B00FFEF6D /* GHRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GHRange.m; path = Geohash/GHRange.m; sourceTree = "<group>"; };
+		E48F7F5920C35A9B00FFEF6D /* GHNeighbors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GHNeighbors.m; path = Geohash/GHNeighbors.m; sourceTree = "<group>"; };
+		E48F7F5A20C35A9B00FFEF6D /* GHArea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GHArea.h; path = Geohash/GHArea.h; sourceTree = "<group>"; };
+		E48F7F5B20C35A9B00FFEF6D /* GHRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GHRange.h; path = Geohash/GHRange.h; sourceTree = "<group>"; };
+		E48F7F5C20C35A9B00FFEF6D /* GeoHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeoHash.h; path = Geohash/GeoHash.h; sourceTree = "<group>"; };
+		E48F7F5D20C35A9B00FFEF6D /* GHArea.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GHArea.m; path = Geohash/GHArea.m; sourceTree = "<group>"; };
+		E48F7F5E20C35A9C00FFEF6D /* cgeohash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = cgeohash.m; path = Geohash/cgeohash.m; sourceTree = "<group>"; };
+		E48F7F5F20C35A9C00FFEF6D /* GHNeighbors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GHNeighbors.h; path = Geohash/GHNeighbors.h; sourceTree = "<group>"; };
 		E495ADF41FF2CF550040F65E /* RNDAggregationProcessor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDAggregationProcessor.m; sourceTree = "<group>"; };
 		E495ADF61FF2CF900040F65E /* RNDAggregationProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDAggregationProcessor.h; sourceTree = "<group>"; };
 		E49CFBA91F7EC17900CDFF29 /* RNDKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RNDKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -329,8 +375,7 @@
 		E4AB810E20A4B91600BBCD06 /* RNDJSONParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDJSONParser.m; sourceTree = "<group>"; };
 		E4BE70E9200D9345008AD11F /* RNDBindingObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDBindingObject.h; sourceTree = "<group>"; };
 		E4C59E962092BCE800884AEE /* RNDIncrementalStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDIncrementalStore.m; sourceTree = "<group>"; };
-		E4C59E992092DE8D00884AEE /* RNDCoreDataContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDCoreDataContainer.h; sourceTree = "<group>"; };
-		E4C59E9A2092DE8D00884AEE /* RNDCoreDataContainer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDCoreDataContainer.m; sourceTree = "<group>"; };
+		E4C92BEF20AFC753006A3D38 /* RNDWebServicesAdaptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDWebServicesAdaptor.m; sourceTree = "<group>"; };
 		E4E95CEF2096B450004CED34 /* RNDCLLocationFromCoordinateStringTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDCLLocationFromCoordinateStringTransformer.h; sourceTree = "<group>"; };
 		E4E95CF02096B471004CED34 /* RNDCLLocationFromCoordinateStringTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDCLLocationFromCoordinateStringTransformer.m; sourceTree = "<group>"; };
 		E4E95CF22096B52A004CED34 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -663,8 +708,16 @@
 		E48235D71FDB1B980061FDCF /* RNDCoreDataSynchronization */ = {
 			isa = PBXGroup;
 			children = (
-				E4C59E992092DE8D00884AEE /* RNDCoreDataContainer.h */,
-				E4C59E9A2092DE8D00884AEE /* RNDCoreDataContainer.m */,
+				E48F7F5620C35A9A00FFEF6D /* cgeohash.h */,
+				E48F7F5E20C35A9C00FFEF6D /* cgeohash.m */,
+				E48F7F5C20C35A9B00FFEF6D /* GeoHash.h */,
+				E48F7F5720C35A9A00FFEF6D /* GeoHash.m */,
+				E48F7F5A20C35A9B00FFEF6D /* GHArea.h */,
+				E48F7F5D20C35A9B00FFEF6D /* GHArea.m */,
+				E48F7F5F20C35A9C00FFEF6D /* GHNeighbors.h */,
+				E48F7F5920C35A9B00FFEF6D /* GHNeighbors.m */,
+				E48F7F5B20C35A9B00FFEF6D /* GHRange.h */,
+				E48F7F5820C35A9B00FFEF6D /* GHRange.m */,
 				E48235E31FDB635B0061FDCF /* RNDCoreDataSynchronization.h */,
 				E48235D81FDB1C860061FDCF /* RNDPersistentStoreCoordinator.h */,
 				E48235E11FDB3E600061FDCF /* RNDSynchronizationStore.h */,
@@ -682,9 +735,14 @@
 				E48235DA1FDB1CBF0061FDCF /* RNDIncrementalStoreCache.h */,
 				E48235DB1FDB1D910061FDCF /* RNDStoreAdaptor.h */,
 				E48235DC1FDB225A0061FDCF /* RNDWebServicesAdaptor.h */,
+				E4C92BEF20AFC753006A3D38 /* RNDWebServicesAdaptor.m */,
 				E48235E21FDB3F000061FDCF /* RNDCoreDataRequestTranslator.h */,
 				E48235DD1FDB22DF0061FDCF /* RNDSQLTranslator.h */,
 				E48235DF1FDB23690061FDCF /* RNDXPathTranslator.h */,
+				E48F7F4A20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h */,
+				E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */,
+				E48F7F4F20C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h */,
+				E48F7F5020C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m */,
 			);
 			path = RNDCoreDataSynchronization;
 			sourceTree = "<group>";
@@ -723,6 +781,10 @@
 			isa = PBXGroup;
 			children = (
 				E49CFBAC1F7EC17900CDFF29 /* RNDKit.h */,
+				E45F365920B5EED9001A9B6C /* RNDValuePathExtensions.h */,
+				E45F365720B5EEC9001A9B6C /* RNDValuePathExtensions.m */,
+				E45F365B20B77532001A9B6C /* NSString+RNDStringExtensions.h */,
+				E45F365C20B77532001A9B6C /* NSString+RNDStringExtensions.m */,
 				E43C3F461F9A7EE400F4D1B5 /* RNDBindingConstants.h */,
 				E43C3F0F1F8F0CDB00F4D1B5 /* RNDBindingConstants.m */,
 				E4193697202B6A12003E96BB /* RNDBindingMacros.h */,
@@ -814,7 +876,15 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E45F365D20B77532001A9B6C /* NSString+RNDStringExtensions.h in Headers */,
+				E48F7F6020C35A9C00FFEF6D /* cgeohash.h in Headers */,
+				E48F7F6720C35A9C00FFEF6D /* GHArea.h in Headers */,
+				E48F7F6E20C35A9C00FFEF6D /* GHNeighbors.h in Headers */,
+				E48F7F4C20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h in Headers */,
+				E48F7F5120C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h in Headers */,
 				E49CFBBA1F7EC17900CDFF29 /* RNDKit.h in Headers */,
+				E48F7F6920C35A9C00FFEF6D /* GeoHash.h in Headers */,
+				E48F7F6820C35A9C00FFEF6D /* GHRange.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1117,11 +1187,14 @@
 			files = (
 				E4AB80EF20A3797200BBCD06 /* UNSImage+CoreDataProperties.m in Sources */,
 				E4AB7F02209B9AE200BBCD06 /* DetailViewController.m in Sources */,
+				E48F7F5320C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m in Sources */,
 				E4AB80EB20A3797200BBCD06 /* UNSSavedSet+CoreDataProperties.m in Sources */,
 				E4AB80F120A3797200BBCD06 /* UNSSchool+CoreDataProperties.m in Sources */,
+				E45F366320B898F5001A9B6C /* RNDValuePathExtensions.m in Sources */,
 				E4AB807720A214F300BBCD06 /* RNDRowCache.m in Sources */,
 				E4AB80E320A3797200BBCD06 /* UNSListing+CoreDataProperties.m in Sources */,
 				E4AB80E820A3797200BBCD06 /* UNSListingAdvertiser+CoreDataClass.m in Sources */,
+				E45F365F20B77532001A9B6C /* NSString+RNDStringExtensions.m in Sources */,
 				E46A6FF7209A9E9600605A98 /* AppDelegate.m in Sources */,
 				E4AB80E920A3797200BBCD06 /* UNSListingAdvertiser+CoreDataProperties.m in Sources */,
 				E4AB80E720A3797200BBCD06 /* UNSGeoLocation+CoreDataProperties.m in Sources */,
@@ -1130,21 +1203,28 @@
 				E4AB80EC20A3797200BBCD06 /* UNSVideos+CoreDataClass.m in Sources */,
 				E46A700C209A9EF200605A98 /* RNDIncrementalStore.m in Sources */,
 				E4AB80E620A3797200BBCD06 /* UNSGeoLocation+CoreDataClass.m in Sources */,
+				E48F7F6420C35A9C00FFEF6D /* GHRange.m in Sources */,
 				E4AB810020A3B4F100BBCD06 /* RNDQueryItemPredicateParser.m in Sources */,
 				E4AB811020A4B91600BBCD06 /* RNDJSONParser.m in Sources */,
+				E48F7F6B20C35A9C00FFEF6D /* GHArea.m in Sources */,
 				E4AB80E520A3797200BBCD06 /* UNSSearchProfile+CoreDataProperties.m in Sources */,
 				E4AB80E020A3797200BBCD06 /* UNSLocationMatch+CoreDataClass.m in Sources */,
 				E4AB80ED20A3797200BBCD06 /* UNSVideos+CoreDataProperties.m in Sources */,
+				E48F7F6620C35A9C00FFEF6D /* GHNeighbors.m in Sources */,
+				E4C92BF120AFC753006A3D38 /* RNDWebServicesAdaptor.m in Sources */,
 				E4AB80FC20A37D9200BBCD06 /* UNSProperty+CoreDataClass.m in Sources */,
 				E4AB80EE20A3797200BBCD06 /* UNSImage+CoreDataClass.m in Sources */,
 				E4AB80E420A3797200BBCD06 /* UNSSearchProfile+CoreDataClass.m in Sources */,
 				E4AB7F03209B9AE200BBCD06 /* MasterViewController.m in Sources */,
+				E48F7F6D20C35A9C00FFEF6D /* cgeohash.m in Sources */,
 				E4AB80E220A3797200BBCD06 /* UNSListing+CoreDataClass.m in Sources */,
 				E4AB80F020A3797200BBCD06 /* UNSSchool+CoreDataClass.m in Sources */,
 				E4AB810420A3F03800BBCD06 /* RNDJSONResponseProcessor.m in Sources */,
 				E4AB80E120A3797200BBCD06 /* UNSLocationMatch+CoreDataProperties.m in Sources */,
+				E48F7F4E20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m in Sources */,
 				E46A7008209A9E9700605A98 /* main.m in Sources */,
 				E4AB80EA20A3797200BBCD06 /* UNSSavedSet+CoreDataClass.m in Sources */,
+				E48F7F6220C35A9C00FFEF6D /* GeoHash.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1152,12 +1232,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4C92BF020AFC753006A3D38 /* RNDWebServicesAdaptor.m in Sources */,
+				E45F365E20B77532001A9B6C /* NSString+RNDStringExtensions.m in Sources */,
+				E45F365820B5EEC9001A9B6C /* RNDValuePathExtensions.m in Sources */,
+				E48F7F6A20C35A9C00FFEF6D /* GHArea.m in Sources */,
 				E4E95CF12096B471004CED34 /* RNDCLLocationFromCoordinateStringTransformer.m in Sources */,
 				E4AB807620A214F300BBCD06 /* RNDRowCache.m in Sources */,
+				E48F7F4D20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m in Sources */,
+				E48F7F6C20C35A9C00FFEF6D /* cgeohash.m in Sources */,
 				E46A6FEE209A5EE800605A98 /* RNDIncrementalStore.m in Sources */,
 				E4AB810F20A4B91600BBCD06 /* RNDJSONParser.m in Sources */,
 				E4AB80FF20A3B4F100BBCD06 /* RNDQueryItemPredicateParser.m in Sources */,
 				E4AB810320A3F03800BBCD06 /* RNDJSONResponseProcessor.m in Sources */,
+				E48F7F5220C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m in Sources */,
+				E48F7F6320C35A9C00FFEF6D /* GHRange.m in Sources */,
+				E48F7F6520C35A9C00FFEF6D /* GHNeighbors.m in Sources */,
+				E48F7F6120C35A9C00FFEF6D /* GeoHash.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

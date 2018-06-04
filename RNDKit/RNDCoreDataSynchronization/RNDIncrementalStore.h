@@ -12,8 +12,11 @@
 #import "RNDQueryItemPredicateParser.h"
 #import "RNDResponseProcessor.h"
 
+@protocol RNDIncrementalStoreDelegate <NSObject>
 
-@protocol RNDIncrementalStoreDataRequestDelegate <NSURLSessionDelegate>
+@end
+
+@protocol RNDIncrementalStoreURLConstructionDelegate <NSObject>
 
 @optional
 
@@ -36,8 +39,11 @@
 
 @end
 
-@protocol RNDIncrementalStoreDataResponseDelegate <NSObject>
+@protocol RNDIncrementalStoreDataIODelegate <NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDataDelegate, NSURLSessionDownloadDelegate>
 
+@end
+
+@protocol RNDIncrementalStoreDataProcessingDelegate
 
 @end
 
@@ -46,18 +52,15 @@
  */
 @interface RNDIncrementalStore: NSIncrementalStore
 
-@property (weak, nullable, nonatomic, readwrite) id storeDelegate;
-
+@property (strong, nullable, nonatomic, readwrite) id<RNDIncrementalStoreDelegate> storeDelegate;
 
 @property (strong, nonnull, nonatomic, readonly) RNDRowCache *rowCache;
-
 
 @property (strong, nonnull, nonatomic, readwrite) NSURLCache *dataCache;
 
 @property (readwrite) NSURLCacheStoragePolicy dataCacheStoragePolicy;
 
 @property (readwrite) NSTimeInterval dataCacheExpirationInterval;
-
 
 @property (strong, nonnull, nonatomic, readwrite) NSURLSession *backgroundDataRequestSession;
 
@@ -67,19 +70,17 @@
 
 @property (strong, nonnull, nonatomic, readwrite) NSURLSessionConfiguration *priorityDataRequestConfigfuration;
 
-@property (weak, nullable, nonatomic, readwrite) id<RNDIncrementalStoreDataRequestDelegate> dataRequestDelegate;
+@property (strong, nullable, nonatomic, readwrite) id<RNDIncrementalStoreURLConstructionDelegate> URLConstructionDelegate;
 
-@property (strong, nonnull, nonatomic, readonly) NSOperationQueue *dataRequestDelegateQueue;
+@property (strong, nonnull, nonatomic, readonly) NSOperationQueue *URLConstructionDelegateQueue;
 
 @property (strong, nonnull, nonatomic, readwrite) RNDQueryItemPredicateParser *dataRequestQueryItemPredicateParser;
 
+@property (strong, nullable, nonatomic, readwrite) id<RNDIncrementalStoreDataIODelegate> dataDelegate;
 
-@property (weak, nullable, nonatomic, readwrite) id<RNDIncrementalStoreDataResponseDelegate> dataResponseDelegate;
-
-@property (strong, nonnull, nonatomic, readonly) NSOperationQueue *dataResponseDelegateQueue;
+@property (strong, nonnull, nonatomic, readonly) NSOperationQueue *dataDelegateQueue;
 
 @property (strong, nonnull, nonatomic, readonly) NSMutableDictionary <NSString *, id<RNDResponseProcessor> > *dataResponseProcessors;
-
 
 @end
 

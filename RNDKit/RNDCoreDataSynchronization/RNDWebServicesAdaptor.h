@@ -6,8 +6,9 @@
 //  Copyright © 2017 Curated Cocoa LLC. All rights reserved.
 //
 
-#ifndef RNDWebServicesAdaptor_h
-#define RNDWebServicesAdaptor_h
+#import <Foundation/Foundation.h>
+
+@interface RNDWebServicesAdaptor: NSObject
 
 
-#endif /* RNDWebServicesAdaptor_h */
+@end
