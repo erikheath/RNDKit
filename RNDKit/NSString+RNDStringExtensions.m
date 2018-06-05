@@ -13,7 +13,7 @@
 - (instancetype)stringWithSubstitutionsVariables:(id)substitutions {
     NSString *newString = self;
     
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[\$](\\w*\)\b" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionUseUnicodeWordBoundaries error:nil];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[$](\\w*)\\b" options:NSRegularExpressionCaseInsensitive|NSRegularExpressionUseUnicodeWordBoundaries error:nil];
     
     NSUInteger matchCount = [regex numberOfMatchesInString:newString
                                                    options:0
@@ -22,9 +22,9 @@
         NSTextCheckingResult *result = [regex firstMatchInString:newString
                                                          options:0
                                                            range:NSMakeRange(0, newString.length)];
-        NSString *keyPath = [newString substringWithRange:[result rangeAtIndex:1]];
+        NSString *keyPath = [newString substringWithRange:[result rangeAtIndex:0]];
         NSString *newValue = [substitutions valueForKeyPath:keyPath];
-        [regex replacementStringForResult:result
+        newString = [regex replacementStringForResult:result
                                  inString:newString
                                    offset:0
                                  template:newValue];
