@@ -10,8 +10,8 @@
 #import "RNDIncrementalStore.h"
 #import "DetailViewController.h"
 #import "MasterViewController.h"
-#import "RNDCoordinateToGeohashTransformer.h"
-#import "RNDGeohashToCoordinateTransformer.h"
+#import "../RNDKit/RNDTransformers/RNDGeohash/RNDCoordinateToGeohashTransformer.h"
+#import "../RNDKit/RNDTransformers/RNDGeohash/RNDGeohashToCoordinateTransformer.h"
 
 @interface AppDelegate () <UISplitViewControllerDelegate>
 

@@ -457,6 +457,27 @@
 			path = "RND WorkbenchUITests";
 			sourceTree = "<group>";
 		};
+		E434336C20C757AB00560824 /* RNDGeohash */ = {
+			isa = PBXGroup;
+			children = (
+				E48F7F4A20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h */,
+				E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */,
+				E48F7F4F20C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h */,
+				E48F7F5020C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m */,
+				E48F7F5620C35A9A00FFEF6D /* cgeohash.h */,
+				E48F7F5E20C35A9C00FFEF6D /* cgeohash.m */,
+				E48F7F5C20C35A9B00FFEF6D /* GeoHash.h */,
+				E48F7F5720C35A9A00FFEF6D /* GeoHash.m */,
+				E48F7F5A20C35A9B00FFEF6D /* GHArea.h */,
+				E48F7F5D20C35A9B00FFEF6D /* GHArea.m */,
+				E48F7F5F20C35A9C00FFEF6D /* GHNeighbors.h */,
+				E48F7F5920C35A9B00FFEF6D /* GHNeighbors.m */,
+				E48F7F5B20C35A9B00FFEF6D /* GHRange.h */,
+				E48F7F5820C35A9B00FFEF6D /* GHRange.m */,
+			);
+			path = RNDGeohash;
+			sourceTree = "<group>";
+		};
 		E434971F1FCDEDF400E1FD2B /* RNDResourceBindings */ = {
 			isa = PBXGroup;
 			children = (
@@ -603,20 +624,7 @@
 		E454AFFD1FD89C7900C59FB3 /* RNDTransformers */ = {
 			isa = PBXGroup;
 			children = (
-				E48F7F4A20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h */,
-				E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */,
-				E48F7F4F20C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h */,
-				E48F7F5020C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m */,
-				E48F7F5620C35A9A00FFEF6D /* cgeohash.h */,
-				E48F7F5E20C35A9C00FFEF6D /* cgeohash.m */,
-				E48F7F5C20C35A9B00FFEF6D /* GeoHash.h */,
-				E48F7F5720C35A9A00FFEF6D /* GeoHash.m */,
-				E48F7F5A20C35A9B00FFEF6D /* GHArea.h */,
-				E48F7F5D20C35A9B00FFEF6D /* GHArea.m */,
-				E48F7F5F20C35A9C00FFEF6D /* GHNeighbors.h */,
-				E48F7F5920C35A9B00FFEF6D /* GHNeighbors.m */,
-				E48F7F5B20C35A9B00FFEF6D /* GHRange.h */,
-				E48F7F5820C35A9B00FFEF6D /* GHRange.m */,
+				E434336C20C757AB00560824 /* RNDGeohash */,
 				E454B0001FD8A16C00C59FB3 /* RNDObjectArrayFromString.h */,
 				E4E95CEF2096B450004CED34 /* RNDCLLocationFromCoordinateStringTransformer.h */,
 				E4E95CF02096B471004CED34 /* RNDCLLocationFromCoordinateStringTransformer.m */,
