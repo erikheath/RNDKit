@@ -18,6 +18,13 @@
 		E4295BD21FA010440040BAC4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BD11FA010440040BAC4 /* main.m */; };
 		E4295BDD1FA010440040BAC4 /* RND_WorkbenchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BDC1FA010440040BAC4 /* RND_WorkbenchTests.m */; };
 		E4295BE81FA010450040BAC4 /* RND_WorkbenchUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = E4295BE71FA010450040BAC4 /* RND_WorkbenchUITests.m */; };
+		E434336D20C75E0D00560824 /* RNDCoordinateToGeohashTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */; };
+		E434336E20C75E1000560824 /* RNDGeohashToCoordinateTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5020C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m */; };
+		E434336F20C75E1400560824 /* cgeohash.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5E20C35A9C00FFEF6D /* cgeohash.m */; };
+		E434337020C75E1700560824 /* GeoHash.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5720C35A9A00FFEF6D /* GeoHash.m */; };
+		E434337120C75E1A00560824 /* GHArea.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5D20C35A9B00FFEF6D /* GHArea.m */; };
+		E434337220C75E1D00560824 /* GHNeighbors.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5920C35A9B00FFEF6D /* GHNeighbors.m */; };
+		E434337320C75E2000560824 /* GHRange.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F5820C35A9B00FFEF6D /* GHRange.m */; };
 		E438AF3C1FA25F7C00C856A5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF3B1FA25F7C00C856A5 /* AppDelegate.m */; };
 		E438AF3F1FA25F7C00C856A5 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E438AF3E1FA25F7C00C856A5 /* ViewController.m */; };
 		E438AF421FA25F7C00C856A5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E438AF401FA25F7C00C856A5 /* Main.storyboard */; };
@@ -1177,15 +1184,21 @@
 				E4AB80E920A3797200BBCD06 /* UNSListingAdvertiser+CoreDataProperties.m in Sources */,
 				E4AB80E720A3797200BBCD06 /* UNSGeoLocation+CoreDataProperties.m in Sources */,
 				E4AB80FD20A37D9200BBCD06 /* UNSProperty+CoreDataProperties.m in Sources */,
+				E434336E20C75E1000560824 /* RNDGeohashToCoordinateTransformer.m in Sources */,
 				E4AB7F7E209BAEC900BBCD06 /* UnisonRemoteModel.xcdatamodel in Sources */,
 				E4AB80EC20A3797200BBCD06 /* UNSVideos+CoreDataClass.m in Sources */,
+				E434337120C75E1A00560824 /* GHArea.m in Sources */,
 				E46A700C209A9EF200605A98 /* RNDIncrementalStore.m in Sources */,
 				E4AB80E620A3797200BBCD06 /* UNSGeoLocation+CoreDataClass.m in Sources */,
 				E4AB810020A3B4F100BBCD06 /* RNDQueryItemPredicateParser.m in Sources */,
 				E4AB811020A4B91600BBCD06 /* RNDJSONParser.m in Sources */,
 				E4AB80E520A3797200BBCD06 /* UNSSearchProfile+CoreDataProperties.m in Sources */,
+				E434336F20C75E1400560824 /* cgeohash.m in Sources */,
 				E4AB80E020A3797200BBCD06 /* UNSLocationMatch+CoreDataClass.m in Sources */,
+				E434337320C75E2000560824 /* GHRange.m in Sources */,
+				E434337220C75E1D00560824 /* GHNeighbors.m in Sources */,
 				E4AB80ED20A3797200BBCD06 /* UNSVideos+CoreDataProperties.m in Sources */,
+				E434336D20C75E0D00560824 /* RNDCoordinateToGeohashTransformer.m in Sources */,
 				E4AB80FC20A37D9200BBCD06 /* UNSProperty+CoreDataClass.m in Sources */,
 				E4AB80EE20A3797200BBCD06 /* UNSImage+CoreDataClass.m in Sources */,
 				E4AB80E420A3797200BBCD06 /* UNSSearchProfile+CoreDataClass.m in Sources */,
@@ -1196,6 +1209,7 @@
 				E4AB80E120A3797200BBCD06 /* UNSLocationMatch+CoreDataProperties.m in Sources */,
 				E46A7008209A9E9700605A98 /* main.m in Sources */,
 				E4AB80EA20A3797200BBCD06 /* UNSSavedSet+CoreDataClass.m in Sources */,
+				E434337020C75E1700560824 /* GeoHash.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1438,6 +1452,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$SRCROOT/**";
 			};
 			name = Debug;
 		};
@@ -1457,6 +1472,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "CoreDataSyncTestApp-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "$SRCROOT/**";
 			};
 			name = Release;
 		};
