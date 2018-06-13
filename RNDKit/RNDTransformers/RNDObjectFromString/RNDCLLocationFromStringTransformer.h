@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
-@interface RNDCLLocationFromCoordinateStringTransformer: NSValueTransformer
+@interface RNDCLLocationFromStringTransformer: NSValueTransformer
 
 @end

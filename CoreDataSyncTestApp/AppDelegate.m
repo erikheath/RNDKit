@@ -12,6 +12,7 @@
 #import "MasterViewController.h"
 #import "RNDGeohashToCoordinateTransformer.h"
 #import "RNDCoordinateToGeohashTransformer.h"
+#import "RNDCLLocationFromStringTransformer.h"
 
 @interface AppDelegate () <UISplitViewControllerDelegate>
 
@@ -28,6 +29,7 @@
     [NSValueTransformer setValueTransformer:[RNDGeohashToCoordinateTransformer new]
                                     forName:NSStringFromClass([RNDGeohashToCoordinateTransformer class])];
     
+    
     [NSPersistentStoreCoordinator registerStoreClass:[RNDIncrementalStore class] forStoreType:NSStringFromClass([RNDIncrementalStore class])];
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
@@ -38,6 +40,12 @@
     UINavigationController *masterNavigationController = splitViewController.viewControllers[0];
     MasterViewController *controller = (MasterViewController *)masterNavigationController.topViewController;
     controller.managedObjectContext = self.persistentContainer.viewContext;
+    
+    // test transformer
+    RNDCLLocationFromStringTransformer *transformer = [RNDCLLocationFromStringTransformer new];
+    CLLocation *location = [transformer transformedValue:@"{24.980, 34.987},4.5,2.3,3.5,7.6,30.4,'Jun 24, 2017'"];
+    NSLog(@"%@", location);
+    NSString *locationString = [transformer reverseTransformedValue:location];
     return YES;
 }
 

@@ -1,19 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14133" systemVersion="17E202" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
-    <entity name="UNSGeoLocation" representedClassName="UNSGeoLocation" syncable="YES">
-        <attribute name="bottomRightCoordinateBoundary" optional="YES" attributeType="Transformable" syncable="YES"/>
-        <attribute name="boundaryCoordinates" optional="YES" attributeType="Transformable" syncable="YES"/>
-        <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="creationTimestamp" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="descriptionText" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="locationCoordinates" optional="YES" attributeType="Transformable" syncable="YES"/>
-        <attribute name="locationRadiusBoundary" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="postalCode" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="state" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="titleText" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="topLeftCoordinateBoundary" optional="YES" attributeType="Transformable" syncable="YES"/>
-        <relationship name="searchProfile" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSSearchProfile" inverseName="locations" inverseEntity="UNSSearchProfile" syncable="YES"/>
-    </entity>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14135" systemVersion="17E202" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="UNSImage" representedClassName="UNSImage" syncable="YES">
         <attribute name="image" attributeType="Binary" valueTransformerName="" syncable="YES">
             <userInfo>
@@ -95,7 +81,7 @@
             <entry key="preload" value="YES"/>
             <entry key="priorityPreloadLimit" value="100"/>
             <entry key="requestTimeoutInterval" value="200"/>
-            <entry key="serviceURL" value="http://porch-LoadB-IFMDLNXV2S4E-bdde94ba5bce560e.elb.us-east-1.amazonaws.com/api/v1/homes?distanceUnits=mi&amp;page=1&amp;perPage=100&amp;columns=id&amp;columns=lastUpdatedOn"/>
+            <entry key="serviceURL" value="http://listi-loadb-ryeua1cvj3n5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings?distanceUnits=mi&amp;page=1&amp;perPage=100&amp;columns=id&amp;columns=lastUpdatedOn"/>
             <entry key="stalenessFactor" value="86400"/>
         </userInfo>
     </entity>
@@ -217,17 +203,36 @@
         </userInfo>
     </entity>
     <entity name="UNSSearchProfile" representedClassName="UNSSearchProfile" syncable="YES">
+        <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="creationTimestamp" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="descriptionText" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="downPayment" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="listingIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="listingStatus" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="locationCoordinates" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="locationRadiusBoundary" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="marketIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="maxBathrooms" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
         <attribute name="maxBedrooms" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
         <attribute name="minbathrooms" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
         <attribute name="minbedrooms" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
         <attribute name="monthlyPayment" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="points" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="postalCode" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="propertyKind" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="locations" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UNSGeoLocation" inverseName="searchProfile" inverseEntity="UNSGeoLocation" syncable="YES"/>
+        <attribute name="state" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="titleText" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="listings" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="UNSListing" syncable="YES">
+            <userInfo>
+                <entry key="destinationURL" value="$SOURCEURL"/>
+            </userInfo>
+        </relationship>
+        <userInfo>
+            <entry key="dataContainerType" value="JSON"/>
+            <entry key="materializationType" value="USE_PREDICATE_VALUES"/>
+            <entry key="PERSISTENCETYPE" value="IN_MEMORY"/>
+            <entry key="serviceURL" value="http://listi-loadb-ryeua1cvj3n5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings?distanceUnits=mi&amp;page=1&amp;perPage=100&amp;columns=id&amp;columns=lastUpdatedOn"/>
+        </userInfo>
     </entity>
     <entity name="UNSVideos" representedClassName="UNSVideos" syncable="YES">
         <attribute name="descriptionText" optional="YES" attributeType="String" syncable="YES"/>
@@ -235,7 +240,6 @@
         <attribute name="titleText" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="UNSGeoLocation" positionX="160" positionY="-144" width="128" height="225"/>
         <element name="UNSImage" positionX="133" positionY="492" width="128" height="60"/>
         <element name="UNSListing" positionX="54" positionY="108" width="128" height="195"/>
         <element name="UNSListingAdvertiser" positionX="-45" positionY="507" width="128" height="120"/>
@@ -243,7 +247,7 @@
         <element name="UNSProperty" positionX="403" positionY="138" width="128" height="330"/>
         <element name="UNSSavedSet" positionX="-279" positionY="360" width="128" height="60"/>
         <element name="UNSSchool" positionX="-63" positionY="18" width="128" height="105"/>
-        <element name="UNSSearchProfile" positionX="342" positionY="-135" width="128" height="30"/>
+        <element name="UNSSearchProfile" positionX="342" positionY="-135" width="128" height="345"/>
         <element name="UNSVideos" positionX="385" positionY="498" width="128" height="90"/>
     </elements>
 </model>

@@ -146,7 +146,8 @@
     // Edit the sort key as appropriate.
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"price" ascending:NO];
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"city='Palo Alto' AND stateCode='CA'"];
+//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"city='Palo Alto' AND stateCode='CA'"];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"points='[[37.290,-121.940],[37.250,-121.910]]'"];
     
     fetchRequest.predicate = predicate;
 
