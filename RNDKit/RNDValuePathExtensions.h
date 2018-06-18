@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RNDValuePathExtensions: NSObject
+//void initializeValuePathExtensions( void );
+
+@interface NSObject(RNDValuePathExtensions)
+
+- (nullable id)valueForExtendedKeyPath:(NSString *)keyPath;
 
 @end
