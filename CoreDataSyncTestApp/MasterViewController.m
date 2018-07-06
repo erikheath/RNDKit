@@ -60,7 +60,7 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        UNSListing *object = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        UNSListing *object = [self.fetchedResultsController.fetchedObjects.firstObject.listings objectAtIndex: indexPath.row];
         DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
         [controller setDetailItem:object];
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
@@ -72,19 +72,19 @@
 #pragma mark - Table View
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [[self.fetchedResultsController sections] count];
+    return 1;
 }
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController sections][section];
-    return [sectionInfo numberOfObjects];
+    NSUInteger count = self.fetchedResultsController.fetchedObjects.firstObject.listings.count;
+    return count;
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    UNSListing *listing = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    UNSListing *listing = [self.fetchedResultsController.fetchedObjects.firstObject.listings objectAtIndex:indexPath.row];
     [self configureCell:cell withUNSListing:listing];
     return cell;
 }
@@ -117,12 +117,13 @@
 //    [detailText appendString:@" bedrooms / "];
 //    [detailText appendString:[NSString stringWithFormat:@"%@",listing.propertyDescription.bathrooms]];
     
-    NSMutableString *detailText = [NSMutableString stringWithString:[NSString stringWithFormat:@"latitude: %f", listing.propertyDescription.latitude]];
-    [detailText appendString:@" / longitude: "];
-    [detailText appendString:[NSString stringWithFormat:@"%f", listing.propertyDescription.longitude]];
+//    NSMutableString *detailText = [NSMutableString stringWithString:[NSString stringWithFormat:@"latitude: %f", listing.propertyDescription.latitude]];
+//    [detailText appendString:@" / longitude: "];
+//    [detailText appendString:[NSString stringWithFormat:@"%f", listing.propertyDescription.longitude]];
 
+    NSString *detailText = [NSString stringWithFormat:@"Status: %@", listing.status];
     cell.detailTextLabel.text = detailText;
-    cell.textLabel.text = [NSString stringWithFormat:@"%@",listing.price];
+    cell.textLabel.text = [NSString stringWithFormat:@"%lld",listing.price];
     
     NSData *imageData = listing.images.firstObject.image;
     cell.imageView.image = [UIImage imageWithData: imageData];
@@ -133,21 +134,21 @@
 
 #pragma mark - Fetched results controller
 
-- (NSFetchedResultsController<UNSListing *> *)fetchedResultsController {
+- (NSFetchedResultsController<UNSSearchProfile *> *)fetchedResultsController {
     if (_fetchedResultsController != nil) {
         return _fetchedResultsController;
     }
     
-    NSFetchRequest<UNSListing *> *fetchRequest = UNSListing.fetchRequest;
+    NSFetchRequest<UNSSearchProfile *> *fetchRequest = UNSSearchProfile.fetchRequest;
     
     // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
     
     // Edit the sort key as appropriate.
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"price" ascending:NO];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"creationDate" ascending:NO];
     
-//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"city='Palo Alto' AND stateCode='CA'"];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"points='[[37.290,-121.940],[37.250,-121.910]]'"];
+//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"postalCode='94131'"];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"points='[[37.290,-121.940],[37.290,-121.910]]'"];
     
     fetchRequest.predicate = predicate;
 
@@ -155,7 +156,7 @@
     
     // Edit the section name key path and cache name if appropriate.
     // nil for section name key path means "no sections".
-    NSFetchedResultsController<UNSListing *> *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:@"Master"];
+    NSFetchedResultsController<UNSSearchProfile *> *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:@"Master"];
     aFetchedResultsController.delegate = self;
     
     NSError *error = nil;
@@ -167,7 +168,17 @@
     }
     
     _fetchedResultsController = aFetchedResultsController;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(updateSearchObject:) name:NSManagedObjectContextObjectsDidChangeNotification
+                                               object:self.managedObjectContext];
+    
     return _fetchedResultsController;
+}
+
+- (void)updateSearchObject:(NSNotification *)notification {
+    
+    [self.tableView reloadData];
 }
 
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {

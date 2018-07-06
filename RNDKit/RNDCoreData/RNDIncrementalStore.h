@@ -8,9 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "RNDRowCache.h"
-#import "RNDQueryItemPredicateParser.h"
-#import "RNDResponseProcessor.h"
+
+@class RNDRowCache;
+@class RNDQueryItemPredicateParser;
+@protocol RNDResponseProcessor;
 
 @protocol RNDIncrementalStoreDelegate <NSObject>
 

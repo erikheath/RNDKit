@@ -2,7 +2,7 @@
 //  UNSProperty+CoreDataProperties.m
 //  CoreDataSyncTestApp
 //
-//  Created by Erikheath Thomas on 5/9/18.
+//  Created by Erikheath Thomas on 6/25/18.
 //  Copyright © 2018 Curated Cocoa LLC. All rights reserved.
 //
 //
@@ -21,6 +21,7 @@
 @dynamic county;
 @dynamic dateBuilt;
 @dynamic floor;
+@dynamic geohash10;
 @dynamic identifier;
 @dynamic kind;
 @dynamic latitude;
@@ -34,6 +35,5 @@
 @dynamic stories;
 @dynamic street;
 @dynamic style;
-@dynamic listing;
 
 @end

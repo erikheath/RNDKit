@@ -24,7 +24,8 @@
 
     if(JSONError != nil) {
         if (error != NULL) {
-            *error = JSONError;
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDJSONDeserializationError":[NSString stringWithFormat:@"Entity(%@) response data could not be deserialized.", entity.name], NSUnderlyingErrorKey:JSONError}];
+            *error = internalError;
         }
         return nil;
     }
@@ -39,6 +40,22 @@
     //****************** BEGIN RESPONSE DATA ROOT PROCESSING ******************//
 
     NSString *identifierKeyPath = entity.userInfo[@"identifierKeyPath"];
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+
+    if (identifierKeyPath == nil) {
+        if (error != NULL) {
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDIsNilError":@"entity.userInfo[@\"identifierKeyPath\""}];
+            *error = internalError;
+        }
+        return nil; }
+    
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+
     id identifierRootObject = [JSONResult valueForKeyPath:identifierKeyPath];
     
     //////////////////////////////////////////////////////
@@ -47,7 +64,8 @@
 
     if (identifierRootObject == nil) {
         if (error != NULL) {
-            *error = nil;
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDJSONValueRetrievalError":[NSString stringWithFormat:@"Root object not found for key path(%@) in entity (%@) parsed response data.", identifierKeyPath, entity.name]}];
+            *error = internalError;
         }
         return nil;
     }
@@ -78,7 +96,8 @@
 
     if (identifierArray == nil) {
         if (error != NULL) {
-            *error = nil;
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDJSONFormatError":[NSString stringWithFormat:@"Entity(%@) response data for identifier key path (%@) does not contain the expected format.", entity.name, identifierKeyPath]}];
+            *error = internalError;
         }
         return nil;
     }
@@ -142,7 +161,7 @@
     
     if (dataProcessingError != nil) {
         if (error != NULL) {
-            *error = dataProcessingError; // TODO: Return error
+            *error = dataProcessingError;
         }
         return nil;
     }
@@ -167,7 +186,8 @@
     
     if (JSONData == nil) {
         if (error != NULL) {
-            *error = nil; // TODO: Return error
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDJSONDataError":@"JSON data is nil."}];
+            *error = internalError;
         }
         return nil;
     }
@@ -185,7 +205,8 @@
     
     if(JSONError != nil) {
         if (error != NULL) {
-            *error = JSONError;
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDJSONDeserializationError":@"Parsed JSON data is nil."}];
+            *error = internalError;
         }
         return nil;
     }
@@ -199,6 +220,23 @@
     
     //****************** BEGIN RESPONSE DATA ROOT PROCESSING ******************//
     NSString *dataRootKeyPath = entity.userInfo[@"dataRootKeyPath"];
+    
+    //////////////////////////////////////////////////////
+    ///////////////////// CHECKPOINT /////////////////////
+    //////////////////////////////////////////////////////
+
+    if (dataRootKeyPath == nil) {
+        if (error != NULL) {
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDIsNilError":@"entity.userInfo[@\"dataRootKeyPath\""}];
+            *error = internalError;
+        }
+        return nil;
+    }
+
+    /////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+
     id dataRootObject = [JSONResult valueForKeyPath:dataRootKeyPath];
     
     //////////////////////////////////////////////////////
@@ -207,7 +245,8 @@
     
     if (dataRootObject == nil) {
      if (error != NULL) {
-            *error = nil; // TODO: Return error
+         NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDJSONValueRetrievalError":[NSString stringWithFormat:@"Root object not found for key path(%@) in entity (%@) parsed response data.", dataRootKeyPath, entity.name]}];
+         *error = internalError;
      }
         return nil;
     }
@@ -289,7 +328,8 @@
     
     if (JSONError != nil) {
         if (error != NULL) {
-            *error = JSONError; // TODO: Return error
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDJSONDeserializationError":@"Parsed JSON data is nil.", NSUnderlyingErrorKey:JSONError}];
+            *error = internalError;
         }
         return nil;
     }
@@ -311,7 +351,8 @@
     
     if (lastUpdates == nil) {
         if (error != NULL) {
-            *error = nil; // TODO: Return error
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDIsNilError":@"entity.userInfo[@\"lastUpdateKeyPath\""}];
+            *error = internalError;
         }
         return nil;
     }
@@ -342,14 +383,16 @@
     
     if (updatesArray == nil) {
         if (error != NULL) {
-            *error = nil; // TODO: Return error
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDJSONFormatError":[NSString stringWithFormat:@"Entity(%@) response data for identifier key path (%@) does not contain the expected format.", entity.name, lastUpdateKeyPath]}];
+            *error = internalError;
         }
         return nil;
     }
     
     if (updatesArray.count != objectIDs.count) {
         if (error != NULL) {
-            *error = nil; // TODO: Return error
+            NSError *internalError = [NSError errorWithDomain:@"RNDCoreDataDomain" code:200000 userInfo:@{@"RNDJSONFormatError":[NSString stringWithFormat:@"Updates do not match specified Object IDs."]}];
+            *error = internalError;
         }
         return nil;
     }

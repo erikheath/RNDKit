@@ -20,7 +20,7 @@
 }
 
 + (BOOL)allowsReverseTransformation {
-    return YES;
+    return NO;
 }
 
 - (id)transformedValue:(id)value {
@@ -34,16 +34,5 @@
     CLLocationCoordinate2D location = CLLocationCoordinate2DMake(latitude, longitude);
     return [NSValue valueWithMKCoordinate:location];
 }
-
-- (id)reverseTransformedValue:(id)value {
-    if (value == nil || [value isKindOfClass:[NSValue class]] == NO || CLLocationCoordinate2DIsValid(((NSValue *)value).MKCoordinateValue) == NO) {
-        return nil;
-    }
-    CLLocationCoordinate2D location = ((NSValue *)value).MKCoordinateValue;
-    return [GeoHash hashForLatitude:location.latitude
-                          longitude:location.longitude
-                             length:8];
-}
-
 
 @end

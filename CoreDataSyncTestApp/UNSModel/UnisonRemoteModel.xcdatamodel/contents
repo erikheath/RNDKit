@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14135" systemVersion="17E202" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14135" systemVersion="17F77" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="UNSImage" representedClassName="UNSImage" syncable="YES">
         <attribute name="image" attributeType="Binary" valueTransformerName="" syncable="YES">
             <userInfo>
@@ -14,6 +14,7 @@
             <entry key="ignoreCache" value="NO"/>
             <entry key="preload" value="NO"/>
             <entry key="priorityPreloadLimit" value="1"/>
+            <entry key="requestType" value="ASYNC"/>
         </userInfo>
     </entity>
     <entity name="UNSListing" representedClassName="UNSListing" syncable="YES">
@@ -52,7 +53,11 @@
                 <entry key="serverKeyPath" value="listPrice"/>
             </userInfo>
         </attribute>
-        <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="String" syncable="YES">
+            <userInfo>
+                <entry key="serverKeyPath" value="unisonProductOfferHB.offer.status"/>
+            </userInfo>
+        </attribute>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="UNSImage" syncable="YES">
             <userInfo>
                 <entry key="destinationURL" value="$SOURCEURL"/>
@@ -81,7 +86,7 @@
             <entry key="preload" value="YES"/>
             <entry key="priorityPreloadLimit" value="100"/>
             <entry key="requestTimeoutInterval" value="200"/>
-            <entry key="serviceURL" value="http://listi-loadb-ryeua1cvj3n5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings?distanceUnits=mi&amp;page=1&amp;perPage=100&amp;columns=id&amp;columns=lastUpdatedOn"/>
+            <entry key="serviceURL" value="http://listi-loadb-ryeua1cvj3n5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings?distanceUnits=mi&amp;page=1&amp;perPage=200&amp;columns=id&amp;columns=lastUpdatedOn"/>
             <entry key="stalenessFactor" value="86400"/>
         </userInfo>
     </entity>
@@ -125,14 +130,15 @@
             </userInfo>
         </attribute>
         <attribute name="floor" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="geohash10" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="kind" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES">
+        <attribute name="latitude" optional="YES" attributeType="Double" minValueString="-90" maxValueString="90" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES">
             <userInfo>
                 <entry key="serverKeyPath" value="address.coordinates.lat"/>
             </userInfo>
         </attribute>
-        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES">
+        <attribute name="longitude" optional="YES" attributeType="Double" minValueString="-180" maxValueString="180" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES">
             <userInfo>
                 <entry key="serverKeyPath" value="address.coordinates.lon"/>
             </userInfo>
@@ -207,6 +213,7 @@
         <attribute name="creationTimestamp" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="descriptionText" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="downPayment" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="geohash" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="listingIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="listingStatus" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="locationCoordinates" optional="YES" attributeType="Transformable" syncable="YES"/>
@@ -217,7 +224,12 @@
         <attribute name="minbathrooms" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
         <attribute name="minbedrooms" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
         <attribute name="monthlyPayment" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="points" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="points" optional="YES" attributeType="String" valueTransformerName="RNDCoordinateRegionFromJSONStringTransformer" syncable="YES">
+            <userInfo>
+                <entry key="serviceNameTransformer" value="geohash"/>
+                <entry key="serviceValueTransformer" value="RNDGeohashFromJSONRegionStringTransformer"/>
+            </userInfo>
+        </attribute>
         <attribute name="postalCode" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="propertyKind" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="state" optional="YES" attributeType="String" syncable="YES"/>
@@ -231,7 +243,7 @@
             <entry key="dataContainerType" value="JSON"/>
             <entry key="materializationType" value="USE_PREDICATE_VALUES"/>
             <entry key="PERSISTENCETYPE" value="IN_MEMORY"/>
-            <entry key="serviceURL" value="http://listi-loadb-ryeua1cvj3n5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings?distanceUnits=mi&amp;page=1&amp;perPage=100&amp;columns=id&amp;columns=lastUpdatedOn"/>
+            <entry key="serviceURL" value="http://listi-loadb-ryeua1cvj3n5-8c99f35991bf2249.elb.us-east-1.amazonaws.com/api/v1/listings?distanceUnits=mi&amp;page=1&amp;perPage=200&amp;columns=id&amp;columns=lastUpdatedOn"/>
         </userInfo>
     </entity>
     <entity name="UNSVideos" representedClassName="UNSVideos" syncable="YES">
@@ -244,10 +256,10 @@
         <element name="UNSListing" positionX="54" positionY="108" width="128" height="195"/>
         <element name="UNSListingAdvertiser" positionX="-45" positionY="507" width="128" height="120"/>
         <element name="UNSLocationMatch" positionX="-20" positionY="-144" width="128" height="105"/>
-        <element name="UNSProperty" positionX="403" positionY="138" width="128" height="330"/>
+        <element name="UNSProperty" positionX="403" positionY="138" width="128" height="345"/>
         <element name="UNSSavedSet" positionX="-279" positionY="360" width="128" height="60"/>
         <element name="UNSSchool" positionX="-63" positionY="18" width="128" height="105"/>
-        <element name="UNSSearchProfile" positionX="342" positionY="-135" width="128" height="345"/>
+        <element name="UNSSearchProfile" positionX="342" positionY="-135" width="128" height="360"/>
         <element name="UNSVideos" positionX="385" positionY="498" width="128" height="90"/>
     </elements>
 </model>

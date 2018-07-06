@@ -12,6 +12,7 @@
 
 @implementation NSObject(RNDValuePathExtensions)
 
+#pragma mark - 
 - (nullable id)valueForExtendedKeyPath:(NSString *)keyPath {
 
     NSString *extractedKey = nil;
@@ -65,7 +66,6 @@
         }
         SEL selector = NSSelectorFromString([operator stringByAppendingFormat:@"%@", @"UsingFormat:subsequentKeyPath:"]);
         return [input performSelector:selector withObject:formatString withObject:nextKeyPath];
-        
     }
     
     return nil;
@@ -90,7 +90,7 @@
         if (startRange.location != NSNotFound) {
             
             extractedKey = [parsedRepresentation substringToIndex:startRange.location];
-            if (extractedKey.length == startRange.location) { return nil; }
+//            if (extractedKey.length == startRange.location) { return nil; }
             parsedRepresentation = [parsedRepresentation substringFromIndex:startRange.location + 1];
             
             searchRange = NSMakeRange(0, parsedRepresentation.length);
@@ -106,7 +106,7 @@
                 searchRange = NSMakeRange(searchRange.location + 1, parsedRepresentation.length - searchRange.location - 1);
             } while (matchedParenCounter != 0);
             
-            extractedValuePath = extractedValuePath != nil ? [parsedRepresentation substringToIndex:searchRange.location] : extractedValuePath;
+            extractedValuePath = extractedValuePath == nil ? [parsedRepresentation substringToIndex:searchRange.location] : extractedValuePath;
             [keyedValuePaths addObject:@{extractedKey:extractedValuePath}];
 
             if (searchRange.location < parsedRepresentation.length && [[parsedRepresentation substringWithRange:NSMakeRange(searchRange.location, 1)] isEqualToString:@","]) {
@@ -191,7 +191,7 @@
     NSString *parsedString = [format stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     NSRange classRange = [parsedString rangeOfString:@","];
     id targetObject = [NSClassFromString([parsedString substringToIndex:classRange.location]) new];
-    parsedString = parsedString.length < classRange.location ? [[parsedString substringFromIndex:classRange.location + 1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] : nil;
+    parsedString = parsedString.length > classRange.location ? [[parsedString substringFromIndex:classRange.location + 1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] : nil;
     if (parsedString == nil || targetObject == nil) { return targetObject; }
     
     for (NSDictionary *keyedValuePath in [self keyedValuePathsFromStringRepresentation:parsedString]) {

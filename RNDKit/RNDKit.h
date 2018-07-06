@@ -37,7 +37,11 @@ FOUNDATION_EXPORT const unsigned char RNDKitVersionString[];
 ////////////////// CORE DATA /////////////////////
 //////////////////////////////////////////////////
 //FIXME: ADD CORE DATA HEADER
-#import "RNDCoreData/RNDCoreData.h"
+#import "RNDCoreData/RNDIncrementalStore.h"
+#import "RNDCoreData/RNDResponseProcessor.h"
+#import "RNDCoreData/RNDJSONResponseProcessor.h"
+#import "RNDCoreData/RNDQueryItemPredicateParser.h"
+#import "RNDCoreData/RNDRowCache.h"
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
@@ -45,9 +49,44 @@ FOUNDATION_EXPORT const unsigned char RNDKitVersionString[];
 //////////////////////////////////////////////////
 ////////////////// TRANSFORMERS //////////////////
 //////////////////////////////////////////////////
-#import "RNDTransformers/RNDTransformers.h"
+
+
+//////////////////////////////////////////////////
+//////////////////  PROCESSORS  //////////////////
+//////////////////////////////////////////////////
+#import "RNDProcessor.h"
+#import "RNDMutableProcessor.h"
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
+//////////////////////////////////////////////////
+/////////////////// GEOHASHING ///////////////////
+//////////////////////////////////////////////////
+#import "RNDTransformers/RNDGeohash/RNDCoordinateToGeohashTransformer.h"
+#import "RNDTransformers/RNDGeohash/RNDGeohashToCoordinateTransformer.h"
+#import "RNDTransformers/RNDGeohash/RNDGeohash10FromJSONCoordinateStringTransformer.h"
+#import "RNDTransformers/RNDGeohash/RNDCoordinateRegionFromJSONStringTransformer.h"
+#import "RNDTransformers/RNDGeohash/RNDGeohashFromJSONRegionStringTransformer.m"
+#import "RNDTransformers/RNDGeohash/GeoHash.h"
+#import "RNDTransformers/RNDGeohash/GHArea.h"
+#import "RNDTransformers/RNDGeohash/GHNeighbors.h"
+#import "RNDTransformers/RNDGeohash/GHRange.h"
+#import "RNDTransformers/RNDGeohash/cgeohash.h"
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////
+//////////////// OBJECT TO STRING ////////////////
+//////////////////////////////////////////////////
+#import "RNDTransformers/RNDObjectFromString/RNDCLLocationFromStringTransformer.h"
+#import "RNDTransformers/RNDObjectFromString/RNDUUIDFromUUIDString.h"
+#import "RNDTransformers/RNDObjectFromString/RNDFontFromString.h"
+#import "RNDTransformers/RNDObjectFromString/RNDURLFromString.h"
+#import "RNDTransformers/RNDObjectFromString/RNDDateFromString.h"
+#import "RNDTransformers/RNDObjectFromString/RNDDateFromNumber.h"
+#import "RNDTransformers/RNDObjectFromString/RNDImageFromData.h"
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
 
 

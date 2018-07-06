@@ -7,12 +7,9 @@
 //
 
 #import "AppDelegate.h"
-#import "RNDIncrementalStore.h"
+#import <RNDKit/RNDKit.h>
 #import "DetailViewController.h"
 #import "MasterViewController.h"
-#import "RNDGeohashToCoordinateTransformer.h"
-#import "RNDCoordinateToGeohashTransformer.h"
-#import "RNDCLLocationFromStringTransformer.h"
 
 @interface AppDelegate () <UISplitViewControllerDelegate>
 
@@ -28,8 +25,10 @@
                 forName:NSStringFromClass([RNDCoordinateToGeohashTransformer class])];
     [NSValueTransformer setValueTransformer:[RNDGeohashToCoordinateTransformer new]
                                     forName:NSStringFromClass([RNDGeohashToCoordinateTransformer class])];
-    
-    
+    [NSValueTransformer setValueTransformer:[RNDGeohash10FromJSONCoordinateStringTransformer new] forName:NSStringFromClass([RNDGeohash10FromJSONCoordinateStringTransformer class])];
+    [NSValueTransformer setValueTransformer:[RNDCoordinateRegionFromJSONStringTransformer new] forName:NSStringFromClass([RNDCoordinateRegionFromJSONStringTransformer class])];
+    [NSValueTransformer setValueTransformer:[RNDGeohashFromJSONRegionStringTransformer new] forName:NSStringFromClass([RNDGeohashFromJSONRegionStringTransformer class])];
+
     [NSPersistentStoreCoordinator registerStoreClass:[RNDIncrementalStore class] forStoreType:NSStringFromClass([RNDIncrementalStore class])];
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;

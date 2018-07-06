@@ -43,10 +43,10 @@
     array = [NSArray arrayWithArray:array];
     NSDictionary *arrayDictionary = @{@"array":array};
     NSDictionary *dictionary = @{@"dictionary":arrayDictionary};
-    NSNumber *passingObjects = [dictionary valueForExtendedKeyPath:@"dictionary.array.@map(@filter(SELF < 20)).@index(3)"];
+    NSMutableDictionary *passingObjects = [dictionary valueForExtendedKeyPath:@"dictionary.array.@map(@filter(SELF < 20)).@combine(NSMutableDictionary, first:@index(1), second:@index(2))"];
 //    XCTAssert([passingObjects count]  == 20);
 //    XCTAssert([[passingObjects valueForExtendedKeyPath:@"@avg()"] doubleValue] == 9.5);
-    XCTAssert([passingObjects integerValue] == 3);
+    XCTAssert([passingObjects count] == 2);
 
 //    NSNumber *sum = [arrayArray valueForExtendedKeyPath:@"@sum(SELF.@sum(SELF.@avg(SELF.@filter(SELF < 20))))"];
 }

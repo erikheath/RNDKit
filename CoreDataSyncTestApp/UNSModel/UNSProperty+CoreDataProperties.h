@@ -2,7 +2,7 @@
 //  UNSProperty+CoreDataProperties.h
 //  CoreDataSyncTestApp
 //
-//  Created by Erikheath Thomas on 5/9/18.
+//  Created by Erikheath Thomas on 6/25/18.
 //  Copyright © 2018 Curated Cocoa LLC. All rights reserved.
 //
 //
@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *county;
 @property (nullable, nonatomic, copy) NSString *dateBuilt;
 @property (nonatomic) int16_t floor;
+@property (nullable, nonatomic, copy) NSString *geohash10;
 @property (nullable, nonatomic, copy) NSString *identifier;
 @property (nullable, nonatomic, copy) NSString *kind;
 @property (nonatomic) double latitude;
@@ -35,7 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) int16_t stories;
 @property (nullable, nonatomic, copy) NSString *street;
 @property (nullable, nonatomic, copy) NSString *style;
-@property (nullable, nonatomic, retain) UNSListing *listing;
 
 @end
 

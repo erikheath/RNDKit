@@ -2,7 +2,7 @@
 //  UNSImage+CoreDataProperties.m
 //  CoreDataSyncTestApp
 //
-//  Created by Erikheath Thomas on 5/9/18.
+//  Created by Erikheath Thomas on 6/25/18.
 //  Copyright © 2018 Curated Cocoa LLC. All rights reserved.
 //
 //
@@ -15,10 +15,6 @@
 	return [NSFetchRequest fetchRequestWithEntityName:@"UNSImage"];
 }
 
-@dynamic descriptionText;
 @dynamic image;
-@dynamic location;
-@dynamic titleText;
-@dynamic listing;
 
 @end

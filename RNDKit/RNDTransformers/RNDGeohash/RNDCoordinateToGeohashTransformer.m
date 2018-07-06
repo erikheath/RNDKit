@@ -23,10 +23,6 @@
     return [NSString class];
 }
 
-+ (BOOL)allowsReverseTransformation {
-    return YES;
-}
-
 - (id)transformedValue:(id)value {
     if (value == nil || [value isKindOfClass:[NSValue class]] == NO || CLLocationCoordinate2DIsValid(((NSValue *)value).MKCoordinateValue) == NO) {
         return nil;
@@ -36,18 +32,5 @@
                                             longitude:location.longitude
                                                length:8];
 }
-
-- (id)reverseTransformedValue:(id)value {
-    if (value == nil || [value isKindOfClass:[NSString class]] == NO ||
-        [GeoHash verifyHash:value] == NO) {
-        return nil;
-    }
-    GHArea *area = [GeoHash areaForHash:(NSString *)value];
-    CLLocationDegrees latitude = area.latitude.max.doubleValue; // TODO: CONFIRM MATH
-    CLLocationDegrees longitude = area.longitude.max.doubleValue; // TODO: CONFIRM MATH
-    CLLocationCoordinate2D location = CLLocationCoordinate2DMake(latitude, longitude);
-    return [NSValue valueWithMKCoordinate:location];
-}
-
 
 @end

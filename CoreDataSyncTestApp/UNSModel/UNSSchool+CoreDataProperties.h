@@ -2,7 +2,7 @@
 //  UNSSchool+CoreDataProperties.h
 //  CoreDataSyncTestApp
 //
-//  Created by Erikheath Thomas on 5/9/18.
+//  Created by Erikheath Thomas on 6/25/18.
 //  Copyright © 2018 Curated Cocoa LLC. All rights reserved.
 //
 //
@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSString *highSchool;
 @property (nullable, nonatomic, copy) NSString *middleSchool;
 @property (nullable, nonatomic, copy) NSString *schoolDistrict;
-@property (nullable, nonatomic, retain) UNSListing *listing;
 
 @end
 

@@ -11,6 +11,7 @@
 #import "UNSModel/UNSListing+CoreDataClass.h"
 #import "UNSModel/UNSProperty+CoreDataClass.h"
 #import "UNSModel/UNSImage+CoreDataClass.h"
+#import "UNSModel/UNSSearchProfile+CoreDataClass.h"
 
 @class DetailViewController;
 
@@ -18,7 +19,7 @@
 
 @property (strong, nonatomic) DetailViewController *detailViewController;
 
-@property (strong, nonatomic) NSFetchedResultsController<UNSListing *> *fetchedResultsController;
+@property (strong, nonatomic) NSFetchedResultsController<UNSSearchProfile *> *fetchedResultsController;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 
 

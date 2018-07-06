@@ -2,7 +2,7 @@
 //  UNSListing+CoreDataProperties.m
 //  CoreDataSyncTestApp
 //
-//  Created by Erikheath Thomas on 5/9/18.
+//  Created by Erikheath Thomas on 6/25/18.
 //  Copyright © 2018 Curated Cocoa LLC. All rights reserved.
 //
 //
@@ -24,11 +24,6 @@
 @dynamic price;
 @dynamic status;
 @dynamic images;
-@dynamic listingAdvertisers;
 @dynamic propertyDescription;
-@dynamic savedSets;
-@dynamic schools;
-@dynamic searchSets;
-@dynamic videos;
 
 @end
