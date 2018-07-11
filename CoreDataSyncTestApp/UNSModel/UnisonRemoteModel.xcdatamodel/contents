@@ -212,18 +212,18 @@
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="creationTimestamp" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="descriptionText" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="downPayment" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="downPayment" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="geohash" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="listingIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="listingStatus" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="locationCoordinates" optional="YES" attributeType="Transformable" syncable="YES"/>
-        <attribute name="locationRadiusBoundary" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="locationRadiusBoundary" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="marketIdentifier" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="maxBathrooms" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
-        <attribute name="maxBedrooms" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
-        <attribute name="minbathrooms" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
-        <attribute name="minbedrooms" optional="YES" attributeType="Decimal" defaultValueString="0" syncable="YES"/>
-        <attribute name="monthlyPayment" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="maxBathrooms" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="maxBedrooms" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="minbathrooms" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="minbedrooms" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="monthlyPayment" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="points" optional="YES" attributeType="String" valueTransformerName="RNDCoordinateRegionFromJSONStringTransformer" syncable="YES">
             <userInfo>
                 <entry key="serviceNameTransformer" value="geohash"/>

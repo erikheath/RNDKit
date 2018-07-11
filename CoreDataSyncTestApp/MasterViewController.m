@@ -77,8 +77,10 @@
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSUInteger count = self.fetchedResultsController.fetchedObjects.firstObject.listings.count;
-    return count;
+    NSArray <UNSSearchProfile *> *objects = self.fetchedResultsController.fetchedObjects;
+    if (objects.count == 0) { return 0; };
+    id listings = [((UNSSearchProfile *)objects.firstObject) listings];
+    return [listings count];
 }
 
 
@@ -148,7 +150,7 @@
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"creationDate" ascending:NO];
     
 //    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"postalCode='94131'"];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"points='[[37.290,-121.940],[37.290,-121.910]]'"];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"processor = 'searchByPayment' AND monthlyPayment = 3500 AND downPayment = 20000 AND points = '[[37.290,-121.940],[37.290,-121.910]]'"];
     
     fetchRequest.predicate = predicate;
 

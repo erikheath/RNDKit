@@ -40,6 +40,16 @@
 		E46A7002209A9E9700605A98 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E46A7001209A9E9700605A98 /* Assets.xcassets */; };
 		E46A7005209A9E9700605A98 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E46A7003209A9E9700605A98 /* LaunchScreen.storyboard */; };
 		E46A7008209A9E9700605A98 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E46A7007209A9E9700605A98 /* main.m */; };
+		E485FDC520F67699006E9A57 /* RNDDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = E485FDC320F67699006E9A57 /* RNDDatabase.h */; };
+		E485FDC620F67699006E9A57 /* RNDDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = E485FDC420F67699006E9A57 /* RNDDatabase.m */; };
+		E485FDC920F676C4006E9A57 /* RNDDatabaseContext.h in Headers */ = {isa = PBXBuildFile; fileRef = E485FDC720F676C4006E9A57 /* RNDDatabaseContext.h */; };
+		E485FDCA20F676C4006E9A57 /* RNDDatabaseContext.m in Sources */ = {isa = PBXBuildFile; fileRef = E485FDC820F676C4006E9A57 /* RNDDatabaseContext.m */; };
+		E485FDCD20F67780006E9A57 /* RNDDatabaseConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = E485FDCB20F67780006E9A57 /* RNDDatabaseConnection.h */; };
+		E485FDCE20F67780006E9A57 /* RNDDatabaseConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = E485FDCC20F67780006E9A57 /* RNDDatabaseConnection.m */; };
+		E485FDD120F6780C006E9A57 /* RNDDatabaseChannelOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = E485FDCF20F6780C006E9A57 /* RNDDatabaseChannelOperation.h */; };
+		E485FDD220F6780C006E9A57 /* RNDDatabaseChannelOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = E485FDD020F6780C006E9A57 /* RNDDatabaseChannelOperation.m */; };
+		E485FDD520F6782A006E9A57 /* RNDDatabaseChannel.h in Headers */ = {isa = PBXBuildFile; fileRef = E485FDD320F6782A006E9A57 /* RNDDatabaseChannel.h */; };
+		E485FDD620F6782A006E9A57 /* RNDDatabaseChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = E485FDD420F6782A006E9A57 /* RNDDatabaseChannel.m */; };
 		E48F7F4C20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F4A20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E48F7F4D20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */; };
 		E48F7F5120C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F4F20C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -81,12 +91,6 @@
 		E4C02E8320E1A2F900E660AA /* UNSSearchProfile+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C02E6F20E1A2F900E660AA /* UNSSearchProfile+CoreDataProperties.m */; };
 		E4C02E8420E1A2F900E660AA /* UNSVideos+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C02E7220E1A2F900E660AA /* UNSVideos+CoreDataClass.m */; };
 		E4C02E8520E1A2F900E660AA /* UNSVideos+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C02E7320E1A2F900E660AA /* UNSVideos+CoreDataProperties.m */; };
-		E4DE65EC20E6C3C2005415A0 /* RNDStoreContext.h in Headers */ = {isa = PBXBuildFile; fileRef = E4DE65EA20E6C3C2005415A0 /* RNDStoreContext.h */; };
-		E4DE65ED20E6C3C2005415A0 /* RNDStoreContext.m in Sources */ = {isa = PBXBuildFile; fileRef = E4DE65EB20E6C3C2005415A0 /* RNDStoreContext.m */; };
-		E4DE65F020E6C3EE005415A0 /* RNDStoreChannel.h in Headers */ = {isa = PBXBuildFile; fileRef = E4DE65EE20E6C3EE005415A0 /* RNDStoreChannel.h */; };
-		E4DE65F120E6C3EE005415A0 /* RNDStoreChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = E4DE65EF20E6C3EE005415A0 /* RNDStoreChannel.m */; };
-		E4DE65F420E6C400005415A0 /* RNDStoreConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = E4DE65F220E6C400005415A0 /* RNDStoreConnection.h */; };
-		E4DE65F520E6C400005415A0 /* RNDStoreConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = E4DE65F320E6C400005415A0 /* RNDStoreConnection.m */; };
 		E4E95CF12096B471004CED34 /* RNDCLLocationFromStringTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E4E95CF02096B471004CED34 /* RNDCLLocationFromStringTransformer.m */; };
 		E4E95CF32096B52A004CED34 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4E95CF22096B52A004CED34 /* CoreLocation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		E4ED0DEC20D1A0C80010778F /* RNDValuePathExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = E45F365920B5EED9001A9B6C /* RNDValuePathExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -294,6 +298,16 @@
 		E48235D41FDB1B320061FDCF /* NSLock+RNDOperations.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSLock+RNDOperations.m"; sourceTree = "<group>"; };
 		E48235D91FDB1C9F0061FDCF /* RNDIncrementalStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDIncrementalStore.h; sourceTree = "<group>"; };
 		E48235E41FDF5B3A0061FDCF /* RNDPatternedStringProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNDPatternedStringProcessor.m; sourceTree = "<group>"; };
+		E485FDC320F67699006E9A57 /* RNDDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDDatabase.h; sourceTree = "<group>"; };
+		E485FDC420F67699006E9A57 /* RNDDatabase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDDatabase.m; sourceTree = "<group>"; };
+		E485FDC720F676C4006E9A57 /* RNDDatabaseContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDDatabaseContext.h; sourceTree = "<group>"; };
+		E485FDC820F676C4006E9A57 /* RNDDatabaseContext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDDatabaseContext.m; sourceTree = "<group>"; };
+		E485FDCB20F67780006E9A57 /* RNDDatabaseConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDDatabaseConnection.h; sourceTree = "<group>"; };
+		E485FDCC20F67780006E9A57 /* RNDDatabaseConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDDatabaseConnection.m; sourceTree = "<group>"; };
+		E485FDCF20F6780C006E9A57 /* RNDDatabaseChannelOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDDatabaseChannelOperation.h; sourceTree = "<group>"; };
+		E485FDD020F6780C006E9A57 /* RNDDatabaseChannelOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDDatabaseChannelOperation.m; sourceTree = "<group>"; };
+		E485FDD320F6782A006E9A57 /* RNDDatabaseChannel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDDatabaseChannel.h; sourceTree = "<group>"; };
+		E485FDD420F6782A006E9A57 /* RNDDatabaseChannel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDDatabaseChannel.m; sourceTree = "<group>"; };
 		E48F7F4A20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDCoordinateToGeohashTransformer.h; sourceTree = "<group>"; };
 		E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDCoordinateToGeohashTransformer.m; sourceTree = "<group>"; };
 		E48F7F4F20C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDGeohashToCoordinateTransformer.h; sourceTree = "<group>"; };
@@ -379,12 +393,6 @@
 		E4C02E7220E1A2F900E660AA /* UNSVideos+CoreDataClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UNSVideos+CoreDataClass.m"; sourceTree = "<group>"; };
 		E4C02E7320E1A2F900E660AA /* UNSVideos+CoreDataProperties.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UNSVideos+CoreDataProperties.m"; sourceTree = "<group>"; };
 		E4C59E962092BCE800884AEE /* RNDIncrementalStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDIncrementalStore.m; sourceTree = "<group>"; };
-		E4DE65EA20E6C3C2005415A0 /* RNDStoreContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDStoreContext.h; sourceTree = "<group>"; };
-		E4DE65EB20E6C3C2005415A0 /* RNDStoreContext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDStoreContext.m; sourceTree = "<group>"; };
-		E4DE65EE20E6C3EE005415A0 /* RNDStoreChannel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDStoreChannel.h; sourceTree = "<group>"; };
-		E4DE65EF20E6C3EE005415A0 /* RNDStoreChannel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDStoreChannel.m; sourceTree = "<group>"; };
-		E4DE65F220E6C400005415A0 /* RNDStoreConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDStoreConnection.h; sourceTree = "<group>"; };
-		E4DE65F320E6C400005415A0 /* RNDStoreConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDStoreConnection.m; sourceTree = "<group>"; };
 		E4E95CEF2096B450004CED34 /* RNDCLLocationFromStringTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDCLLocationFromStringTransformer.h; sourceTree = "<group>"; };
 		E4E95CF02096B471004CED34 /* RNDCLLocationFromStringTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDCLLocationFromStringTransformer.m; sourceTree = "<group>"; };
 		E4E95CF22096B52A004CED34 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -771,14 +779,18 @@
 				E4AB810220A3F03800BBCD06 /* RNDJSONResponseProcessor.m */,
 				E4AB810120A3B51100BBCD06 /* RNDQueryItemPredicateParser.h */,
 				E4AB80FE20A3B4F100BBCD06 /* RNDQueryItemPredicateParser.m */,
-				E4DE65EA20E6C3C2005415A0 /* RNDStoreContext.h */,
-				E4DE65EB20E6C3C2005415A0 /* RNDStoreContext.m */,
 				E4AB807820A2150600BBCD06 /* RNDRowCache.h */,
 				E4AB807520A214F300BBCD06 /* RNDRowCache.m */,
-				E4DE65EE20E6C3EE005415A0 /* RNDStoreChannel.h */,
-				E4DE65EF20E6C3EE005415A0 /* RNDStoreChannel.m */,
-				E4DE65F220E6C400005415A0 /* RNDStoreConnection.h */,
-				E4DE65F320E6C400005415A0 /* RNDStoreConnection.m */,
+				E485FDC320F67699006E9A57 /* RNDDatabase.h */,
+				E485FDC420F67699006E9A57 /* RNDDatabase.m */,
+				E485FDC720F676C4006E9A57 /* RNDDatabaseContext.h */,
+				E485FDC820F676C4006E9A57 /* RNDDatabaseContext.m */,
+				E485FDD320F6782A006E9A57 /* RNDDatabaseChannel.h */,
+				E485FDD420F6782A006E9A57 /* RNDDatabaseChannel.m */,
+				E485FDCF20F6780C006E9A57 /* RNDDatabaseChannelOperation.h */,
+				E485FDD020F6780C006E9A57 /* RNDDatabaseChannelOperation.m */,
+				E485FDCB20F67780006E9A57 /* RNDDatabaseConnection.h */,
+				E485FDCC20F67780006E9A57 /* RNDDatabaseConnection.m */,
 			);
 			path = RNDCoreData;
 			sourceTree = "<group>";
@@ -914,21 +926,23 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E485FDCD20F67780006E9A57 /* RNDDatabaseConnection.h in Headers */,
 				E4ED0DF820D1A2080010778F /* RNDDateFromNumber.h in Headers */,
 				E48F7F6720C35A9C00FFEF6D /* GHArea.h in Headers */,
 				E4ED0DED20D1A0D20010778F /* NSString+RNDStringExtensions.h in Headers */,
 				E4ED0DF420D1A1E80010778F /* RNDUUIDFromUUIDString.h in Headers */,
 				E48F7F6E20C35A9C00FFEF6D /* GHNeighbors.h in Headers */,
+				E485FDC520F67699006E9A57 /* RNDDatabase.h in Headers */,
 				E433F27620E8499D0087605F /* RNDProcessor.h in Headers */,
 				E4ED0DF320D1A1E00010778F /* RNDCLLocationFromStringTransformer.h in Headers */,
-				E4DE65F020E6C3EE005415A0 /* RNDStoreChannel.h in Headers */,
+				E485FDC920F676C4006E9A57 /* RNDDatabaseContext.h in Headers */,
 				E4ED0DF220D1A1450010778F /* RNDRowCache.h in Headers */,
 				E4ED0DF120D1A13F0010778F /* RNDQueryItemPredicateParser.h in Headers */,
 				E452B48020E06D61003364D3 /* RNDGeohashFromJSONRegionStringTransformer.h in Headers */,
-				E4DE65EC20E6C3C2005415A0 /* RNDStoreContext.h in Headers */,
 				E48F7F4C20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h in Headers */,
 				E433F27A20E869920087605F /* RNDMutableProcessor.h in Headers */,
 				E48F7F5120C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h in Headers */,
+				E485FDD120F6780C006E9A57 /* RNDDatabaseChannelOperation.h in Headers */,
 				E4ED0DEE20D1A0F10010778F /* RNDIncrementalStore.h in Headers */,
 				E49CFBBA1F7EC17900CDFF29 /* RNDKit.h in Headers */,
 				E4ED0DEC20D1A0C80010778F /* RNDValuePathExtensions.h in Headers */,
@@ -943,7 +957,7 @@
 				E4ED0DF720D1A2020010778F /* RNDDateFromString.h in Headers */,
 				E4ED0DEF20D1A0FA0010778F /* RNDResponseProcessor.h in Headers */,
 				E4ED0DF920D1A20D0010778F /* RNDImageFromData.h in Headers */,
-				E4DE65F420E6C400005415A0 /* RNDStoreConnection.h in Headers */,
+				E485FDD520F6782A006E9A57 /* RNDDatabaseChannel.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1274,6 +1288,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E485FDC620F67699006E9A57 /* RNDDatabase.m in Sources */,
 				E45F365E20B77532001A9B6C /* NSString+RNDStringExtensions.m in Sources */,
 				E45F365820B5EEC9001A9B6C /* RNDValuePathExtensions.m in Sources */,
 				E48F7F6A20C35A9C00FFEF6D /* GHArea.m in Sources */,
@@ -1284,16 +1299,17 @@
 				E48F7F6C20C35A9C00FFEF6D /* cgeohash.m in Sources */,
 				E433F27720E8499D0087605F /* RNDProcessor.m in Sources */,
 				E46A6FEE209A5EE800605A98 /* RNDIncrementalStore.m in Sources */,
+				E485FDCE20F67780006E9A57 /* RNDDatabaseConnection.m in Sources */,
 				E4AB80FF20A3B4F100BBCD06 /* RNDQueryItemPredicateParser.m in Sources */,
-				E4DE65F120E6C3EE005415A0 /* RNDStoreChannel.m in Sources */,
+				E485FDD620F6782A006E9A57 /* RNDDatabaseChannel.m in Sources */,
 				E4AB810320A3F03800BBCD06 /* RNDJSONResponseProcessor.m in Sources */,
-				E4DE65F520E6C400005415A0 /* RNDStoreConnection.m in Sources */,
 				E452B47D20DF1EF5003364D3 /* RNDCoordinateRegionFromJSONStringTransformer.m in Sources */,
 				E48F7F5220C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.m in Sources */,
 				E433F27B20E869920087605F /* RNDMutableProcessor.m in Sources */,
 				E48F7F6320C35A9C00FFEF6D /* GHRange.m in Sources */,
-				E4DE65ED20E6C3C2005415A0 /* RNDStoreContext.m in Sources */,
 				E452B48120E06D61003364D3 /* RNDGeohashFromJSONRegionStringTransformer.m in Sources */,
+				E485FDCA20F676C4006E9A57 /* RNDDatabaseContext.m in Sources */,
+				E485FDD220F6780C006E9A57 /* RNDDatabaseChannelOperation.m in Sources */,
 				E48F7F6520C35A9C00FFEF6D /* GHNeighbors.m in Sources */,
 				E48F7F6120C35A9C00FFEF6D /* GeoHash.m in Sources */,
 			);

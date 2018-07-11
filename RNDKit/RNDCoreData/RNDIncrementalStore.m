@@ -176,273 +176,312 @@
                         withContext:(NSManagedObjectContext *)context
                               error:(NSError * _Nullable *)error {
     
-    if ([fetchRequest.predicate isKindOfClass:[NSComparisonPredicate class]] == YES) {
+    if ([fetchRequest.predicate isKindOfClass:[NSComparisonPredicate class]] == YES && [(NSComparisonPredicate *)fetchRequest.predicate predicateOperatorType] == NSInPredicateOperatorType) {
         NSComparisonPredicate *predicate = (NSComparisonPredicate *)fetchRequest.predicate;
-        if ([predicate predicateOperatorType] == NSInPredicateOperatorType) {
-            NSSet *managedObjects = [[predicate rightExpression] expressionValueWithObject:nil context:nil];
-            if (managedObjects == nil) { return nil; }
-            NSMutableArray <NSManagedObject *> *fetchedObjects = [NSMutableArray new];
-            for (NSManagedObject *object in managedObjects) {
-                
-                [fetchedObjects addObject:[context objectWithID:object.objectID]];
+        NSSet *managedObjects = [[predicate rightExpression] expressionValueWithObject:nil context:nil];
+        if (managedObjects == nil) { return nil; }
+        NSMutableArray <NSManagedObject *> *fetchedObjects = [NSMutableArray new];
+        for (NSManagedObject *object in managedObjects) {
+            
+            [fetchedObjects addObject:[context objectWithID:object.objectID]];
+        }
+        return fetchedObjects;
+    } else {
+        
+        //****************** BEGIN FETCH REQUEST PROCESSING SETUP ******************//
+        NSEntityDescription *entity = [fetchRequest entity];
+        NSURL *serviceURL = nil;
+        NSString *serviceURLString = nil;
+        NSURLComponents *serviceComponents = nil;
+        //****************** END FETCH REQUEST PROCESSING SETUP ******************//
+        
+        //****************** BEGIN DELEGATE URL PROCESSING ******************//
+        if (self.URLConstructionDelegate != nil) {
+            if ([self.URLConstructionDelegate respondsToSelector:@selector(storeShouldDelegateURLComponentConstructionForRequest:)] == YES && [self.URLConstructionDelegate storeShouldDelegateURLComponentConstructionForRequest:fetchRequest] == YES) {
+                serviceComponents = [self.URLConstructionDelegate URLComponentsForRequest:fetchRequest];
+            } else if ([self.URLConstructionDelegate respondsToSelector:@selector(storeShouldDelegateURLTemplateConstructionForRequest:)] == YES && [self.URLConstructionDelegate storeShouldDelegateURLTemplateConstructionForRequest:fetchRequest] == YES) {
+                serviceURLString = [self.URLConstructionDelegate URLTempateForRequest:fetchRequest];
             }
-            return fetchedObjects;
-        } else if ([predicate predicateOperatorType] == NSEqualToPredicateOperatorType) {
-            
-            //****************** BEGIN FETCH REQUEST PROCESSING SETUP ******************//
-            NSEntityDescription *entity = [fetchRequest entity];
-            NSURL *serviceURL = nil;
-            NSString *serviceURLString = nil;
-            NSURLComponents *serviceComponents = nil;
-            //****************** END FETCH REQUEST PROCESSING SETUP ******************//
-            
-            
-            //****************** BEGIN DELEGATE URL PROCESSING ******************//
-            if (self.URLConstructionDelegate != nil) {
-                if ([self.URLConstructionDelegate respondsToSelector:@selector(storeShouldDelegateURLComponentConstructionForRequest:)] == YES && [self.URLConstructionDelegate storeShouldDelegateURLComponentConstructionForRequest:fetchRequest] == YES) {
-                    serviceComponents = [self.URLConstructionDelegate URLComponentsForRequest:fetchRequest];
-                } else if ([self.URLConstructionDelegate respondsToSelector:@selector(storeShouldDelegateURLTemplateConstructionForRequest:)] == YES && [self.URLConstructionDelegate storeShouldDelegateURLTemplateConstructionForRequest:fetchRequest] == YES) {
-                    serviceURLString = [self.URLConstructionDelegate URLTempateForRequest:fetchRequest];
-                }
-            }
-            //****************** END DELEGATE URL PROCESSING ******************//
-            
-            
-            //****************** BEGIN MODEL URL PROCESSING ******************//
-            if (serviceComponents == nil && serviceURLString == nil) {
-                serviceURLString = entity.userInfo[@"serviceURL"];
-            }
-            //****************** END MODEL URL PROCESSING ******************//
-            
-            
-            //****************** BEGIN STORE URL PROCESSING ******************//
-            if (serviceComponents == nil && serviceURLString == nil) {
-                serviceURLString = [self.URL absoluteString];
-            }
-            
-            //////////////////////////////////////////////////////
-            ///////////////////// CHECKPOINT /////////////////////
-            //////////////////////////////////////////////////////
-            
-            if (serviceComponents == nil && serviceURLString == nil) { return nil; }
-            
-            /////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            
-            //****************** END STORE URL PROCESSING ******************//
-            
-            
-            //****************** BEGIN SUBSTITUTION VARIABLE PROCESSING ******************//
-            if (serviceURLString != nil) {
-                if (self.URLConstructionDelegate != nil && [self.URLConstructionDelegate respondsToSelector:@selector(storeShouldSubstituteVariablesForRequest:)] == YES && [self.URLConstructionDelegate storeShouldSubstituteVariablesForRequest:fetchRequest] == YES) {
-                    NSDictionary *substitutionDictionary = [self.URLConstructionDelegate substitutionDictionaryForRequest:fetchRequest defaultSubstitutions:@{}];
-                    for (NSString *variableName in substitutionDictionary) {
-                        serviceURLString = [serviceURLString stringByReplacingOccurrencesOfString:variableName
-                                                                                       withString:substitutionDictionary[variableName]];
-                    }
-                }
-            } else if (entity.userInfo[@"definesSubstitutions"] != nil) {
-                NSArray *substitutionKeys = [entity.userInfo[@"definedSubstitutions"] componentsSeparatedByString:@","];
-                NSMutableDictionary *substitutionDictionary = [NSMutableDictionary new];
-                for (NSString *key in substitutionKeys) {
-                    NSString *value;
-                    if ((value = entity.userInfo[key]) == nil) { continue; }
-                    NSArray *testValuePairs = [value componentsSeparatedByString:@","];
-                    for (NSString *pair in testValuePairs) {
-                        NSArray *testPair = [pair componentsSeparatedByString:@":"];
-                        NSPredicate *test = [NSPredicate predicateWithFormat:testPair.firstObject];
-                        if ([test evaluateWithObject:fetchRequest] == NO) { continue; }
-                        [substitutionDictionary setObject:testPair[1] forKey:key];
-                        break;
-                    }
-                }
+        }
+        //****************** END DELEGATE URL PROCESSING ******************//
+        
+        
+        //****************** BEGIN MODEL URL PROCESSING ******************//
+        if (serviceComponents == nil && serviceURLString == nil) {
+            serviceURLString = entity.userInfo[@"serviceURL"];
+        }
+        //****************** END MODEL URL PROCESSING ******************//
+        
+        
+        //****************** BEGIN STORE URL PROCESSING ******************//
+        if (serviceComponents == nil && serviceURLString == nil) {
+            serviceURLString = [self.URL absoluteString];
+        }
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+        
+        if (serviceComponents == nil && serviceURLString == nil) { return nil; }
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        
+        //****************** END STORE URL PROCESSING ******************//
+        
+        
+        //****************** BEGIN SUBSTITUTION VARIABLE PROCESSING ******************//
+        if (serviceURLString != nil) {
+            if (self.URLConstructionDelegate != nil && [self.URLConstructionDelegate respondsToSelector:@selector(storeShouldSubstituteVariablesForRequest:)] == YES && [self.URLConstructionDelegate storeShouldSubstituteVariablesForRequest:fetchRequest] == YES) {
+                NSDictionary *substitutionDictionary = [self.URLConstructionDelegate substitutionDictionaryForRequest:fetchRequest defaultSubstitutions:@{}];
                 for (NSString *variableName in substitutionDictionary) {
                     serviceURLString = [serviceURLString stringByReplacingOccurrencesOfString:variableName
                                                                                    withString:substitutionDictionary[variableName]];
                 }
             }
-            
-            
-            //////////////////////////////////////////////////////
-            ///////////////////// CHECKPOINT /////////////////////
-            //////////////////////////////////////////////////////
-            
-            if (serviceComponents == nil && serviceURLString == nil) { return nil; }
-            
-            if (serviceComponents == nil && serviceURLString != nil) {
-                serviceComponents = [NSURLComponents componentsWithString:serviceURLString];
-            }
-            
-            if (serviceComponents == nil) { return nil; }
-            
-            /////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            
-            //****************** END SUBSTITUTION VARIABLE PROCESSING ******************//
-            
-            
-            //****************** BEGIN QUERY ITEM PROCESSING ******************//
-            NSMutableArray *queryItems = [NSMutableArray arrayWithArray:serviceComponents.queryItems];
-            [queryItems addObjectsFromArray:[self.dataRequestQueryItemPredicateParser queryItemsForPredicateRepresentation:fetchRequest.predicate]];
-            
-            //////////////////////////////////////////////////////
-            ///////////////////// CHECKPOINT /////////////////////
-            //////////////////////////////////////////////////////
-            
-            [serviceComponents setQueryItems: queryItems];
-            serviceURL = [serviceComponents URL];
-            if (serviceURL == nil) { return nil; }
-            
-            /////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            
-            NSMutableArray *transformedQueryItems = [NSMutableArray arrayWithCapacity:serviceComponents.queryItems.count];
-            
-            for (NSURLQueryItem *item in serviceComponents.queryItems) {
-                NSString *name = nil;
-                NSString *value = nil;
-                NSAttributeDescription *attribute = entity.attributesByName[item.name];
-                
-                if (attribute == nil) {
-                    [transformedQueryItems addObject:[NSURLQueryItem queryItemWithName:item.name value:item.value]];
-                    continue;
+        } else if (entity.userInfo[@"definesSubstitutions"] != nil) {
+            NSArray *substitutionKeys = [entity.userInfo[@"definedSubstitutions"] componentsSeparatedByString:@","];
+            NSMutableDictionary *substitutionDictionary = [NSMutableDictionary new];
+            for (NSString *key in substitutionKeys) {
+                NSString *value;
+                if ((value = entity.userInfo[key]) == nil) { continue; }
+                NSArray *testValuePairs = [value componentsSeparatedByString:@","];
+                for (NSString *pair in testValuePairs) {
+                    NSArray *testPair = [pair componentsSeparatedByString:@":"];
+                    NSPredicate *test = [NSPredicate predicateWithFormat:testPair.firstObject];
+                    if ([test evaluateWithObject:fetchRequest] == NO) { continue; }
+                    [substitutionDictionary setObject:testPair[1] forKey:key];
+                    break;
                 }
-                
-                NSString *serviceNameTransformerName = attribute.userInfo[@"serviceNameTransformer"];
-                NSValueTransformer *serviceNameTransformer = serviceNameTransformerName != nil ? [NSValueTransformer valueTransformerForName:serviceNameTransformerName] : nil;
-                name = serviceNameTransformer != nil ? [serviceNameTransformer transformedValue:item.name] : (serviceNameTransformerName != nil ? serviceNameTransformerName : item.name);
-                
-                NSString *serviceValueTransformerName = attribute.userInfo[@"serviceValueTransformer"];
-                NSValueTransformer *serviceValueTransformer = serviceValueTransformerName != nil ? [NSValueTransformer valueTransformerForName:serviceValueTransformerName] : nil;
-                value = serviceValueTransformer != nil ? [serviceValueTransformer transformedValue:item.value] : (serviceValueTransformerName != nil ? serviceValueTransformerName : item.value);
-                
-                [transformedQueryItems addObject:[NSURLQueryItem queryItemWithName:name value:value]];
             }
-            
-            
-            //////////////////////////////////////////////////////
-            ///////////////////// CHECKPOINT /////////////////////
-            //////////////////////////////////////////////////////
-            
-            [serviceComponents setQueryItems: transformedQueryItems];
-            serviceURL = [serviceComponents URL];
-            if (serviceURL == nil) { return nil; }
-            
-            /////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            
-            //****************** END QUERY ITEM PROCESSING ******************//
-            
-            
-            //****************** BEGIN OBJECT MATERIALIZATION ******************//
-            
-            //////////////////////////////////////////////////////
-            ///////////////////// CHECKPOINT /////////////////////
-            //////////////////////////////////////////////////////
-            
-            if ([entity.userInfo[@"materializationType"] isEqualToString:@"USE_PREDICATE_VALUES"]) {
-                NSMutableDictionary *propertyDictionary = [NSMutableDictionary dictionaryWithCapacity:serviceComponents.queryItems.count];
-                for (NSURLQueryItem *keyValue in serviceComponents.queryItems) {
-                    [propertyDictionary setObject:keyValue.value forKey:keyValue.name];
-                }
-                NSManagedObjectID *objectID = [self newObjectIDForEntity:entity
-                                                         referenceObject:[[serviceComponents URL] absoluteString]];
-                NSIncrementalStoreNode *node = [[NSIncrementalStoreNode alloc] initWithObjectID:objectID
-                                                                                     withValues:propertyDictionary
-                                                                                        version:1];
-                RNDRow *row = [[RNDRow alloc] initWithNode:node
-                                               lastUpdated:[NSDate date]
-                                        expirationInterval:800000
-                                                primaryKey:[[serviceComponents URL] absoluteString]
-                                                entityName:entity.name];
-                [self.rowCache addRow:row];
-                return @[[context objectWithID:objectID]];
+            for (NSString *variableName in substitutionDictionary) {
+                serviceURLString = [serviceURLString stringByReplacingOccurrencesOfString:variableName
+                                                                               withString:substitutionDictionary[variableName]];
             }
-            
-            /////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            
-            
-            //****************** END OBJECT MATERIALIZATION ******************//
-            
-            
-            //****************** BEGIN REQUEST DATA PROCESSING ******************//
-            BOOL ignoreCache = ((NSString *)entity.userInfo[@"ignoreCache"]).boolValue;
-            NSError *serviceError = nil;
-            NSData *serviceData = [self responseDataForServiceURL:serviceURL
-                                              forRequestingEntity:entity
-                                                      withContext:context
-                                              withLoadingPriority:QOS_CLASS_USER_INITIATED
-                                                       lastUpdate:nil
-                                                      forceReload:ignoreCache
-                                                            error:&serviceError];
-            
-            //////////////////////////////////////////////////////
-            ///////////////////// CHECKPOINT /////////////////////
-            //////////////////////////////////////////////////////
-            
-            if (serviceError != nil) {
-                if (error != NULL) {
-                    *error = serviceError;
-                }
-                return nil;
-            }
-            
-            /////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            
-            //****************** END REQUEST DATA PROCESSING ******************//
-            
-            
-            //****************** BEGIN RESPONSE DATA PROCESSING ******************//
-            NSError *dataProcessorError = nil;
-            NSArray *primaryKeys = [self.dataResponseProcessors[entity.name] uniqueIdentifiersForEntity:entity responseData:serviceData error:&dataProcessorError];
-            
-            //////////////////////////////////////////////////////
-            ///////////////////// CHECKPOINT /////////////////////
-            //////////////////////////////////////////////////////
-            
-            if (dataProcessorError != nil) {
-                if (error != NULL) {
-                    *error = dataProcessorError;
-                }
-                return nil;
-            }
-            
-            if (primaryKeys.count == 0) {
-                return @[];
-            }
-            
-            /////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            //////////////////////////////////////////////////////
-            
-            NSMutableArray *fetchedObjects = [NSMutableArray arrayWithCapacity:[primaryKeys count]];
-            NSMutableArray *objectIDs = [NSMutableArray arrayWithCapacity:[primaryKeys count]];
-            
-            for (NSString *primaryKey in primaryKeys) {
-                NSManagedObjectID *objectID = [self newObjectIDForEntity:entity referenceObject:primaryKey];
-                [objectIDs addObject:objectID];
-                NSManagedObject *managedObject = [context objectWithID:objectID];
-                [fetchedObjects addObject:managedObject];
-            }
-            
-            [self preloadDataForFetchRequest:fetchRequest
-                                     context:context
-                                 primaryKeys:primaryKeys
-                              fetchedObjects:fetchedObjects
-                                   objectIDs:objectIDs];
-            return fetchedObjects;
-            
-            //****************** END RESPONSE DATA PROCESSING ******************//
-            
         }
+        
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+        
+        if (serviceComponents == nil && serviceURLString == nil) { return nil; }
+        
+        if (serviceComponents == nil && serviceURLString != nil) {
+            serviceComponents = [NSURLComponents componentsWithString:serviceURLString];
+        }
+        
+        if (serviceComponents == nil) { return nil; }
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        
+        //****************** END SUBSTITUTION VARIABLE PROCESSING ******************//
+        
+        
+        //****************** BEGIN QUERY ITEM PROCESSING ******************//
+        NSMutableArray *queryItems = [NSMutableArray arrayWithArray:serviceComponents.queryItems];
+        [queryItems addObjectsFromArray:[self.dataRequestQueryItemPredicateParser queryItemsForPredicateRepresentation:fetchRequest.predicate]];
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+        
+        [serviceComponents setQueryItems: queryItems];
+        serviceURL = [serviceComponents URL];
+        if (serviceURL == nil) { return nil; }
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        
+        NSMutableArray *transformedQueryItems = [NSMutableArray arrayWithCapacity:serviceComponents.queryItems.count];
+        
+        for (NSURLQueryItem *item in serviceComponents.queryItems) {
+            NSString *name = nil;
+            NSString *value = nil;
+            NSAttributeDescription *attribute = entity.attributesByName[item.name];
+            
+            if (attribute == nil) {
+                [transformedQueryItems addObject:[NSURLQueryItem queryItemWithName:item.name value:item.value]];
+                continue;
+            }
+            
+            NSString *serviceNameTransformerName = attribute.userInfo[@"serviceNameTransformer"];
+            NSValueTransformer *serviceNameTransformer = serviceNameTransformerName != nil ? [NSValueTransformer valueTransformerForName:serviceNameTransformerName] : nil;
+            name = serviceNameTransformer != nil ? [serviceNameTransformer transformedValue:item.name] : (serviceNameTransformerName != nil ? serviceNameTransformerName : item.name);
+            
+            NSString *serviceValueTransformerName = attribute.userInfo[@"serviceValueTransformer"];
+            NSValueTransformer *serviceValueTransformer = serviceValueTransformerName != nil ? [NSValueTransformer valueTransformerForName:serviceValueTransformerName] : nil;
+            value = serviceValueTransformer != nil ? [serviceValueTransformer transformedValue:item.value] : (serviceValueTransformerName != nil ? serviceValueTransformerName : item.value);
+            
+            [transformedQueryItems addObject:[NSURLQueryItem queryItemWithName:name value:value]];
+        }
+        
+        for (NSURLQueryItem *item in transformedQueryItems) {
+            if ([item.name isEqualToString:@"processor"] == NO) { continue; }
+            if ([item.value isEqualToString:@"searchByPayment"] == NO) { continue; }
+            
+            NSUInteger downPaymentIndex = [transformedQueryItems indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([[obj name] isEqualToString:@"downPayment"]) {
+                    *stop = YES;
+                    return YES;
+                }
+                return NO;
+            }];
+            id downPayment = downPaymentIndex != NSNotFound ? transformedQueryItems[downPaymentIndex] : nil;
+            
+            NSUInteger monthlyPaymentIndex = [transformedQueryItems indexOfObjectWithOptions:NSEnumerationConcurrent passingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([[obj name] isEqualToString:@"monthlyPayment"]) {
+                    *stop = YES;
+                    return YES;
+                }
+                return NO;
+            }];
+            id monthlyPayment = monthlyPaymentIndex != NSNotFound ? transformedQueryItems[monthlyPaymentIndex] : nil;
+            
+            if (downPayment == nil || monthlyPayment == nil) { break; } // TODO: Add an error??
+            
+            // Monthly payment * 12 * 30 == Total Payments
+            // Total Payments - Total Interest + downpayment == maximum house price
+            double payment = [[monthlyPayment value] doubleValue];
+            double down = [[downPayment value] doubleValue];
+            double rate = (5.5 / 12) /100;
+            int number = 12 * 30;
+            double principal = payment * ((pow((1 + rate), number) - 1) / (rate * pow((1 + rate), number)));
+            double maximumPrice = principal + (down * 2);
+            long roundedPrice = (round(maximumPrice)) / 1;
+            [transformedQueryItems addObject:[NSURLQueryItem queryItemWithName:@"maxListPrice" value:[NSString stringWithFormat:@"%ld", roundedPrice]]];
+            [transformedQueryItems removeObject:monthlyPayment];
+            [transformedQueryItems removeObject:downPayment];
+            [transformedQueryItems removeObject:item];
+            break;
+        }
+        
+        // TODO: Check
+        // Make sure the URL and the search object are using the right set of values.
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+        
+        [serviceComponents setQueryItems: transformedQueryItems];
+        serviceURL = [serviceComponents URL];
+        if (serviceURL == nil) { return nil; }
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        
+        //****************** END QUERY ITEM PROCESSING ******************//
+        
+        
+        //****************** BEGIN OBJECT MATERIALIZATION ******************//
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+        
+        if ([entity.userInfo[@"materializationType"] isEqualToString:@"USE_PREDICATE_VALUES"]) {
+            NSMutableDictionary *propertyDictionary = [NSMutableDictionary dictionaryWithCapacity:queryItems.count];
+            for (NSURLQueryItem *keyValue in queryItems) {
+                [propertyDictionary setObject:keyValue.value forKey:keyValue.name];
+            }
+            NSManagedObjectID *objectID = [self newObjectIDForEntity:entity
+                                                     referenceObject:[[serviceComponents URL] absoluteString]];
+            NSIncrementalStoreNode *node = [[NSIncrementalStoreNode alloc] initWithObjectID:objectID
+                                                                                 withValues:propertyDictionary
+                                                                                    version:1];
+            RNDRow *row = [[RNDRow alloc] initWithNode:node
+                                           lastUpdated:[NSDate date]
+                                    expirationInterval:800000
+                                            primaryKey:[[serviceComponents URL] absoluteString]
+                                            entityName:entity.name];
+            [self.rowCache addRow:row];
+            return @[[context objectWithID:objectID]];
+        }
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        
+        
+        //****************** END OBJECT MATERIALIZATION ******************//
+        
+        
+        //****************** BEGIN REQUEST DATA PROCESSING ******************//
+        BOOL ignoreCache = ((NSString *)entity.userInfo[@"ignoreCache"]).boolValue;
+        NSError *serviceError = nil;
+        NSData *serviceData = [self responseDataForServiceURL:serviceURL
+                                          forRequestingEntity:entity
+                                                  withContext:context
+                                          withLoadingPriority:QOS_CLASS_USER_INITIATED
+                                                   lastUpdate:nil
+                                                  forceReload:ignoreCache
+                                                        error:&serviceError];
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+        
+        if (serviceError != nil) {
+            if (error != NULL) {
+                *error = serviceError;
+            }
+            return nil;
+        }
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        
+        //****************** END REQUEST DATA PROCESSING ******************//
+        
+        
+        //****************** BEGIN RESPONSE DATA PROCESSING ******************//
+        NSError *dataProcessorError = nil;
+        NSArray *primaryKeys = [self.dataResponseProcessors[entity.name] uniqueIdentifiersForEntity:entity responseData:serviceData error:&dataProcessorError];
+        
+        //////////////////////////////////////////////////////
+        ///////////////////// CHECKPOINT /////////////////////
+        //////////////////////////////////////////////////////
+        
+        if (dataProcessorError != nil) {
+            if (error != NULL) {
+                *error = dataProcessorError;
+            }
+            return nil;
+        }
+        
+        if (primaryKeys.count == 0) {
+            return @[];
+        }
+        
+        /////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        
+        NSMutableArray *fetchedObjects = [NSMutableArray arrayWithCapacity:[primaryKeys count]];
+        NSMutableArray *objectIDs = [NSMutableArray arrayWithCapacity:[primaryKeys count]];
+        
+        for (NSString *primaryKey in primaryKeys) {
+            NSManagedObjectID *objectID = [self newObjectIDForEntity:entity referenceObject:primaryKey];
+            [objectIDs addObject:objectID];
+            NSManagedObject *managedObject = [context objectWithID:objectID];
+            [fetchedObjects addObject:managedObject];
+        }
+        
+        [self preloadDataForFetchRequest:fetchRequest
+                                 context:context
+                             primaryKeys:primaryKeys
+                          fetchedObjects:fetchedObjects
+                               objectIDs:objectIDs];
+        return fetchedObjects;
+        
+        //****************** END RESPONSE DATA PROCESSING ******************//
+        
     }
     return nil;
 }
@@ -719,7 +758,9 @@
                 [context refreshObject:object mergeChanges:YES];
             }];
         });
-        return nil;
+        uint64_t version = row != nil ? row.node.version : 0;
+        NSIncrementalStoreNode *node = [[NSIncrementalStoreNode alloc] initWithObjectID:objectID withValues:@{} version:version];
+        return [[RNDRow alloc] initWithNode:node lastUpdated:[NSDate date] expirationInterval:0 primaryKey:primaryKey entityName:entity.name];
     } else {
         return [self updatedRowForPrimaryKey:primaryKey
                                  forObjectID:objectID

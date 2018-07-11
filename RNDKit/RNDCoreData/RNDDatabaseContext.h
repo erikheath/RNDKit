@@ -1,13 +1,13 @@
 //
-//  RNDStoreConnection.h
+//  RNDDatabaseContext.h
 //  RNDKit
 //
-//  Created by Erikheath Thomas on 6/29/18.
+//  Created by Erikheath Thomas on 7/11/18.
 //  Copyright © 2018 Curated Cocoa LLC. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-@interface RNDStoreConnection : NSObject
+@interface RNDDatabaseContext : NSObject
 
 @end
