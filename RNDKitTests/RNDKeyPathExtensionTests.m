@@ -43,12 +43,26 @@
     array = [NSArray arrayWithArray:array];
     NSDictionary *arrayDictionary = @{@"array":array};
     NSDictionary *dictionary = @{@"dictionary":arrayDictionary};
-    NSMutableDictionary *passingObjects = [dictionary valueForExtendedKeyPath:@"dictionary.array.@map(@filter(SELF < 20)).@combine(NSMutableDictionary, first:@index(1), second:@index(2))"];
+    NSMutableDictionary *passingObjects = [dictionary valueForExtendedKeyPath:@"dictionary.array.@map(@filter(SELF < 20)).@construct(NSMutableDictionary, first:@index(1), second:@index(2))"];
 //    XCTAssert([passingObjects count]  == 20);
 //    XCTAssert([[passingObjects valueForExtendedKeyPath:@"@avg()"] doubleValue] == 9.5);
     XCTAssert([passingObjects count] == 2);
 
 //    NSNumber *sum = [arrayArray valueForExtendedKeyPath:@"@sum(SELF.@sum(SELF.@avg(SELF.@filter(SELF < 20))))"];
+    
+    NSDictionary *substitutionDictionary = @{@"$keyA":@"This is ", @"$keyB":@"a format string"};
+    NSString *composedString = [substitutionDictionary valueForExtendedKeyPath:@"@compose(\"$keyA$keyB.\")"];
+    XCTAssertEqualObjects(@"This is a format string.", composedString);
 }
 
 @end
+
+
+/**
+ [dictionary valueForExtendedKeyPath: @"construct(NSMutableDictionary,
+    knownKey1:key.@filter().@fold(),
+    knownKey2:key.@filter().@fold(),
+    knownKey3:@('string value'),
+    knownKey4:@(5.0))"];
+ 
+ **/

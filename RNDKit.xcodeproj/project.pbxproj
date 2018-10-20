@@ -50,6 +50,9 @@
 		E485FDD220F6780C006E9A57 /* RNDDatabaseChannelOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = E485FDD020F6780C006E9A57 /* RNDDatabaseChannelOperation.m */; };
 		E485FDD520F6782A006E9A57 /* RNDDatabaseChannel.h in Headers */ = {isa = PBXBuildFile; fileRef = E485FDD320F6782A006E9A57 /* RNDDatabaseChannel.h */; };
 		E485FDD620F6782A006E9A57 /* RNDDatabaseChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = E485FDD420F6782A006E9A57 /* RNDDatabaseChannel.m */; };
+		E485FDD720F6D688006E9A57 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E446D4E91FB6485D0078346D /* MapKit.framework */; };
+		E485FDD820F6D713006E9A57 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E446D4E91FB6485D0078346D /* MapKit.framework */; };
+		E485FDDA20F6FE00006E9A57 /* MappedModel.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = E485FDD920F6FE00006E9A57 /* MappedModel.xcmappingmodel */; };
 		E48F7F4C20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F4A20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E48F7F4D20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */; };
 		E48F7F5120C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = E48F7F4F20C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -308,6 +311,7 @@
 		E485FDD020F6780C006E9A57 /* RNDDatabaseChannelOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDDatabaseChannelOperation.m; sourceTree = "<group>"; };
 		E485FDD320F6782A006E9A57 /* RNDDatabaseChannel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDDatabaseChannel.h; sourceTree = "<group>"; };
 		E485FDD420F6782A006E9A57 /* RNDDatabaseChannel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDDatabaseChannel.m; sourceTree = "<group>"; };
+		E485FDD920F6FE00006E9A57 /* MappedModel.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = MappedModel.xcmappingmodel; sourceTree = "<group>"; };
 		E48F7F4A20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDCoordinateToGeohashTransformer.h; sourceTree = "<group>"; };
 		E48F7F4B20C34EDA00FFEF6D /* RNDCoordinateToGeohashTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNDCoordinateToGeohashTransformer.m; sourceTree = "<group>"; };
 		E48F7F4F20C3594600FFEF6D /* RNDGeohashToCoordinateTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNDGeohashToCoordinateTransformer.h; sourceTree = "<group>"; };
@@ -434,6 +438,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E485FDD820F6D713006E9A57 /* MapKit.framework in Frameworks */,
 				E4459BBF20DA002C008F6647 /* RNDKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -442,6 +447,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E485FDD720F6D688006E9A57 /* MapKit.framework in Frameworks */,
 				E4E95CF32096B52A004CED34 /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -915,6 +921,7 @@
 				E4C02E7220E1A2F900E660AA /* UNSVideos+CoreDataClass.m */,
 				E4C02E7320E1A2F900E660AA /* UNSVideos+CoreDataProperties.m */,
 				E46A700D209AA21900605A98 /* UnisonRemoteModel.xcdatamodel */,
+				E485FDD920F6FE00006E9A57 /* MappedModel.xcmappingmodel */,
 			);
 			path = UNSModel;
 			sourceTree = "<group>";
@@ -1119,6 +1126,11 @@
 						CreatedOnToolsVersion = 9.3;
 						LastSwiftMigration = 0930;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					E49CFBA81F7EC17900CDFF29 = {
 						CreatedOnToolsVersion = 9.0;
@@ -1258,6 +1270,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E485FDDA20F6FE00006E9A57 /* MappedModel.xcmappingmodel in Sources */,
 				E4C02E7920E1A2F900E660AA /* UNSSavedSet+CoreDataProperties.m in Sources */,
 				E4AB7F02209B9AE200BBCD06 /* DetailViewController.m in Sources */,
 				E4C02E7720E1A2F900E660AA /* UNSProperty+CoreDataProperties.m in Sources */,

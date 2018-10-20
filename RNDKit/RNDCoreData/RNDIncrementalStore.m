@@ -758,8 +758,8 @@
                 [context refreshObject:object mergeChanges:YES];
             }];
         });
-        uint64_t version = row != nil ? row.node.version : 0;
-        NSIncrementalStoreNode *node = [[NSIncrementalStoreNode alloc] initWithObjectID:objectID withValues:@{} version:version];
+        uint64_t version = row != nil ? row.node.version : 0; // NOTE: Should this be updated or should it wait until the data is returned to update? Maybe this should be a switch of some sort?
+        NSIncrementalStoreNode *node = [[NSIncrementalStoreNode alloc] initWithObjectID:objectID withValues:@{} version:version]; // NOTE: As stated before, this should vary depending on whether a node exists or not. If an update, then the node should be updated instead of being recreated.
         return [[RNDRow alloc] initWithNode:node lastUpdated:[NSDate date] expirationInterval:0 primaryKey:primaryKey entityName:entity.name];
     } else {
         return [self updatedRowForPrimaryKey:primaryKey
@@ -930,14 +930,14 @@
     
     NSString *sourceURLString = nil;
     if ((sourceURLString = relationship.userInfo[@"destinationURL"]) != nil) {
-        return [NSURL URLWithString:[sourceURLString stringWithSubstitutionsVariables:variables]];
+        return [NSURL URLWithString:[sourceURLString stringWithSubstitutions:variables]];
     }
     
     NSURLComponents *urlComponents = [NSURLComponents new];
-    urlComponents.host = [relationship.userInfo[@"host"] stringWithSubstitutionsVariables:variables];
-    urlComponents.scheme = [relationship.userInfo[@"scheme"] stringWithSubstitutionsVariables:variables];
-    urlComponents.path = [relationship.userInfo[@"path"] stringWithSubstitutionsVariables:variables];
-    urlComponents.port = @([[relationship.userInfo[@"port"] stringWithSubstitutionsVariables:variables] longValue]);
+    urlComponents.host = [relationship.userInfo[@"host"] stringWithSubstitutions:variables];
+    urlComponents.scheme = [relationship.userInfo[@"scheme"] stringWithSubstitutions:variables];
+    urlComponents.path = [relationship.userInfo[@"path"] stringWithSubstitutions:variables];
+    urlComponents.port = @([[relationship.userInfo[@"port"] stringWithSubstitutions:variables] longValue]);
     
     NSString *queryItems = relationship.userInfo[@"queryItems"];
     NSArray *queryItemStringArray = [queryItems componentsSeparatedByString:@","];
@@ -947,7 +947,7 @@
         NSString *trimmedItem = [item stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
         id value = [row.node valueForPropertyDescription:relationship.entity.propertiesByName[trimmedItem]];
         [queryItemArray addObject:[NSURLQueryItem queryItemWithName:trimmedItem
-                                                              value:[[NSString stringWithFormat:@"%@", value] stringWithSubstitutionsVariables:variables]]];
+                                                              value:[[NSString stringWithFormat:@"%@", value] stringWithSubstitutions:variables]]];
     }
     urlComponents.queryItems = queryItemArray;
     

@@ -10,6 +10,6 @@
 
 @interface NSString (RNDStringExtensions)
 
-- (instancetype)stringWithSubstitutionsVariables:(id)substitutions;
+- (instancetype)stringWithSubstitutions:(id)substitutions;
 
 @end

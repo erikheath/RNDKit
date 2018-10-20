@@ -8,6 +8,7 @@
 
 #import "MasterViewController.h"
 #import "DetailViewController.h"
+#import <MapKit/MapKit.h>
 
 @interface MasterViewController ()
 
@@ -140,6 +141,18 @@
     if (_fetchedResultsController != nil) {
         return _fetchedResultsController;
     }
+    
+    CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+
+    [geocoder geocodeAddressString:@"Apple"
+                 completionHandler:^(NSArray* placemarks, NSError* error){
+                     
+                     for (CLPlacemark* aPlacemark in placemarks)
+                     {
+                         NSLog(@"Place:\n%@\n", aPlacemark);
+                     }
+                 }];
+
     
     NSFetchRequest<UNSSearchProfile *> *fetchRequest = UNSSearchProfile.fetchRequest;
     
